@@ -134,6 +134,18 @@ const ADMIN_PIN="2002";
       </div>
     </div>
     <div class="card">
+      <div class="card">
+  <div class="card-title">Lugar de Servicio</div>
+  <div class="select-wrap">
+    <select id="lugar-servicio" onchange="this.classList.toggle('selected',this.value!=='')">
+      <option value="">Selecciona el lugar...</option>
+      <option value="TERMINAL">TERMINAL</option>
+      <option value="CHICAMA">CHICAMA</option>
+      <option value="SENASA">SENASA</option>
+      <option value="OTROS">OTROS</option>
+    </select>
+  </div>
+</div>
       <div class="card-title">Tipo de registro</div>
       <div class="turno-grid">
         <button class="turno-btn" id="btn-inicio" onclick="selTurno('inicio')">
@@ -301,9 +313,18 @@ async function enviar(){
   const tipo=turnoSel==="inicio"?"Inicio de turno":"Fin de turno";
   const fecha=document.getElementById("meta-fecha").textContent;
   const hora=document.getElementById("meta-hora").textContent;
+  const lugar = document.getElementById("lugar-servicio").value;
+if (!lugar) { alert("Por favor, selecciona el lugar de servicio."); btn.disabled = false; return; }
   try{
-    const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(codigo)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
-    const r1=await fetch(url1);
+    const url1 = SCRIPT_URL + "?accion=registro" + 
+             "&codigo=" + encodeURIComponent(codigo) + 
+             "&nombre=" + encodeURIComponent(nombre) + 
+             "&tipo=" + encodeURIComponent(tipo) + 
+             "&lugar=" + encodeURIComponent(lugar) + // <-- NUEVA VARIABLE
+             "&fecha=" + encodeURIComponent(fecha) + 
+             "&hora=" + encodeURIComponent(hora) + 
+             "&latitud=" + encodeURIComponent(latitud) + 
+             "&longitud=" + encodeURIComponent(longitud);
     const d1=await r1.json();
     if(d1.status==="ok"){
       const fila=d1.fila;
