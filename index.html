@@ -88,6 +88,7 @@ input[type=file]{display:none}
 </style>
 </head>
 <body>
+
 <script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbz_mmtEZjfmrYkOqdGiQ3noLquAiyTq0Qco7cQ0vYqff23wFOyHWPGN6LKvgTRakecY/exec";
 const ADMIN_PIN="2002";
@@ -287,79 +288,39 @@ function aplicarMarcaAgua(){
   img.src=fotoData;
 }
 
-async function enviar() {
-  const sel = document.getElementById("trabajador");
-  if (!sel.value) { alert("Selecciona tu nombre."); return; }
-  if (!turnoSel) { alert("Selecciona Inicio o Fin de turno."); return; }
-  if (!fotoConMarca) { alert("Debes tomar una foto antes de registrar."); return; }
-
-  const btn = document.getElementById("btn-enviar");
-  
-  // BLOQUEO DE SEGURIDAD: Evita que se envíe dos veces si el usuario hace doble clic
-  if (btn.disabled) return; 
-  btn.disabled = true;
-  btn.textContent = "Enviando datos...";
-  
-  document.getElementById("error-msg").style.display = "none";
-  
-  const codigo = sel.value;
-  const nombre = sel.selectedOptions[0].text.split(" - ")[1];
-  const tipo = turnoSel === "inicio" ? "Inicio de turno" : "Fin de turno";
-  const fecha = document.getElementById("meta-fecha").textContent;
-  const hora = document.getElementById("meta-hora").textContent;
-
-  try {
-    // PASO 1: Enviar primero los datos de texto
-    const url1 = SCRIPT_URL + "?accion=registro&codigo=" + encodeURIComponent(codigo) + 
-                 "&nombre=" + encodeURIComponent(nombre) + "&tipo=" + encodeURIComponent(tipo) + 
-                 "&fecha=" + encodeURIComponent(fecha) + "&hora=" + encodeURIComponent(hora) + 
-                 "&latitud=" + encodeURIComponent(latitud) + "&longitud=" + encodeURIComponent(longitud);
-
-    const r1 = await fetch(url1);
-    const d1 = await r1.json();
-
-    if (d1.status === "ok") {
-      const fila = d1.fila; // Obtenemos el número de fila que nos devuelve el servidor
-      
-      // PASO 2: Enviar la foto por POST (Esto evita el error 413 de "Content Too Large")
-      btn.textContent = "Subiendo foto...";
-      
-      await fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors', // Importante para evitar problemas de permisos
-        body: JSON.stringify({
-          accion: "foto",
-          fila: fila,
-          foto: fotoConMarca
-        })
+async function enviar(){
+  const sel=document.getElementById("trabajador");
+  if(!sel.value){alert("Selecciona tu nombre.");return;}
+  if(!turnoSel){alert("Selecciona Inicio o Fin de turno.");return;}
+  if(!fotoConMarca){alert("Debes tomar una foto antes de registrar.");return;}
+  const btn=document.getElementById("btn-enviar");
+  if(btn.disabled)return;
+  btn.disabled=true;btn.textContent="Enviando datos...";
+  document.getElementById("error-msg").style.display="none";
+  const codigo=sel.value,nombre=sel.selectedOptions[0].text.split(" - ")[1];
+  const tipo=turnoSel==="inicio"?"Inicio de turno":"Fin de turno";
+  const fecha=document.getElementById("meta-fecha").textContent;
+  const hora=document.getElementById("meta-hora").textContent;
+  try{
+    const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(codigo)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
+    const r1=await fetch(url1);
+    const d1=await r1.json();
+    if(d1.status==="ok"){
+      const fila=d1.fila;
+      btn.textContent="Subiendo foto...";
+      await fetch(SCRIPT_URL,{
+        method:'POST',
+        mode:'no-cors',
+        body:JSON.stringify({accion:"foto",fila:fila,foto:fotoConMarca})
       });
-
-      // ÉXITO: Mostrar panel de confirmación
-      document.getElementById("form-content").style.display = "none";
-      document.getElementById("success-panel").style.display = "flex";
-      document.getElementById("success-title").textContent = tipo + " registrado";
-      document.getElementById("success-detail").innerHTML = "<strong>" + nombre + "</strong><br>" + fecha + " a las " + hora;
-      
-    } else {
-      throw new Error(d1.message || "Error al guardar");
-    }
-  } catch (err) {
-    console.error(err);
-    document.getElementById("error-msg").style.display = "block";
-    document.getElementById("error-msg").textContent = "Error al enviar. Intenta de nuevo.";
-    btn.disabled = false;
-    btn.textContent = "Registrar asistencia";
-  }
-}
-
-    // Mostrar exito
-    document.getElementById("form-content").style.display="none";
-    document.getElementById("success-panel").style.display="flex";
-    document.getElementById("success-title").textContent=tipo+" registrado";
-    document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+fecha+" a las "+hora+"<br><span style='font-size:12px;color:#9CA3AF'>GPS: "+latitud+", "+longitud+"</span>";
+      document.getElementById("form-content").style.display="none";
+      document.getElementById("success-panel").style.display="flex";
+      document.getElementById("success-title").textContent=tipo+" registrado";
+      document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+fecha+" a las "+hora;
+    }else{throw new Error(d1.message||"Error al guardar");}
   }catch(err){
     document.getElementById("error-msg").style.display="block";
-    document.getElementById("error-msg").textContent="Error: "+err.message;
+    document.getElementById("error-msg").textContent="Error al enviar. Intenta de nuevo.";
     btn.disabled=false;btn.textContent="Registrar asistencia";
   }
 }
@@ -440,6 +401,7 @@ async function eliminarTrabajador(codigo,nombre){
     else{alert(data.message||"Error al eliminar");}
   }catch(e){alert("Error de conexion");}
 }
+
 initFecha();
 cargarSelect();
 </script>
