@@ -250,21 +250,25 @@ function cargarFoto(input){
       if(w>h && w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
       canvas.width=w; canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
-      fotoData=canvas.toDataURL('image/jpeg',0.7);
+      
+      // Guardamos la foto limpia (sin letras aún)
+      fotoLimpiaData = canvas.toDataURL('image/jpeg',0.7);
+      
       if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(p=>{
           latitud=p.coords.latitude.toFixed(6); longitud=p.coords.longitude.toFixed(6);
           document.getElementById("meta-gps").textContent=p.coords.latitude.toFixed(3)+","+p.coords.longitude.toFixed(3);
-          aplicarMarcaAgua();
-        },()=>aplicarMarcaAgua());
-      }else{aplicarMarcaAgua();}
+        });
+      }
+      // Habilitamos el botón pero avisamos que la hora se sellará al enviar
+      document.getElementById("btn-enviar").style.display="block";
     };
     img.src=e.target.result;
   };
   reader.readAsDataURL(input.files[0]);
+  // Guardamos el momento en que subió el archivo para el bloqueo de 2 minutos
   window.momentoCapturaMilis = new Date().getTime();
 }
-
 function aplicarMarcaAgua(){
   if(!fotoData)return;
   const sel=document.getElementById("trabajador");
@@ -294,73 +298,96 @@ function aplicarMarcaAgua(){
   };
   img.src=fotoData;
 }
-
 async function enviar(){
-  const sel=document.getElementById("trabajador");
-  const lug=document.getElementById("lugar-servicio");
+  const sel = document.getElementById("trabajador");
+  const lug = document.getElementById("lugar-servicio");
   
-  if(!sel.value || !lug.value || !turnoSel || !fotoConMarca){
-    alert("Completa todos los campos y toma la foto."); return;
+  // Validamos que exista fotoData (la foto limpia de cargarFoto)
+  if(!sel.value || !lug.value || !turnoSel || !fotoData){
+    alert("Completa todos los campos y selecciona una foto."); return;
   }
   
-  // --- BLOQUEO DE SEGURIDAD (ANTI-TRAMPA) ---
   const ahoraMomentoClic = new Date();
   
-  // Si tienes guardada la variable de cuando se tomó la foto, validamos (opcional pero recomendado)
+  // 1. BLOQUEO DE SEGURIDAD (ANTI-TRAMPA DE TIEMPO)
   if (window.momentoCapturaMilis) {
     const segundosDiferencia = (ahoraMomentoClic.getTime() - window.momentoCapturaMilis) / 1000;
-    if (segundosDiferencia > 120) { // Si pasaron más de 2 minutos
-      alert("❌ La foto ha expirado. Por seguridad, tome una nueva foto para registrar su asistencia.");
+    if (segundosDiferencia > 60) { // 2 minutos
+      alert("❌ El tiempo de registro expiró. Por seguridad, selecciona la foto nuevamente.");
       location.reload(); 
       return;
     }
   }
+
+  const btn = document.getElementById("btn-enviar");
+  btn.disabled = true; btn.textContent = "Procesando...";
+  document.getElementById("error-msg").style.display = "none";
+
+  // 2. GENERAR MARCA DE AGUA CON LA HORA REAL DEL CLIC
+  const imgEspera = new Image();
+  imgEspera.src = fotoData; // Usamos la foto que procesó cargarFoto
+  await new Promise(resolve => imgEspera.onload = resolve);
+
+  const canvasMarca = document.createElement('canvas');
+  canvasMarca.width = imgEspera.width; 
+  canvasMarca.height = imgEspera.height;
+  const ctx = canvasMarca.getContext('2d');
+  ctx.drawImage(imgEspera, 0, 0);
   
-  const btn=document.getElementById("btn-enviar");
-  btn.disabled=true; btn.textContent="Enviando...";
-  document.getElementById("error-msg").style.display="none";
+  // Configuración del texto (Hora de envío + GPS)
+  const fechaSello = ahoraMomentoClic.toLocaleDateString('es-PE');
+  const horaSello = ahoraMomentoClic.toLocaleTimeString('es-PE', { hour12: false });
+  const textoSello = fechaSello + " " + horaSello + " GPS: " + latitud + "," + longitud;
+  
+  ctx.font = "bold 22px Arial";
+  ctx.fillStyle = "rgba(255, 255, 0, 0.9)"; // Amarillo para que resalte
+  ctx.shadowColor = "black"; ctx.shadowBlur = 5;
+  ctx.fillText(textoSello, 20, canvasMarca.height - 25);
 
-  const codigo=sel.value;
-  const nombre=sel.selectedOptions[0].text.split(" - ")[1];
-  const lugar=lug.value;
-  const tipo=turnoSel==="inicio"?"Inicio de turno":"Fin de turno";
+  // Esta es la foto definitiva con la marca de agua actualizada
+  const fotoDefinitiva = canvasMarca.toDataURL('image/jpeg', 0.8);
 
-  // --- HORA REAL: Generamos la hora exacta del envío ---
-  const fechaReal = ahoraMomentoClic.toLocaleDateString('es-PE').split('/').map(v => v.padStart(2,'0')).join('/');
-  const horaReal = ahoraMomentoClic.toLocaleTimeString('es-PE', { hour12: false });
+  // 3. DATOS PARA EL EXCEL
+  const codigo = sel.value;
+  const nombre = sel.selectedOptions[0].text.split(" - ")[1];
+  const lugar = lug.value;
+  const tipo = turnoSel === "inicio" ? "Inicio de turno" : "Fin de turno";
+  const fechaReal = fechaSello.split('/').map(v => v.padStart(2,'0')).join('/');
+  const horaReal = horaSello;
 
   try {
-    // Usamos fechaReal y horaReal en la URL en lugar de las etiquetas del HTML
-    const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(codigo)+
-               "&nombre="+encodeURIComponent(nombre)+
-               "&tipo="+encodeURIComponent(tipo)+
-               "&lugar="+encodeURIComponent(lugar)+
-               "&fecha="+encodeURIComponent(fechaReal)+ // HORA ACTUALIZADA
-               "&hora="+encodeURIComponent(horaReal)+   // HORA ACTUALIZADA
-               "&latitud="+encodeURIComponent(latitud)+
-               "&longitud="+encodeURIComponent(longitud);
+    // URL con la hora exacta del clic
+    const url1 = SCRIPT_URL + "?accion=registro&codigo=" + encodeURIComponent(codigo) +
+                 "&nombre=" + encodeURIComponent(nombre) +
+                 "&tipo=" + encodeURIComponent(tipo) +
+                 "&lugar=" + encodeURIComponent(lugar) +
+                 "&fecha=" + encodeURIComponent(fechaReal) + 
+                 "&hora=" + encodeURIComponent(horaReal) + 
+                 "&latitud=" + encodeURIComponent(latitud) +
+                 "&longitud=" + encodeURIComponent(longitud);
     
-    const r1=await fetch(url1);
-    const d1=await r1.json();
+    const r1 = await fetch(url1);
+    const d1 = await r1.json();
 
-    if(d1.status==="ok"){
+    if(d1.status === "ok"){
+      // Enviamos la foto con el sello de hora real
       await fetch(SCRIPT_URL, {
-        method:'POST', mode:'no-cors',
-        body: JSON.stringify({accion:"foto", fila:d1.fila, foto:fotoConMarca})
+        method: 'POST', mode: 'no-cors',
+        body: JSON.stringify({accion: "foto", fila: d1.fila, foto: fotoDefinitiva})
       });
-      document.getElementById("form-content").style.display="none";
-      document.getElementById("success-panel").style.display="flex";
-      document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
+      
+      document.getElementById("form-content").style.display = "none";
+      document.getElementById("success-panel").style.display = "flex";
+      document.getElementById("success-detail").innerHTML = "<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
     } else {
       throw new Error(d1.message);
     }
   } catch(e) {
-    document.getElementById("error-msg").textContent=e.message || "Error al enviar.";
-    document.getElementById("error-msg").style.display="block";
-    btn.disabled=false; btn.textContent="Registrar asistencia";
+    document.getElementById("error-msg").textContent = e.message || "Error al enviar.";
+    document.getElementById("error-msg").style.display = "block";
+    btn.disabled = false; btn.textContent = "Registrar asistencia";
   }
 }
-
 function nuevoRegistro(){ location.reload(); }
 function abrirPin(){ document.getElementById("pin-overlay").style.display="flex"; }
 function cerrarPin(){ document.getElementById("pin-overlay").style.display="none"; }
