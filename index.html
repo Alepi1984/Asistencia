@@ -299,93 +299,88 @@ function aplicarMarcaAgua(){
   img.src=fotoData;
 }
 async function enviar(){
-  const sel = document.getElementById("trabajador");
-  const lug = document.getElementById("lugar-servicio");
+  const sel=document.getElementById("trabajador");
+  const lug=document.getElementById("lugar-servicio");
   
-  // Validamos que exista fotoData (la foto limpia de cargarFoto)
+  // Validamos que exista la foto original (fotoData debe ser la imagen LIMPIA de cargarFoto)
   if(!sel.value || !lug.value || !turnoSel || !fotoData){
     alert("Completa todos los campos y selecciona una foto."); return;
   }
   
   const ahoraMomentoClic = new Date();
   
-  // 1. BLOQUEO DE SEGURIDAD (ANTI-TRAMPA DE TIEMPO)
+  // 1. BLOQUEO DE SEGURIDAD (ANTI-TRAMPA)
   if (window.momentoCapturaMilis) {
     const segundosDiferencia = (ahoraMomentoClic.getTime() - window.momentoCapturaMilis) / 1000;
-    if (segundosDiferencia > 60) { // 2 minutos
-      alert("❌ El tiempo de registro expiró. Por seguridad, selecciona la foto nuevamente.");
+    if (segundosDiferencia > 120) { 
+      alert("❌ El tiempo de registro expiró (máx 2 min). Por favor, suba la foto nuevamente.");
       location.reload(); 
       return;
     }
   }
 
-  const btn = document.getElementById("btn-enviar");
-  btn.disabled = true; btn.textContent = "Procesando...";
-  document.getElementById("error-msg").style.display = "none";
+  const btn=document.getElementById("btn-enviar");
+  btn.disabled=true; btn.textContent="Procesando...";
 
-  // 2. GENERAR MARCA DE AGUA CON LA HORA REAL DEL CLIC
+  // --- 2. RE-DIBUJAR MARCA DE AGUA CON HORA ACTUAL ---
   const imgEspera = new Image();
-  imgEspera.src = fotoData; // Usamos la foto que procesó cargarFoto
+  imgEspera.src = fotoData; // Usamos la foto original sin marcas previas
   await new Promise(resolve => imgEspera.onload = resolve);
 
   const canvasMarca = document.createElement('canvas');
   canvasMarca.width = imgEspera.width; 
   canvasMarca.height = imgEspera.height;
   const ctx = canvasMarca.getContext('2d');
+  
+  // Dibujamos la imagen
   ctx.drawImage(imgEspera, 0, 0);
   
-  // Configuración del texto (Hora de envío + GPS)
-  const fechaSello = ahoraMomentoClic.toLocaleDateString('es-PE');
-  const horaSello = ahoraMomentoClic.toLocaleTimeString('es-PE', { hour12: false });
-  const textoSello = fechaSello + " " + horaSello + " GPS: " + latitud + "," + longitud;
-  
+  // Definimos la nueva hora real
+  const fechaReal = ahoraMomentoClic.toLocaleDateString('es-PE').split('/').map(v => v.padStart(2,'0')).join('/');
+  const horaReal = ahoraMomentoClic.toLocaleTimeString('es-PE', { hour12: false });
+  const textoSello = fechaReal + " " + horaReal + " GPS: " + latitud + "," + longitud;
+
+  // Estilo de la marca de agua actualizada
   ctx.font = "bold 22px Arial";
-  ctx.fillStyle = "rgba(255, 255, 0, 0.9)"; // Amarillo para que resalte
+  ctx.fillStyle = "yellow"; // Color llamativo para notar el cambio
   ctx.shadowColor = "black"; ctx.shadowBlur = 5;
   ctx.fillText(textoSello, 20, canvasMarca.height - 25);
 
-  // Esta es la foto definitiva con la marca de agua actualizada
-  const fotoDefinitiva = canvasMarca.toDataURL('image/jpeg', 0.8);
+  // Esta es la foto definitiva que se enviará
+  const fotoDefinitivaConHoraReal = canvasMarca.toDataURL('image/jpeg', 0.8);
 
-  // 3. DATOS PARA EL EXCEL
-  const codigo = sel.value;
-  const nombre = sel.selectedOptions[0].text.split(" - ")[1];
-  const lugar = lug.value;
-  const tipo = turnoSel === "inicio" ? "Inicio de turno" : "Fin de turno";
-  const fechaReal = fechaSello.split('/').map(v => v.padStart(2,'0')).join('/');
-  const horaReal = horaSello;
+  // 3. PROCESO DE ENVÍO
+  const codigo=sel.value;
+  const nombre=sel.selectedOptions[0].text.split(" - ")[1];
+  const lugar=lug.value;
+  const tipo=turnoSel==="inicio"?"Inicio de turno":"Fin de turno";
 
   try {
-    // URL con la hora exacta del clic
-    const url1 = SCRIPT_URL + "?accion=registro&codigo=" + encodeURIComponent(codigo) +
-                 "&nombre=" + encodeURIComponent(nombre) +
-                 "&tipo=" + encodeURIComponent(tipo) +
-                 "&lugar=" + encodeURIComponent(lugar) +
-                 "&fecha=" + encodeURIComponent(fechaReal) + 
-                 "&hora=" + encodeURIComponent(horaReal) + 
-                 "&latitud=" + encodeURIComponent(latitud) +
-                 "&longitud=" + encodeURIComponent(longitud);
+    const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(codigo)+
+               "&nombre="+encodeURIComponent(nombre)+
+               "&tipo="+encodeURIComponent(tipo)+
+               "&lugar="+encodeURIComponent(lugar)+
+               "&fecha="+encodeURIComponent(fechaReal)+ 
+               "&hora="+encodeURIComponent(horaReal)+
+               "&latitud="+encodeURIComponent(latitud)+
+               "&longitud="+encodeURIComponent(longitud);
     
-    const r1 = await fetch(url1);
-    const d1 = await r1.json();
+    const r1=await fetch(url1);
+    const d1=await r1.json();
 
-    if(d1.status === "ok"){
-      // Enviamos la foto con el sello de hora real
+    if(d1.status==="ok"){
       await fetch(SCRIPT_URL, {
-        method: 'POST', mode: 'no-cors',
-        body: JSON.stringify({accion: "foto", fila: d1.fila, foto: fotoDefinitiva})
+        method:'POST', mode:'no-cors',
+        body: JSON.stringify({accion:"foto", fila:d1.fila, foto: fotoDefinitivaConHoraReal})
       });
-      
-      document.getElementById("form-content").style.display = "none";
-      document.getElementById("success-panel").style.display = "flex";
-      document.getElementById("success-detail").innerHTML = "<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
+      document.getElementById("form-content").style.display="none";
+      document.getElementById("success-panel").style.display="flex";
     } else {
       throw new Error(d1.message);
     }
   } catch(e) {
-    document.getElementById("error-msg").textContent = e.message || "Error al enviar.";
-    document.getElementById("error-msg").style.display = "block";
-    btn.disabled = false; btn.textContent = "Registrar asistencia";
+    alert("Error: " + e.message);
+    btn.disabled=false; btn.textContent="Registrar asistencia";
   }
 }
 function nuevoRegistro(){ location.reload(); }
