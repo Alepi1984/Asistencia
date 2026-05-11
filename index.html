@@ -139,11 +139,7 @@ const ADMIN_PIN="2002";
       <div class="card-title">Lugar de Servicio</div>
       <div class="select-wrap">
         <select id="lugar-servicio" onchange="this.classList.toggle('selected',this.value!=='');if(fotoData)aplicarMarcaAgua();">
-          <option value="">Selecciona el lugar...</option>
-          <option value="TERMINAL">TERMINAL</option>
-          <option value="CHICAMA">CHICAMA</option>
-          <option value="SENASA">SENASA</option>
-          <option value="OTROS">OTROS</option>
+          <option value="">Cargando lugares...</option>
         </select>
       </div>
     </div>
@@ -231,6 +227,29 @@ async function cargarSelect(){
     }
   }catch(e){ sel.innerHTML='<option value="">Error al cargar lista</option>'; }
 }
+  function cargarListaLugares() {
+  google.script.run
+    .withSuccessHandler(function(lugares) {
+      const selLug = document.getElementById("lugar-servicio"); // Verifica que este sea el ID de tu select
+      selLug.innerHTML = '<option value="">Seleccione el lugar...</option>';
+      
+      lugares.forEach(function(lugar) {
+        const opt = document.createElement("option");
+        opt.value = lugar;
+        opt.textContent = lugar;
+        selLug.appendChild(opt);
+      });
+    })
+    .withFailureHandler(err => console.error("Error cargando lugares:", err))
+    .obtenerListaLugares();
+}
+
+// Asegúrate de llamar a la función al inicio
+window.onload = function() {
+  cargarListaTrabajadores(); // La que ya tenías
+  cargarListaLugares();      // La nueva
+  // ... resto de tus funciones
+};
 
 function selTurno(t){
   turnoSel=t;
