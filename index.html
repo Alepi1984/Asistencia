@@ -227,29 +227,25 @@ async function cargarSelect(){
     }
   }catch(e){ sel.innerHTML='<option value="">Error al cargar lista</option>'; }
 }
-  function cargarListaLugares() {
+  function cargarLugares() {
   google.script.run
     .withSuccessHandler(function(lugares) {
-      const selLug = document.getElementById("lugar-servicio"); // Verifica que este sea el ID de tu select
-      selLug.innerHTML = '<option value="">Seleccione el lugar...</option>';
+      const select = document.getElementById("lugar-servicio");
+      if(!select) return; // Seguridad por si el ID cambió
       
-      lugares.forEach(function(lugar) {
-        const opt = document.createElement("option");
-        opt.value = lugar;
-        opt.textContent = lugar;
-        selLug.appendChild(opt);
+      select.innerHTML = '<option value="">Seleccione lugar...</option>';
+      
+      lugares.forEach(l => {
+        if(l) { // Evita opciones vacías
+          let opt = document.createElement("option");
+          opt.value = l;
+          opt.textContent = l;
+          select.appendChild(opt);
+        }
       });
     })
-    .withFailureHandler(err => console.error("Error cargando lugares:", err))
-    .obtenerListaLugares();
+    .obtenerListaLugares(); // Verifica que este nombre sea igual al del paso 1
 }
-
-// Asegúrate de llamar a la función al inicio
-window.onload = function() {
-  cargarListaTrabajadores(); // La que ya tenías
-  cargarListaLugares();      // La nueva
-  // ... resto de tus funciones
-};
 
 function selTurno(t){
   turnoSel=t;
