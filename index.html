@@ -213,19 +213,41 @@ function initFecha(){
 }
 
 async function cargarSelect(){
-  const sel=document.getElementById("trabajador");
-  try{
-    const res=await fetch(SCRIPT_URL+"?accion=listar");
-    const data=await res.json();
-    sel.innerHTML='<option value="">Selecciona tu nombre</option>';
-    if(data.trabajadores && data.trabajadores.length>0){
-      data.trabajadores.forEach(t=>{
-        const op=document.createElement("option");
-        op.value=t.codigo; op.textContent=t.codigo+" - "+t.nombre;
+  const sel = document.getElementById("trabajador");
+  const lug = document.getElementById("lugar-servicio"); // Agregamos el selector de lugares
+  
+  try {
+    const res = await fetch(SCRIPT_URL + "?accion=listar");
+    const data = await res.json();
+    
+    // 1. LLENAR TRABAJADORES
+    sel.innerHTML = '<option value="">Selecciona tu nombre</option>';
+    if(data.trabajadores && data.trabajadores.length > 0){
+      data.trabajadores.forEach(t => {
+        const op = document.createElement("option");
+        op.value = t.codigo; 
+        op.textContent = t.codigo + " - " + t.nombre;
         sel.appendChild(op);
       });
     }
-  }catch(e){ sel.innerHTML='<option value="">Error al cargar lista</option>'; }
+
+    // 2. LLENAR LUGARES (Añadimos esta parte)
+    if(lug) {
+      lug.innerHTML = '<option value="">Selecciona lugar de servicio</option>';
+      if(data.lugares && data.lugares.length > 0){
+        data.lugares.forEach(l => {
+          const op = document.createElement("option");
+          op.value = l; 
+          op.textContent = l;
+          lug.appendChild(op);
+        });
+      }
+    }
+
+  } catch(e) { 
+    sel.innerHTML = '<option value="">Error al cargar lista</option>'; 
+    if(lug) lug.innerHTML = '<option value="">Error al cargar lugares</option>';
+  }
 }
   function cargarLugares() {
   google.script.run
