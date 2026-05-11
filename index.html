@@ -88,15 +88,14 @@ input[type=file]{display:none}
 </style>
 </head>
 <body>
-
 <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzf0RS71lSPETxQOTRYFleqb15pC1j5ThexzDKr2LD86f87hqu2_Xe-RH-3Ua0aeG4G/exec";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxFR4qte-z9ZgzyHvaNwtIMWXSf3EPA2wH_YHYn9-hI0aWCF8d8_nE-C6dvgpFmNKmA/exec";
 const ADMIN_PIN="2002";
 </script>
 
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-box">
-    <div class="pin-title">Administración</div>
+    <div class="pin-title">Administracion</div>
     <div class="pin-sub">Ingresa el PIN para continuar</div>
     <input class="pin-input" type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="****">
     <div class="pin-error" id="pin-error">PIN incorrecto</div>
@@ -125,29 +124,14 @@ const ADMIN_PIN="2002";
 
 <div class="main" id="form-wrap">
   <div id="form-content" style="display:flex;flex-direction:column;gap:12px">
-    
     <div class="card">
-      <div class="card-title">Identificación</div>
+      <div class="card-title">Identificacion</div>
       <div class="select-wrap">
         <select id="trabajador" onchange="this.classList.toggle('selected',this.value!=='');if(fotoData)aplicarMarcaAgua();">
           <option value="">Cargando trabajadores...</option>
         </select>
       </div>
     </div>
-
-    <div class="card">
-      <div class="card-title">Lugar de Servicio</div>
-      <div class="select-wrap">
-        <select id="lugar-servicio" onchange="this.classList.toggle('selected',this.value!=='');if(fotoData)aplicarMarcaAgua();">
-          <option value="">Selecciona el lugar...</option>
-          <option value="TERMINAL">TERMINAL</option>
-          <option value="CHICAMA">CHICAMA</option>
-          <option value="SENASA">SENASA</option>
-          <option value="OTROS">OTROS</option>
-        </select>
-      </div>
-    </div>
-
     <div class="card">
       <div class="card-title">Tipo de registro</div>
       <div class="turno-grid">
@@ -161,7 +145,6 @@ const ADMIN_PIN="2002";
         </button>
       </div>
     </div>
-
     <div class="card">
       <div class="card-title">Foto de evidencia</div>
       <div class="foto-area" id="foto-area" onclick="document.getElementById('foto-input').click()">
@@ -169,7 +152,7 @@ const ADMIN_PIN="2002";
           <svg viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
         </div>
         <div class="foto-txt">Tomar foto</div>
-        <div class="foto-sub">La foto mostrará nombre, fecha, hora y turno</div>
+        <div class="foto-sub">La foto mostrara nombre, fecha, hora y turno</div>
       </div>
       <input type="file" id="foto-input" accept="image/*" capture="environment" onchange="cargarFoto(this)">
       <div class="meta">
@@ -178,11 +161,10 @@ const ADMIN_PIN="2002";
         <div class="meta-box"><div class="meta-label">GPS</div><div class="meta-val" id="meta-gps">-</div></div>
       </div>
     </div>
-
     <button class="btn-enviar" id="btn-enviar" onclick="enviar()">Registrar asistencia</button>
     <div class="error-msg" id="error-msg">Error al enviar.</div>
+    <p class="nota">Los datos se guardan en Google Sheets y la foto en Google Drive.</p>
   </div>
-
   <div id="success-panel">
     <div class="check-wrap"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
     <div class="success-title" id="success-title">Registro guardado</div>
@@ -193,14 +175,15 @@ const ADMIN_PIN="2002";
 
 <div id="admin-panel">
   <div class="admin-header">
-    <div class="admin-title">Gestión de trabajadores</div>
+    <div class="admin-title">Gestion de trabajadores</div>
     <button class="btn-cerrar" onclick="cerrarAdmin()">Volver</button>
   </div>
   <div class="add-worker">
     <input type="text" id="nuevo-nombre" placeholder="Nombre completo" maxlength="60" onkeydown="if(event.key==='Enter')agregarTrabajador()">
     <button class="btn-agregar" id="btn-agregar" onclick="agregarTrabajador()">+ Agregar</button>
   </div>
-  <div class="worker-list" id="worker-list"></div>
+  <div class="worker-list" id="worker-list"><div class="loading-txt">Cargando...</div></div>
+  <p class="admin-nota">El codigo se asigna automaticamente.<br>La lista se guarda en Google Sheets.</p>
 </div>
 
 <script>
@@ -208,10 +191,10 @@ let turnoSel="",fotoData=null,fotoConMarca=null,latitud="N/D",longitud="N/D";
 
 function initFecha(){
   const d=new Date();
-  const dd=String(d.getDate()).padStart(2,"0"),mm=String(d.getMonth()+1).padStart(2,"0");
-  const dias=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+  const dias=["Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"];
   const meses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
   document.getElementById("fecha-hoy").textContent=dias[d.getDay()]+" "+d.getDate()+" de "+meses[d.getMonth()];
+  const dd=String(d.getDate()).padStart(2,"0"),mm=String(d.getMonth()+1).padStart(2,"0");
   document.getElementById("meta-fecha").textContent=dd+"/"+mm+"/"+d.getFullYear();
   document.getElementById("meta-hora").textContent=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
 }
@@ -222,14 +205,14 @@ async function cargarSelect(){
     const res=await fetch(SCRIPT_URL+"?accion=listar");
     const data=await res.json();
     sel.innerHTML='<option value="">Selecciona tu nombre</option>';
-    if(data.trabajadores && data.trabajadores.length>0){
-      data.trabajadores.forEach(t=>{
+    if(data.trabajadores&&data.trabajadores.length>0){
+      data.trabajadores.slice().sort((a,b)=>a.nombre.localeCompare(b.nombre)).forEach(t=>{
         const op=document.createElement("option");
-        op.value=t.codigo; op.textContent=t.codigo+" - "+t.nombre;
+        op.value=t.codigo;op.textContent=t.codigo+" - "+t.nombre;
         sel.appendChild(op);
       });
-    }
-  }catch(e){ sel.innerHTML='<option value="">Error al cargar lista</option>'; }
+    }else{sel.innerHTML='<option value="">No hay trabajadores registrados</option>';}
+  }catch(e){sel.innerHTML='<option value="">Error al cargar lista</option>';}
 }
 
 function selTurno(t){
@@ -240,23 +223,24 @@ function selTurno(t){
 }
 
 function cargarFoto(input){
-  if(!input.files || !input.files[0]) return;
+  if(!input.files||!input.files[0])return;
   const reader=new FileReader();
   reader.onload=function(e){
     const img=new Image();
     img.onload=function(){
+      const MAX=800;let w=img.width,h=img.height;
+      if(w>h&&w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
       const canvas=document.createElement('canvas');
-      const MAX=800; let w=img.width, h=img.height;
-      if(w>h && w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
-      canvas.width=w; canvas.height=h;
+      canvas.width=w;canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
       fotoData=canvas.toDataURL('image/jpeg',0.7);
+      // La hora se captura al momento de enviar, no al tomar la foto
       if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(p=>{
-          latitud=p.coords.latitude.toFixed(6); longitud=p.coords.longitude.toFixed(6);
-          document.getElementById("meta-gps").textContent=p.coords.latitude.toFixed(3)+","+p.coords.longitude.toFixed(3);
+        navigator.geolocation.getCurrentPosition(function(pos){
+          latitud=pos.coords.latitude.toFixed(6);longitud=pos.coords.longitude.toFixed(6);
+          document.getElementById("meta-gps").textContent=pos.coords.latitude.toFixed(3)+","+pos.coords.longitude.toFixed(3);
           aplicarMarcaAgua();
-        },()=>aplicarMarcaAgua());
+        },function(){document.getElementById("meta-gps").textContent="N/D";aplicarMarcaAgua();});
       }else{aplicarMarcaAgua();}
     };
     img.src=e.target.result;
@@ -267,111 +251,199 @@ function cargarFoto(input){
 function aplicarMarcaAgua(){
   if(!fotoData)return;
   const sel=document.getElementById("trabajador");
-  const lug=document.getElementById("lugar-servicio");
-  const nombre=sel.value?sel.selectedOptions[0].text.split(" - ")[1]:"N/D";
-  const lugar=lug.value || "LUGAR NO SELEC.";
-  const tipo=turnoSel==="inicio"?"INICIO DE TURNO":"FIN DE TURNO";
+  const nombre=sel.value?sel.selectedOptions[0].text.split(" - ")[1]:"Sin seleccionar";
+  const tipo=turnoSel==="inicio"?"INICIO DE TURNO":turnoSel==="fin"?"FIN DE TURNO":"SIN TURNO";
   const fecha=document.getElementById("meta-fecha").textContent;
   const hora=document.getElementById("meta-hora").textContent;
-  
+  const lineColor=turnoSel==="inicio"?"#3B82F6":turnoSel==="fin"?"#10B981":"#6B7280";
   const img=new Image();
   img.onload=function(){
     const canvas=document.createElement('canvas');
-    canvas.width=img.width; canvas.height=img.height;
+    canvas.width=img.width;canvas.height=img.height;
     const ctx=canvas.getContext('2d');
     ctx.drawImage(img,0,0);
-    ctx.fillStyle="rgba(0,0,0,0.6)";
-    ctx.fillRect(0,img.height-140,img.width,140);
-    ctx.fillStyle="#FFFFFF"; ctx.font="bold 24px Arial";
-    ctx.fillText(tipo + " - " + lugar, 20, img.height-100);
-    ctx.font="20px Arial";
-    ctx.fillText("Nombre: "+nombre, 20, img.height-70);
-    ctx.fillText("Fecha: "+fecha+"  Hora: "+hora, 20, img.height-40);
-    fotoConMarca=canvas.toDataURL('image/jpeg',0.8);
-    document.getElementById("foto-area").innerHTML='<img src="'+fotoConMarca+'">';
-    document.getElementById("foto-area").classList.add("has-foto");
+    const barH=Math.round(img.height*0.24),y0=img.height-barH;
+    const pad=Math.round(img.width*0.04),base=Math.round(img.height*0.04);
+    const grad=ctx.createLinearGradient(0,y0,0,img.height);
+    grad.addColorStop(0,"rgba(0,0,0,0.55)");grad.addColorStop(1,"rgba(0,0,0,0.82)");
+    ctx.fillStyle=grad;ctx.fillRect(0,y0,img.width,barH);
+    ctx.fillStyle=lineColor;ctx.fillRect(0,y0,img.width,Math.max(3,Math.round(img.height*0.006)));
+    ctx.font="bold "+Math.round(base*1.1)+"px Arial";ctx.fillStyle=lineColor;
+    ctx.fillText(tipo,pad,y0+Math.round(barH*0.28));
+    ctx.font="bold "+base+"px Arial";ctx.fillStyle="#FFFFFF";
+    ctx.fillText("Nombre: "+nombre,pad,y0+Math.round(barH*0.52));
+    ctx.font=Math.round(base*0.85)+"px Arial";ctx.fillStyle="#D1D5DB";
+    ctx.fillText("Fecha: "+fecha+"    Hora: "+hora,pad,y0+Math.round(barH*0.72));
+    if(latitud!=="N/D"){
+      ctx.font=Math.round(base*0.72)+"px Arial";ctx.fillStyle="#9CA3AF";
+      ctx.fillText("GPS: "+latitud+", "+longitud,pad,y0+Math.round(barH*0.90));
+    }
+    fotoConMarca=canvas.toDataURL('image/jpeg',0.7);
+    const area=document.getElementById("foto-area");
+    area.innerHTML='<img src="'+fotoConMarca+'" alt="Foto">';
+    area.classList.add("has-foto");
   };
   img.src=fotoData;
 }
 
 async function enviar(){
   const sel=document.getElementById("trabajador");
-  const lug=document.getElementById("lugar-servicio");
-  if(!sel.value || !lug.value || !turnoSel || !fotoConMarca){
-    alert("Completa todos los campos y toma la foto."); return;
-  }
-  
+  if(!sel.value){alert("Selecciona tu nombre.");return;}
+  if(!turnoSel){alert("Selecciona Inicio o Fin de turno.");return;}
+  if(!fotoConMarca){alert("Debes tomar una foto antes de registrar.");return;}
   const btn=document.getElementById("btn-enviar");
-  btn.disabled=true; btn.textContent="Enviando...";
+  btn.disabled=true;btn.textContent="Enviando datos...";
   document.getElementById("error-msg").style.display="none";
-
-  const codigo=sel.value;
-  const nombre=sel.selectedOptions[0].text.split(" - ")[1];
-  const lugar=lug.value;
+  const codigo=sel.value,nombre=sel.selectedOptions[0].text.split(" - ")[1];
   const tipo=turnoSel==="inicio"?"Inicio de turno":"Fin de turno";
-  const fecha=document.getElementById("meta-fecha").textContent;
-  const hora=document.getElementById("meta-hora").textContent;
+  // Capturar hora y fecha REAL al momento de enviar
+  const ahora=new Date();
+  const dd=String(ahora.getDate()).padStart(2,"0"),mm=String(ahora.getMonth()+1).padStart(2,"0");
+  const fecha=dd+"/"+mm+"/"+ahora.getFullYear();
+  const hora=String(ahora.getHours()).padStart(2,"0")+":"+String(ahora.getMinutes()).padStart(2,"0");
+  // Actualizar display
+  document.getElementById("meta-fecha").textContent=fecha;
+  document.getElementById("meta-hora").textContent=hora;
+  // Regenerar marca de agua con hora real de envio
+  await new Promise(function(resolve){
+    const sel2=document.getElementById("trabajador");
+    const nombre2=sel2.value?sel2.selectedOptions[0].text.split(" - ")[1]:"Sin seleccionar";
+    const tipo2=turnoSel==="inicio"?"INICIO DE TURNO":turnoSel==="fin"?"FIN DE TURNO":"SIN TURNO";
+    const lineColor2=turnoSel==="inicio"?"#3B82F6":turnoSel==="fin"?"#10B981":"#6B7280";
+    const img2=new Image();
+    img2.onload=function(){
+      const canvas2=document.createElement("canvas");
+      canvas2.width=img2.width;canvas2.height=img2.height;
+      const ctx2=canvas2.getContext("2d");
+      ctx2.drawImage(img2,0,0);
+      const barH2=Math.round(img2.height*0.24),y02=img2.height-barH2;
+      const pad2=Math.round(img2.width*0.04),base2=Math.round(img2.height*0.04);
+      const grad2=ctx2.createLinearGradient(0,y02,0,img2.height);
+      grad2.addColorStop(0,"rgba(0,0,0,0.55)");grad2.addColorStop(1,"rgba(0,0,0,0.82)");
+      ctx2.fillStyle=grad2;ctx2.fillRect(0,y02,img2.width,barH2);
+      ctx2.fillStyle=lineColor2;ctx2.fillRect(0,y02,img2.width,Math.max(3,Math.round(img2.height*0.006)));
+      ctx2.font="bold "+Math.round(base2*1.1)+"px Arial";ctx2.fillStyle=lineColor2;
+      ctx2.fillText(tipo2,pad2,y02+Math.round(barH2*0.28));
+      ctx2.font="bold "+base2+"px Arial";ctx2.fillStyle="#FFFFFF";
+      ctx2.fillText("Nombre: "+nombre2,pad2,y02+Math.round(barH2*0.52));
+      ctx2.font=Math.round(base2*0.85)+"px Arial";ctx2.fillStyle="#D1D5DB";
+      ctx2.fillText("Fecha: "+fecha+"    Hora: "+hora,pad2,y02+Math.round(barH2*0.72));
+      if(latitud!=="N/D"){
+        ctx2.font=Math.round(base2*0.72)+"px Arial";ctx2.fillStyle="#9CA3AF";
+        ctx2.fillText("GPS: "+latitud+", "+longitud,pad2,y02+Math.round(barH2*0.90));
+      }
+      fotoConMarca=canvas2.toDataURL("image/jpeg",0.7);
+      const area2=document.getElementById("foto-area");
+      area2.innerHTML="<img src=""+fotoConMarca+"" alt="Foto">";
+      resolve();
+    };
+    img2.src=fotoData;
+  });
 
-  try {
-    const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(codigo)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&lugar="+encodeURIComponent(lugar)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
+  try{
+    // PASO 1: Enviar datos sin foto
+    const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(codigo)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
     const r1=await fetch(url1);
     const d1=await r1.json();
+    if(d1.status!=="ok") throw new Error(d1.message||"Error al guardar datos");
 
-    if(d1.status==="ok"){
-      await fetch(SCRIPT_URL, {
-        method:'POST', mode:'no-cors',
-        body: JSON.stringify({accion:"foto", fila:d1.fila, foto:fotoConMarca})
-      });
-      document.getElementById("form-content").style.display="none";
-      document.getElementById("success-panel").style.display="flex";
-      document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
-    } else {
-      throw new Error(d1.message);
-    }
-  } catch(e) {
-    document.getElementById("error-msg").textContent=e.message || "Error al enviar.";
+    // PASO 2: Enviar foto por separado con numero de fila
+    btn.textContent="Subiendo foto...";
+    const fila=d1.fila;
+    const url2=SCRIPT_URL+"?accion=foto&fila="+fila+"&foto="+encodeURIComponent(fotoConMarca);
+    fetch(url2).catch(()=>{}); // La foto se envía en segundo plano
+
+    // Mostrar exito inmediatamente
+    document.getElementById("form-content").style.display="none";
+    document.getElementById("success-panel").style.display="flex";
+    document.getElementById("success-title").textContent=tipo+" registrado";
+    document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+fecha+" a las "+hora+"<br><span style='font-size:12px;color:#9CA3AF'>GPS: "+latitud+", "+longitud+"</span>";
+  }catch(err){
     document.getElementById("error-msg").style.display="block";
-    btn.disabled=false; btn.textContent="Registrar asistencia";
+    document.getElementById("error-msg").textContent="Error: "+err.message;
+    btn.disabled=false;btn.textContent="Registrar asistencia";
   }
 }
 
-function nuevoRegistro(){ location.reload(); }
-function abrirPin(){ document.getElementById("pin-overlay").style.display="flex"; }
-function cerrarPin(){ document.getElementById("pin-overlay").style.display="none"; }
+function nuevoRegistro(){
+  document.getElementById("form-content").style.display="flex";
+  document.getElementById("success-panel").style.display="none";
+  document.getElementById("trabajador").value="";
+  document.getElementById("trabajador").classList.remove("selected");
+  turnoSel="";fotoData=null;fotoConMarca=null;latitud="N/D";longitud="N/D";
+  document.getElementById("btn-inicio").className="turno-btn";
+  document.getElementById("btn-fin").className="turno-btn";
+  document.getElementById("meta-gps").textContent="-";
+  document.getElementById("error-msg").style.display="none";
+  const area=document.getElementById("foto-area");
+  area.classList.remove("has-foto");
+  area.innerHTML='<div class="foto-cam"><svg viewBox="0 0 24 24" fill="none" stroke="#1A56DB" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg></div><div class="foto-txt">Tomar foto</div><div class="foto-sub">La foto mostrara nombre, fecha, hora y turno</div>';
+  document.getElementById("btn-enviar").disabled=false;
+  document.getElementById("btn-enviar").textContent="Registrar asistencia";
+  initFecha();
+}
+
+function abrirPin(){
+  document.getElementById("pin-overlay").style.display="flex";
+  document.getElementById("pin-input").value="";
+  document.getElementById("pin-error").style.display="none";
+  setTimeout(function(){document.getElementById("pin-input").focus();},100);
+}
+function cerrarPin(){document.getElementById("pin-overlay").style.display="none";}
 function verificarPin(){
-  if(document.getElementById("pin-input").value===ADMIN_PIN){
-    cerrarPin(); document.getElementById("form-wrap").style.display="none";
-    document.getElementById("admin-panel").style.display="block"; renderWorkers();
-  } else { document.getElementById("pin-error").style.display="block"; }
+  if(document.getElementById("pin-input").value===ADMIN_PIN){cerrarPin();abrirAdmin();}
+  else{document.getElementById("pin-error").style.display="block";document.getElementById("pin-input").value="";}
 }
-function cerrarAdmin(){ location.reload(); }
-
-async function renderWorkers(){
-  const list=document.getElementById("worker-list");
-  list.innerHTML="Cargando...";
-  const res=await fetch(SCRIPT_URL+"?accion=listar");
-  const data=await res.json();
-  list.innerHTML=data.trabajadores.map(t=>`
-    <div class="worker-item">
-      <span>${t.codigo} - ${t.nombre}</span>
-      <button onclick="eliminarTrabajador('${t.codigo}')">Eliminar</button>
-    </div>
-  `).join("");
-}
-
-async function agregarTrabajador(){
-  const nom=document.getElementById("nuevo-nombre").value;
-  if(!nom)return;
-  await fetch(SCRIPT_URL+"?accion=agregar&nombre="+encodeURIComponent(nom));
-  document.getElementById("nuevo-nombre").value=""; renderWorkers();
-}
-
-async function eliminarTrabajador(cod){
-  if(!confirm("¿Eliminar?"))return;
-  await fetch(SCRIPT_URL+"?accion=eliminar&codigo="+cod);
+document.addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&document.getElementById("pin-overlay").style.display==="flex")verificarPin();
+});
+function abrirAdmin(){
+  document.getElementById("form-wrap").style.display="none";
+  document.getElementById("admin-panel").style.display="block";
   renderWorkers();
 }
-
+function cerrarAdmin(){
+  document.getElementById("admin-panel").style.display="none";
+  document.getElementById("form-wrap").style.display="flex";
+  cargarSelect();
+}
+async function renderWorkers(){
+  const list=document.getElementById("worker-list");
+  list.innerHTML='<div class="loading-txt">Cargando...</div>';
+  try{
+    const res=await fetch(SCRIPT_URL+"?accion=listar");
+    const data=await res.json();
+    if(!data.trabajadores||data.trabajadores.length===0){
+      list.innerHTML='<div class="loading-txt">No hay trabajadores registrados</div>';return;
+    }
+    list.innerHTML=data.trabajadores.slice().sort((a,b)=>a.nombre.localeCompare(b.nombre)).map(function(t){
+      return '<div class="worker-item"><div class="worker-info"><span class="worker-code">'+t.codigo+'</span><span class="worker-name">'+t.nombre+'</span></div><button class="btn-delete" onclick="eliminarTrabajador(\''+t.codigo+'\',\''+t.nombre.replace(/'/g,"")+'\')" title="Eliminar"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>';
+    }).join("");
+  }catch(e){list.innerHTML='<div class="loading-txt">Error al cargar lista</div>';}
+}
+async function agregarTrabajador(){
+  const input=document.getElementById("nuevo-nombre");
+  const nombre=input.value.trim();
+  if(!nombre){alert("Escribe el nombre del trabajador.");return;}
+  const btn=document.getElementById("btn-agregar");
+  btn.disabled=true;btn.textContent="Guardando...";
+  try{
+    const res=await fetch(SCRIPT_URL+"?accion=agregar&nombre="+encodeURIComponent(nombre));
+    const data=await res.json();
+    if(data.status==="ok"){input.value="";renderWorkers();}
+    else{alert(data.message||"Error al agregar");}
+  }catch(e){alert("Error de conexion");}
+  btn.disabled=false;btn.textContent="+ Agregar";
+}
+async function eliminarTrabajador(codigo,nombre){
+  if(!confirm("Eliminar a "+nombre+"?"))return;
+  try{
+    const res=await fetch(SCRIPT_URL+"?accion=eliminar&codigo="+encodeURIComponent(codigo));
+    const data=await res.json();
+    if(data.status==="ok"){renderWorkers();}
+    else{alert(data.message||"Error al eliminar");}
+  }catch(e){alert("Error de conexion");}
+}
 initFecha();
 cargarSelect();
 </script>
