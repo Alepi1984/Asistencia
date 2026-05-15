@@ -90,8 +90,7 @@ input[type=file]{display:none}
 <body>
   <script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzqTAWt8N2UUD96ZpXM77UoRfB1gKQyGsD-8TfPGTzxA2kw8_EjFgnBDzzIQtDpTJIu/exec";
-    const ADMIN_PIN="2002";
-   </script>
+    </script>
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-box">
     <div class="pin-title">Administración</div>
@@ -247,41 +246,6 @@ async function cambiarPin() {
   if (data.status === "ok") {
     alert("PIN actualizado correctamente. Se reiniciará la app.");
     location.reload();
-  }
-}
-async function verificarPin() {
-  const pinInput = document.getElementById("pin-input");
-  const btn = document.querySelector("#pin-overlay button");
-  const errorMsg = document.getElementById("pin-error");
-
-  if (!pinInput.value) return;
-
-  try {
-    // Bloqueamos el botón mientras consulta
-    btn.disabled = true;
-    btn.textContent = "Verificando...";
-    errorMsg.style.display = "none";
-
-    // Consultamos al servidor
-    const res = await fetch(SCRIPT_URL + "?accion=obtenerPin");
-    const data = await res.json();
-
-    // Comparamos lo ingresado con la celda B2 del Excel
-    if (String(pinInput.value) === String(data.pin)) {
-      cerrarPin(); 
-      document.getElementById("form-wrap").style.display = "none";
-      document.getElementById("admin-panel").style.display = "block"; 
-      cargarSelect(); // Carga las listas de trabajadores y lugares
-    } else {
-      errorMsg.style.display = "block";
-      errorMsg.textContent = "PIN incorrecto";
-      pinInput.value = ""; // Limpiamos el campo
-    }
-  } catch (e) {
-    alert("Error de conexión. Verifica que el Script esté publicado.");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Ingresar";
   }
 }
 // --- CARGA DE DATOS (SELECTORES) ---
@@ -459,16 +423,43 @@ async function enviar(){
 }
 
 // --- NAVEGACIÓN ---
-function nuevoRegistro(){ location.reload(); }
-function abrirPin(){ document.getElementById("pin-overlay").style.display="flex"; }
-function cerrarPin(){ document.getElementById("pin-overlay").style.display="none"; }
-function verificarPin(){
-  if(document.getElementById("pin-input").value===ADMIN_PIN){
-    cerrarPin(); 
-    document.getElementById("form-wrap").style.display="none";
-    document.getElementById("admin-panel").style.display="block"; 
-    cargarSelect(); // Llenamos las listas al entrar al panel admin
-  } else { document.getElementById("pin-error").style.display="block"; }
+function nuevoRegistro(){ 
+  location.reload(); 
+}
+
+function abrirPin(){ 
+  document.getElementById("pin-overlay").style.display = "flex"; 
+}
+
+function cerrarPin(){ 
+  document.getElementById("pin-overlay").style.display = "none"; 
+  document.getElementById("pin-input").value = ""; 
+}
+
+// ESTA ES LA ÚNICA QUE DEBE QUEDAR. 
+
+async function verificarPin() {
+  const pinIngresado = document.getElementById("pin-input").value;
+  const errorMsg = document.getElementById("pin-error");
+
+  if (!pinIngresado) return;
+
+  try {
+    const res = await fetch(SCRIPT_URL + "?accion=obtenerPin");
+    const data = await res.json();
+
+    if (String(pinIngresado) === String(data.pin)) {
+      cerrarPin(); 
+      document.getElementById("form-wrap").style.display = "none";
+      document.getElementById("admin-panel").style.display = "block"; 
+      cargarSelect(); 
+    } else {
+      errorMsg.style.display = "block";
+      errorMsg.textContent = "PIN incorrecto";
+    }
+  } catch (e) {
+    alert("Error al conectar con el servidor.");
+  }
 }
 function cerrarAdmin(){ location.reload(); }
 
