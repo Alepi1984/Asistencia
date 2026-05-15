@@ -437,28 +437,32 @@ function cerrarPin(){
 }
 
 // ESTA ES LA ÚNICA QUE DEBE QUEDAR. 
-
 async function verificarPin() {
-  const pinIngresado = document.getElementById("pin-input").value;
-  const errorMsg = document.getElementById("pin-error");
-
-  if (!pinIngresado) return;
+  const btn = document.querySelector("#pin-overlay button");
+  const input = document.getElementById("pin-input");
+  
+  // 1. Efecto visual inmediato
+  btn.innerText = "Verificando..."; 
+  btn.disabled = true;
 
   try {
     const res = await fetch(SCRIPT_URL + "?accion=obtenerPin");
     const data = await res.json();
 
-    if (String(pinIngresado) === String(data.pin)) {
-      cerrarPin(); 
+    if (String(input.value) === String(data.pin)) {
+      cerrarPin();
       document.getElementById("form-wrap").style.display = "none";
-      document.getElementById("admin-panel").style.display = "block"; 
-      cargarSelect(); 
+      document.getElementById("admin-panel").style.display = "block";
+      cargarSelect();
     } else {
-      errorMsg.style.display = "block";
-      errorMsg.textContent = "PIN incorrecto";
+      alert("PIN Incorrecto");
+      btn.innerText = "Ingresar";
+      btn.disabled = false;
     }
   } catch (e) {
-    alert("Error al conectar con el servidor.");
+    btn.innerText = "Ingresar";
+    btn.disabled = false;
+    alert("Error de red");
   }
 }
 function cerrarAdmin(){ location.reload(); }
