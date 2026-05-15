@@ -189,14 +189,39 @@ const ADMIN_PIN="2002";
 
 <div id="admin-panel">
   <div class="admin-header">
-    <div class="admin-title">Gestión de trabajadores</div>
+    <div class="admin-title">Panel de Administración</div>
     <button class="btn-cerrar" onclick="cerrarAdmin()">Volver</button>
   </div>
-  <div class="add-worker">
-    <input type="text" id="nuevo-nombre" placeholder="Nombre completo" maxlength="60" onkeydown="if(event.key==='Enter')agregarTrabajador()">
-    <button class="btn-agregar" id="btn-agregar" onclick="agregarTrabajador()">+ Agregar</button>
+
+  <div class="admin-section">
+    <h3 style="margin-bottom: 10px; color: #444;">Gestión de Trabajadores</h3>
+    <div class="add-worker">
+      <input type="text" id="nuevoNombre" placeholder="Nombre completo" maxlength="60">
+      <button class="btn-agregar" onclick="ejecutarAccion('agregarTrabajador')">+ Agregar</button>
+    </div>
+    
+    <div style="margin-top: 15px;">
+      <select id="listaTrabajadoresEliminar" style="width: 70%; padding: 8px; border-radius: 5px;"></select>
+      <button onclick="ejecutarAccion('eliminarTrabajador')" style="background-color: #ff4d4d; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">Eliminar</button>
+    </div>
   </div>
-  <div class="worker-list" id="worker-list"></div>
+
+  <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+
+  <div class="admin-section">
+    <h3 style="margin-bottom: 10px; color: #444;">Gestión de Lugares</h3>
+    <div class="add-worker">
+      <input type="text" id="nuevoLugar" placeholder="Nombre del lugar (Ej: CHICAMA)" maxlength="60">
+      <button class="btn-agregar" onclick="ejecutarAccion('agregarLugar')" style="background-color: #28a745;">+ Agregar</button>
+    </div>
+
+    <div style="margin-top: 15px;">
+      <select id="listaLugaresEliminar" style="width: 70%; padding: 8px; border-radius: 5px;"></select>
+      <button onclick="ejecutarAccion('eliminarLugar')" style="background-color: #ff4d4d; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">Eliminar</button>
+    </div>
+  </div>
+
+  <div class="worker-list" id="worker-list" style="margin-top:20px;"></div>
 </div>
 
 <script>
