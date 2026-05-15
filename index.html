@@ -90,7 +90,6 @@ input[type=file]{display:none}
 <body>
   <script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyC7r3fLmSgaghQQAwTRkFPUNl_UbIOdwk8rqi0XK-e5UUmnUo1zvgB01R2gWGEWKD6/exec";
-const ADMIN_PIN="2002";
 </script>
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-box">
@@ -214,6 +213,14 @@ const ADMIN_PIN="2002";
       <button onclick="ejecutarAccion('eliminarLugar')" style="background:#dc3545; color:white; border:none; padding:8px;">Eliminar</button>
     </div>
   </div>
+  <hr style="margin: 20px 0;">
+<div class="admin-section" style="padding:15px; background: #f9f9f9; border-radius: 8px;">
+  <h4>Seguridad</h4>
+  <div style="display:flex; gap:5px;">
+    <input type="password" id="inputNuevoPin" placeholder="Nuevo PIN (4 dígitos)" maxlength="4" style="flex:1; padding:8px;">
+    <button onclick="cambiarPin()" style="background:#007bff; color:white; border:none; padding:8px; border-radius:5px;">Actualizar PIN</button>
+  </div>
+</div>
 </div>
 <script>
 let turnoSel="",fotoData=null,fotoConMarca=null,latitud="N/D",longitud="N/D";
@@ -228,7 +235,35 @@ function initFecha(){
   document.getElementById("meta-fecha").textContent=dd+"/"+mm+"/"+d.getFullYear();
   document.getElementById("meta-hora").textContent=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
 }
+async function cambiarPin() {
+  const nuevo = document.getElementById("inputNuevoPin").value;
+  if (nuevo.length < 4) return alert("El PIN debe ser de 4 dígitos");
+  
+  if (!confirm("¿Seguro que quieres cambiar la contraseña de acceso?")) return;
 
+  const res = await fetch(SCRIPT_URL + "?accion=cambiarPin&nuevoPin=" + nuevo);
+  const data = await res.json();
+  if (data.status === "ok") {
+    alert("PIN actualizado correctamente. Se reiniciará la app.");
+    location.reload();
+  }
+}
+  async function verificarPin() {
+  const pinIngresado = document.getElementById("pin-input").value;
+  
+  // Consultamos al servidor el PIN actual
+  const res = await fetch(SCRIPT_URL + "?accion=obtenerPin");
+  const data = await res.json();
+  
+  if (pinIngresado === data.pin) {
+    cerrarPin(); 
+    document.getElementById("form-wrap").style.display="none";
+    document.getElementById("admin-panel").style.display="block"; 
+    cargarSelect();
+  } else { 
+    document.getElementById("pin-error").style.display="block"; 
+  }
+}
 // --- CARGA DE DATOS (SELECTORES) ---
 async function cargarSelect() {
   const selTrab = document.getElementById("trabajador");
