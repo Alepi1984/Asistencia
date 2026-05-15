@@ -248,36 +248,39 @@ async function cambiarPin() {
     location.reload();
   }
 }
-  async function verificarPin() {
-  const pinIngresado = document.getElementById("pin-input").value;
-  const errorMsg = document.getElementById("pin-error");
+async function verificarPin() {
+  const pinInput = document.getElementById("pin-input");
   const btn = document.querySelector("#pin-overlay button");
+  const errorMsg = document.getElementById("pin-error");
 
-  if (!pinIngresado) return;
+  if (!pinInput.value) return;
 
   try {
-    btn.textContent = "Validando...";
+    // Bloqueamos el botón mientras consulta
     btn.disabled = true;
+    btn.textContent = "Verificando...";
+    errorMsg.style.display = "none";
 
-    // Pedimos el PIN al Excel
+    // Consultamos al servidor
     const res = await fetch(SCRIPT_URL + "?accion=obtenerPin");
     const data = await res.json();
 
-    // Comparamos lo que escribió el usuario con lo que devolvió el Excel
-    if (String(pinIngresado) === String(data.pin)) {
-      cerrarPin();
+    // Comparamos lo ingresado con la celda B2 del Excel
+    if (String(pinInput.value) === String(data.pin)) {
+      cerrarPin(); 
       document.getElementById("form-wrap").style.display = "none";
-      document.getElementById("admin-panel").style.display = "block";
-      cargarSelect();
+      document.getElementById("admin-panel").style.display = "block"; 
+      cargarSelect(); // Carga las listas de trabajadores y lugares
     } else {
       errorMsg.style.display = "block";
       errorMsg.textContent = "PIN incorrecto";
+      pinInput.value = ""; // Limpiamos el campo
     }
   } catch (e) {
-    alert("Hubo un problema al conectar con el servidor.");
+    alert("Error de conexión. Verifica que el Script esté publicado.");
   } finally {
-    btn.textContent = "Ingresar";
     btn.disabled = false;
+    btn.textContent = "Ingresar";
   }
 }
 // --- CARGA DE DATOS (SELECTORES) ---
