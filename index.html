@@ -90,143 +90,9 @@ input[type=file]{display:none}
 <body>
 
 <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyC7r3fLmSgaghQQAwTRkFPUNl_UbIOdwk8rqi0XK-e5UUmnUo1zvgB01R2gWGEWKD6/exec";
-const ADMIN_PIN="2002";
-</script>
-
-<div class="pin-overlay" id="pin-overlay">
-  <div class="pin-box">
-    <div class="pin-title">Administración</div>
-    <div class="pin-sub">Ingresa el PIN para continuar</div>
-    <input class="pin-input" type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="****">
-    <div class="pin-error" id="pin-error">PIN incorrecto</div>
-    <div class="pin-btns">
-      <button class="pin-btn" onclick="cerrarPin()">Cancelar</button>
-      <button class="pin-btn confirm" onclick="verificarPin()">Ingresar</button>
-    </div>
-  </div>
-</div>
-
-<div class="header">
-  <div class="header-left">
-    <div class="header-icon">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-    </div>
-    <div>
-      <div class="header-title">Control de asistencia</div>
-      <div class="header-date" id="fecha-hoy"></div>
-    </div>
-  </div>
-  <button class="btn-admin" onclick="abrirPin()">
-    <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-    Admin
-  </button>
-</div>
-
-<div class="main" id="form-wrap">
-  <div id="form-content" style="display:flex;flex-direction:column;gap:12px">
-    
-    <div class="card">
-      <div class="card-title">Identificación</div>
-      <div class="select-wrap">
-        <select id="trabajador" onchange="this.classList.toggle('selected',this.value!=='');if(fotoData)aplicarMarcaAgua();">
-          <option value="">Cargando trabajadores...</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Lugar de Servicio</div>
-      <div class="select-wrap">
-        <select id="lugar-servicio" onchange="this.classList.toggle('selected',this.value!=='');if(fotoData)aplicarMarcaAgua();">
-          <option value="">Cargando lugares...</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Tipo de registro</div>
-      <div class="turno-grid">
-        <button class="turno-btn" id="btn-inicio" onclick="selTurno('inicio')">
-          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Inicio de turno
-        </button>
-        <button class="turno-btn" id="btn-fin" onclick="selTurno('fin')">
-          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 8 14"/></svg>
-          Fin de turno
-        </button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Foto de evidencia</div>
-      <div class="foto-area" id="foto-area" onclick="document.getElementById('foto-input').click()">
-        <div class="foto-cam">
-          <svg viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
-        </div>
-        <div class="foto-txt">Tomar foto</div>
-        <div class="foto-sub">La foto mostrará nombre, fecha, hora y turno</div>
-      </div>
-      <input type="file" id="foto-input" accept="image/*" capture="environment" onchange="cargarFoto(this)">
-      <div class="meta">
-        <div class="meta-box"><div class="meta-label">Fecha</div><div class="meta-val" id="meta-fecha">-</div></div>
-        <div class="meta-box"><div class="meta-label">Hora</div><div class="meta-val" id="meta-hora">-</div></div>
-        <div class="meta-box"><div class="meta-label">GPS</div><div class="meta-val" id="meta-gps">-</div></div>
-      </div>
-    </div>
-
-    <button class="btn-enviar" id="btn-enviar" onclick="enviar()">Registrar asistencia</button>
-    <div class="error-msg" id="error-msg">Error al enviar.</div>
-  </div>
-
-  <div id="success-panel">
-    <div class="check-wrap"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-    <div class="success-title" id="success-title">Registro guardado</div>
-    <div class="success-info"><p id="success-detail"></p></div>
-    <button class="btn-nuevo" onclick="nuevoRegistro()">Nuevo registro</button>
-  </div>
-</div>
-
-<div id="admin-panel">
-  <div class="admin-header">
-    <div class="admin-title">Panel de Administración</div>
-    <button class="btn-cerrar" onclick="cerrarAdmin()">Volver</button>
-  </div>
-
-  <div class="admin-section">
-    <h3 style="margin-bottom: 10px; color: #444;">Gestión de Trabajadores</h3>
-    <div class="add-worker">
-      <input type="text" id="nuevoNombre" placeholder="Nombre completo" maxlength="60">
-      <button class="btn-agregar" onclick="ejecutarAccion('agregarTrabajador')">+ Agregar</button>
-    </div>
-    
-    <div style="margin-top: 15px;">
-      <select id="listaTrabajadoresEliminar" style="width: 70%; padding: 8px; border-radius: 5px;"></select>
-      <button onclick="ejecutarAccion('eliminarTrabajador')" style="background-color: #ff4d4d; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">Eliminar</button>
-    </div>
-  </div>
-
-  <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
-
-  <div class="admin-section">
-    <h3 style="margin-bottom: 10px; color: #444;">Gestión de Lugares</h3>
-    <div class="add-worker">
-      <input type="text" id="nuevoLugar" placeholder="Nombre del lugar (Ej: CHICAMA)" maxlength="60">
-      <button class="btn-agregar" onclick="ejecutarAccion('agregarLugar')" style="background-color: #28a745;">+ Agregar</button>
-    </div>
-
-    <div style="margin-top: 15px;">
-      <select id="listaLugaresEliminar" style="width: 70%; padding: 8px; border-radius: 5px;"></select>
-      <button onclick="ejecutarAccion('eliminarLugar')" style="background-color: #ff4d4d; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer;">Eliminar</button>
-    </div>
-  </div>
-
-  <div class="worker-list" id="worker-list" style="margin-top:20px;"></div>
-</div>
-
-<script>
 let turnoSel="",fotoData=null,fotoConMarca=null,latitud="N/D",longitud="N/D";
 
+// --- CONFIGURACIÓN INICIAL ---
 function initFecha(){
   const d=new Date();
   const dd=String(d.getDate()).padStart(2,"0"),mm=String(d.getMonth()+1).padStart(2,"0");
@@ -237,63 +103,77 @@ function initFecha(){
   document.getElementById("meta-hora").textContent=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
 }
 
-async function cargarSelect(){
-  const sel = document.getElementById("trabajador");
-  const lug = document.getElementById("lugar-servicio"); // Agregamos el selector de lugares
-  
+// --- CARGA DE DATOS (SELECTORES) ---
+async function cargarSelect() {
+  const selTrab = document.getElementById("trabajador");
+  const selLug = document.getElementById("lugar-servicio");
+  const delTrab = document.getElementById("listaTrabajadoresEliminar");
+  const delLug = document.getElementById("listaLugaresEliminar");
+
   try {
     const res = await fetch(SCRIPT_URL + "?accion=listar");
     const data = await res.json();
-    
-    // 1. LLENAR TRABAJADORES
-    sel.innerHTML = '<option value="">Selecciona tu nombre</option>';
-    if(data.trabajadores && data.trabajadores.length > 0){
-      data.trabajadores.forEach(t => {
-        const op = document.createElement("option");
-        op.value = t.codigo; 
-        op.textContent = t.codigo + " - " + t.nombre;
-        sel.appendChild(op);
-      });
-    }
 
-    // 2. LLENAR LUGARES (Añadimos esta parte)
-    if(lug) {
-      lug.innerHTML = '<option value="">Selecciona lugar de servicio</option>';
-      if(data.lugares && data.lugares.length > 0){
-        data.lugares.forEach(l => {
-          const op = document.createElement("option");
-          op.value = l; 
-          op.textContent = l;
-          lug.appendChild(op);
-        });
-      }
-    }
+    if (data.status === "ok") {
+      // Llenar Trabajadores (Registro y Panel Admin)
+      const opcionesTrab = '<option value="">Seleccione trabajador...</option>' + 
+        data.trabajadores.map(t => `<option value="${t.codigo}">${t.codigo} - ${t.nombre}</option>`).join("");
+      
+      if(selTrab) selTrab.innerHTML = opcionesTrab;
+      if(delTrab) delTrab.innerHTML = opcionesTrab;
 
-  } catch(e) { 
-    sel.innerHTML = '<option value="">Error al cargar lista</option>'; 
-    if(lug) lug.innerHTML = '<option value="">Error al cargar lugares</option>';
+      // Llenar Lugares (Registro y Panel Admin)
+      const opcionesLug = '<option value="">Seleccione lugar...</option>' + 
+        data.lugares.map(l => `<option value="${l}">${l}</option>`).join("");
+      
+      if(selLug) selLug.innerHTML = opcionesLug;
+      if(delLug) delLug.innerHTML = opcionesLug;
+    }
+  } catch (e) {
+    console.error("Error cargando listas:", e);
   }
 }
-  function cargarLugares() {
-  google.script.run
-    .withSuccessHandler(function(lugares) {
-      const select = document.getElementById("lugar-servicio");
-      if(!select) return; // Seguridad por si el ID cambió
-      
-      select.innerHTML = '<option value="">Seleccione lugar...</option>';
-      
-      lugares.forEach(l => {
-        if(l) { // Evita opciones vacías
-          let opt = document.createElement("option");
-          opt.value = l;
-          opt.textContent = l;
-          select.appendChild(opt);
-        }
-      });
-    })
-    .obtenerListaLugares(); // Verifica que este nombre sea igual al del paso 1
+
+// --- FUNCIONES DE ADMINISTRACIÓN (NUEVAS) ---
+async function ejecutarAccion(tipo) {
+  let url = SCRIPT_URL + "?accion=" + tipo;
+  
+  if (tipo === 'agregarTrabajador') {
+    const nom = document.getElementById("nuevoNombre").value;
+    if (!nom) return alert("Ingresa un nombre");
+    url += "&nombre=" + encodeURIComponent(nom);
+  } 
+  else if (tipo === 'eliminarTrabajador') {
+    const cod = document.getElementById("listaTrabajadoresEliminar").value;
+    if (!cod) return alert("Selecciona un trabajador");
+    url += "&codigo=" + cod;
+  } 
+  else if (tipo === 'agregarLugar') {
+    const lug = document.getElementById("nuevoLugar").value;
+    if (!lug) return alert("Ingresa un lugar");
+    url += "&lugar=" + encodeURIComponent(lug);
+  } 
+  else if (tipo === 'eliminarLugar') {
+    const lug = document.getElementById("listaLugaresEliminar").value;
+    if (!lug) return alert("Selecciona un lugar");
+    url += "&lugar=" + encodeURIComponent(lug);
+  }
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.status === "ok") {
+      alert("¡Operación exitosa!");
+      if (document.getElementById("nuevoNombre")) document.getElementById("nuevoNombre").value = "";
+      if (document.getElementById("nuevoLugar")) document.getElementById("nuevoLugar").value = "";
+      cargarSelect(); // Refresca todos los selectores automáticamente
+    }
+  } catch (e) {
+    alert("Error al ejecutar acción");
+  }
 }
 
+// --- LÓGICA DE REGISTRO Y FOTO (TUS FUNCIONES ORIGINALES) ---
 function selTurno(t){
   turnoSel=t;
   document.getElementById("btn-inicio").className="turno-btn"+(t==="inicio"?" active-inicio":"");
@@ -316,7 +196,7 @@ function cargarFoto(input){
       if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(p=>{
           latitud=p.coords.latitude.toFixed(6); longitud=p.coords.longitude.toFixed(6);
-          document.getElementById("meta-gps").textContent=p.coords.latitude.toFixed(3)+","+p.coords.longitude.toFixed(3);
+          document.getElementById("meta-gps").textContent=latitud+","+longitud;
           aplicarMarcaAgua();
         },()=>aplicarMarcaAgua());
       }else{aplicarMarcaAgua();}
@@ -397,45 +277,21 @@ async function enviar(){
   }
 }
 
+// --- NAVEGACIÓN ---
 function nuevoRegistro(){ location.reload(); }
 function abrirPin(){ document.getElementById("pin-overlay").style.display="flex"; }
 function cerrarPin(){ document.getElementById("pin-overlay").style.display="none"; }
 function verificarPin(){
   if(document.getElementById("pin-input").value===ADMIN_PIN){
-    cerrarPin(); document.getElementById("form-wrap").style.display="none";
-    document.getElementById("admin-panel").style.display="block"; renderWorkers();
+    cerrarPin(); 
+    document.getElementById("form-wrap").style.display="none";
+    document.getElementById("admin-panel").style.display="block"; 
+    cargarSelect(); // Llenamos las listas al entrar al panel admin
   } else { document.getElementById("pin-error").style.display="block"; }
 }
 function cerrarAdmin(){ location.reload(); }
 
-async function renderWorkers(){
-  const list=document.getElementById("worker-list");
-  list.innerHTML="Cargando...";
-  const res=await fetch(SCRIPT_URL+"?accion=listar");
-  const data=await res.json();
-  list.innerHTML=data.trabajadores.map(t=>`
-    <div class="worker-item">
-      <span>${t.codigo} - ${t.nombre}</span>
-      <button onclick="eliminarTrabajador('${t.codigo}')">Eliminar</button>
-    </div>
-  `).join("");
-}
-
-async function agregarTrabajador(){
-  const nom=document.getElementById("nuevo-nombre").value;
-  if(!nom)return;
-  await fetch(SCRIPT_URL+"?accion=agregar&nombre="+encodeURIComponent(nom));
-  document.getElementById("nuevo-nombre").value=""; renderWorkers();
-}
-
-async function eliminarTrabajador(cod){
-  if(!confirm("¿Eliminar?"))return;
-  await fetch(SCRIPT_URL+"?accion=eliminar&codigo="+cod);
-  renderWorkers();
-}
-
+// --- INICIO ---
 initFecha();
 cargarSelect();
 </script>
-</body>
-</html>
