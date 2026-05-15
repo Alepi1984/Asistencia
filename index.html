@@ -250,18 +250,34 @@ async function cambiarPin() {
 }
   async function verificarPin() {
   const pinIngresado = document.getElementById("pin-input").value;
-  
-  // Consultamos al servidor el PIN actual
-  const res = await fetch(SCRIPT_URL + "?accion=obtenerPin");
-  const data = await res.json();
-  
-  if (pinIngresado === data.pin) {
-    cerrarPin(); 
-    document.getElementById("form-wrap").style.display="none";
-    document.getElementById("admin-panel").style.display="block"; 
-    cargarSelect();
-  } else { 
-    document.getElementById("pin-error").style.display="block"; 
+  const errorMsg = document.getElementById("pin-error");
+  const btn = document.querySelector("#pin-overlay button");
+
+  if (!pinIngresado) return;
+
+  try {
+    btn.textContent = "Validando...";
+    btn.disabled = true;
+
+    // Pedimos el PIN al Excel
+    const res = await fetch(SCRIPT_URL + "?accion=obtenerPin");
+    const data = await res.json();
+
+    // Comparamos lo que escribió el usuario con lo que devolvió el Excel
+    if (String(pinIngresado) === String(data.pin)) {
+      cerrarPin();
+      document.getElementById("form-wrap").style.display = "none";
+      document.getElementById("admin-panel").style.display = "block";
+      cargarSelect();
+    } else {
+      errorMsg.style.display = "block";
+      errorMsg.textContent = "PIN incorrecto";
+    }
+  } catch (e) {
+    alert("Hubo un problema al conectar con el servidor.");
+  } finally {
+    btn.textContent = "Ingresar";
+    btn.disabled = false;
   }
 }
 // --- CARGA DE DATOS (SELECTORES) ---
