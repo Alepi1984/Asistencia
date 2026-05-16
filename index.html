@@ -252,26 +252,38 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyxC0yIEMNMQvj5gGgKub6
 </div>
 </div>
 <script>
- async function validarEntrada() {
+async function validarEntrada() {
   const inputPin = document.getElementById("pin-acceso-input").value;
+  const boton = document.querySelector("#muro-entrada button");
   
+  if (!inputPin) return alert("Ingresa el PIN");
+
+  // Bloqueamos el botón para que no den mil clicks
+  boton.disabled = true;
+  boton.innerText = "Verificando...";
+
   try {
-    const res = await fetch(SCRIPT_URL + "?accion=obtenerPin");
+    // Añadimos un "timestamp" para evitar que Google use datos viejos guardados
+    const res = await fetch(SCRIPT_URL + "?accion=obtenerPin&t=" + new Date().getTime());
     const data = await res.json();
     
-    // Comparamos con "acceso" (celda B3)
-    if (String(inputPin) === String(data.acceso)) {
+    if (data.status === "ok" && String(inputPin) === String(data.acceso)) {
       document.getElementById("muro-entrada").style.display = "none";
       document.getElementById("contenedor-principal").style.display = "block";
       
-      // Llamamos a tus funciones que cargan los nombres
+      // Cargamos los datos
       cargarTrabajadores();
       cargarLugares();
     } else {
       alert("PIN de acceso incorrecto");
+      boton.disabled = false;
+      boton.innerText = "ENTRAR";
     }
   } catch (e) {
-    alert("Error de conexión");
+    console.error(e);
+    alert("Error de conexión: Revisa que la URL de implementación sea la correcta.");
+    boton.disabled = false;
+    boton.innerText = "ENTRAR";
   }
 }
 let turnoSel="",fotoData=null,fotoConMarca=null,latitud="N/D",longitud="N/D";
