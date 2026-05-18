@@ -199,6 +199,19 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
       Ejecutar Procesos
     </div>
+    <div class="sidebar-label">Gestión</div>
+    <div class="nav-item" onclick="nav('personal',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Personal
+    </div>
+    <div class="nav-item" onclick="nav('biometrico',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Biométrico
+    </div>
+    <div class="nav-item" onclick="nav('editar-prog',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Editar Programación
+    </div>
 
     <div class="sidebar-bottom">
       <div class="mes-selector">
@@ -415,11 +428,124 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       </div>
     </div>
 
+
+    <!-- PERSONAL -->
+    <div class="panel" id="p-personal">
+      <div class="page-title">Gestión de Personal</div>
+      <div class="page-sub">Agregar o eliminar trabajadores del sistema</div>
+      <div class="card">
+        <div class="card-title">Agregar nuevo trabajador</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Nombre sistema (corto)</label>
+          <input type="text" id="per-sistema" placeholder="Ej: Abner"></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Nombre completo</label>
+          <input type="text" id="per-completo" placeholder="Ej: Abner León Pichen"></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">DNI</label>
+          <input type="text" id="per-dni" placeholder="Ej: 42563290"></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Cargo</label>
+          <input type="text" id="per-cargo" placeholder="Ej: Inspector"></div>
+        </div>
+        <button class="btn btn-green" onclick="agregarPersonal()">+ Agregar trabajador</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Lista de personal</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nombre sistema</th><th>Nombre completo</th><th>DNI</th><th>Cargo</th><th>Acción</th></tr></thead>
+            <tbody id="per-tabla"><tr><td colspan="5" class="loading-cell">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BIOMÉTRICO -->
+    <div class="panel" id="p-biometrico">
+      <div class="page-title">Registros Biométricos</div>
+      <div class="page-sub">Cargar y gestionar marcaciones del sistema biométrico</div>
+      <div class="card">
+        <div class="card-title">Agregar marcación biométrica</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px">
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Trabajador</label>
+          <select id="bio-nombre" style="min-width:200px"><option value="">Selecciona...</option></select></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Fecha</label>
+          <input type="date" id="bio-fecha"></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Hora</label>
+          <input type="time" id="bio-hora"></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Tipo</label>
+          <select id="bio-tipo"><option value="">Sin especificar</option><option>Entrada</option><option>Salida</option></select></div>
+          <button class="btn btn-green" onclick="agregarBiometrico()">+ Agregar</button>
+        </div>
+        <div style="font-size:11px;color:var(--text3)">💡 También puedes cargar varios registros pegando desde Excel:</div>
+        <textarea id="bio-masivo" style="width:100%;margin-top:8px;height:80px;font-family:var(--mono);font-size:11px" placeholder="Pega aquí datos de Excel: Nombre TAB Fecha TAB Hora (una fila por línea)"></textarea>
+        <button class="btn btn-primary" style="margin-top:8px" onclick="cargarBiometricoMasivo()">Cargar desde pegado</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Registros cargados</div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="cargarTablaBio()">Actualizar lista</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>DNI</th><th>Nombre</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Acción</th></tr></thead>
+            <tbody id="bio-tabla"><tr><td colspan="7" class="loading-cell">Haz clic en Actualizar</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDITAR PROGRAMACIÓN -->
+    <div class="panel" id="p-editar-prog">
+      <div class="page-title">Editar Programación</div>
+      <div class="page-sub">Visualiza y edita la programación — corrige estados REVISION y agrega horarios</div>
+      <div class="card">
+        <div class="card-title">Agregar registro de programación</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:0">
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Trabajador</label>
+          <select id="ep-nombre" style="min-width:180px"><option value="">Selecciona...</option></select></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Fecha</label>
+          <input type="date" id="ep-fecha"></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Lugar</label>
+          <input type="text" id="ep-lugar" placeholder="PEAJE CHICAMA" style="width:160px"></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">H. Inicio</label>
+          <input type="time" id="ep-inicio"></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">H. Fin</label>
+          <input type="time" id="ep-fin"></div>
+          <div><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Estado</label>
+          <select id="ep-estado">
+            <option value="PROGRAMADO">PROGRAMADO</option>
+            <option value="DS">DS - Descanso</option>
+            <option value="CP">CP - Compensación</option>
+            <option value="REVISION">REVISION</option>
+          </select></div>
+          <button class="btn btn-green" onclick="agregarProgNuevo()">+ Agregar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Registros de programación</div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="cargarTablaEditProg()">Cargar / Actualizar</button>
+          <select id="ep-filtro-estado" onchange="filtrarProg()">
+            <option value="">Todos los estados</option>
+            <option value="REVISION">Solo REVISION</option>
+            <option value="PROGRAMADO">Solo PROGRAMADO</option>
+            <option value="DS">Solo DS</option>
+            <option value="CP">Solo CP</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Fila</th><th>Fecha</th><th>Nombre</th><th>Lugar</th><th>H. Inicio</th><th>H. Fin</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="ep-tabla"><tr><td colspan="8" class="loading-cell">Carga los registros</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQAWPwXi1jU8lozXiM1HNqpwpES8XBJYHYB5xixn6ox80d1YwMu0iDo7-LD10pzBk/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvHQq5b-_E2fQCZamdRZmhMTdYqC1W0n_NL5pKdyi8uOgXLIaQdlUwDNTsmQF1oHDN/exec";
 const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
 let personal = [];
@@ -487,14 +613,7 @@ async function cargarPersonal() {
   try {
     const data = await fetchJSON(SCRIPT_URL + '?accion=listarPersonal');
     personal = data.personal || [];
-    const sel = document.getElementById('con-trab');
-    sel.innerHTML = '<option value="">Todos los trabajadores</option>';
-    personal.forEach(p => {
-      const op = document.createElement('option');
-      op.value = p.nombre_sistema;
-      op.textContent = p.nombre_completo || p.nombre_sistema;
-      sel.appendChild(op);
-    });
+    poblarSelectPersonal(personal);
   } catch(e) {}
 }
 
@@ -687,16 +806,74 @@ async function cargarConsulta() {
         '<div class="stat blue"><div class="stat-val">' + cntDS + '</div><div class="stat-label">Descansos</div></div>' +
         '<div class="stat yellow"><div class="stat-val">' + cntOtros + '</div><div class="stat-label">Otros</div></div>';
     }
-    document.getElementById('con-tabla').innerHTML = rows.length === 0
-      ? '<tr><td colspan="7" class="loading-cell">Sin resultados</td></tr>'
-      : rows.map(r =>
-          '<tr><td>' + r.nombre + '</td><td>' + (r.lugar||'—') + '</td>' +
-          '<td class="mono">' + r.fecha + '</td>' +
-          '<td class="mono">' + (r.hora_inicio||'') + (r.hora_fin ? ' - '+r.hora_fin : '') + '</td>' +
-          '<td class="mono" style="color:var(--green)">' + (r.entrada||'—') + '</td>' +
-          '<td class="mono" style="color:var(--red)">' + (r.salida||'—') + '</td>' +
-          '<td>' + badge(r.estado) + '</td></tr>'
-        ).join('');
+    if (rows.length === 0) {
+      document.getElementById('con-tabla').innerHTML = '<tr><td colspan="7" class="loading-cell">Sin resultados</td></tr>';
+    } else {
+      // Mostrar tabla de asistencia
+      document.getElementById('con-tabla').innerHTML = rows.map(r =>
+        '<tr><td>' + r.nombre + '</td><td>' + (r.lugar||'—') + '</td>' +
+        '<td class="mono">' + r.fecha + '</td>' +
+        '<td class="mono">' + (r.hora_inicio||'') + (r.hora_fin ? ' - '+r.hora_fin : '') + '</td>' +
+        '<td class="mono" style="color:var(--green)">' + (r.entrada||'—') + '</td>' +
+        '<td class="mono" style="color:var(--red)">' + (r.salida||'—') + '</td>' +
+        '<td>' + badge(r.estado) + '</td></tr>'
+      ).join('');
+
+      // Mostrar fotos y biométrico debajo
+      let detalle = '';
+      rows.forEach(r => {
+        const tieneFotos = r.fotos && r.fotos.length > 0;
+        const tieneBio = r.biometrico && r.biometrico.length > 0;
+        if (!tieneFotos && !tieneBio) return;
+        detalle += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:12px">';
+        detalle += '<div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text)">' + r.nombre + ' — ' + r.fecha + ' ' + badge(r.estado) + '</div>';
+        
+        if (tieneFotos) {
+          detalle += '<div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Marcaciones por foto</div>';
+          detalle += '<div style="display:flex;gap:12px;flex-wrap:wrap">';
+          r.fotos.forEach(f => {
+            detalle += '<div style="text-align:center">';
+            if (f.url && f.url !== 'Pendiente' && f.url.includes('drive.google.com')) {
+              // Convertir URL de Drive a thumbnail
+              const fileId = f.url.match(/\/d\/([^/]+)/);
+              const thumb = fileId ? 'https://drive.google.com/thumbnail?id=' + fileId[1] + '&sz=w200' : '';
+              if (thumb) {
+                detalle += '<a href="' + f.url + '" target="_blank">';
+                detalle += '<img src="' + thumb + '" style="width:120px;height:120px;object-fit:cover;border-radius:6px;border:1px solid var(--border)" onerror="this.style.display='none'">';
+                detalle += '</a>';
+              }
+            }
+            detalle += '<div style="font-family:var(--mono);font-size:11px;color:var(--green);margin-top:4px">' + (f.hora||'') + '</div>';
+            detalle += '<div style="font-size:10px;color:var(--text3)">' + (f.tipo||'') + '</div>';
+            detalle += '<div style="font-size:10px;color:var(--text3)">' + (f.lugar||'') + '</div>';
+            detalle += '</div>';
+          });
+          detalle += '</div>';
+        }
+        
+        if (tieneBio) {
+          detalle += '<div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin:12px 0 8px">Marcaciones biométrico</div>';
+          detalle += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+          r.biometrico.forEach(b => {
+            detalle += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;text-align:center">';
+            detalle += '<div style="font-family:var(--mono);font-size:14px;color:var(--blue)">' + (b.hora||'') + '</div>';
+            detalle += '<div style="font-size:10px;color:var(--text3);margin-top:2px">👆 Biométrico</div>';
+            detalle += '</div>';
+          });
+          detalle += '</div>';
+        }
+        detalle += '</div>';
+      });
+      
+      // Agregar detalle después de la tabla
+      let contenedor = document.getElementById('con-detalle');
+      if (!contenedor) {
+        contenedor = document.createElement('div');
+        contenedor.id = 'con-detalle';
+        document.getElementById('con-tabla').closest('.card').after(contenedor);
+      }
+      contenedor.innerHTML = detalle;
+    }
   } catch(e) {
     document.getElementById('con-tabla').innerHTML = '<tr><td colspan="7" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
   }
@@ -730,6 +907,256 @@ function setEstado(id, tipo, msg) {
   const el = document.getElementById(id);
   const dot = tipo === 'ok' ? 'ok' : tipo === 'err' ? 'err' : 'loading';
   el.innerHTML = '<div class="dot ' + dot + '"></div>' + msg;
+}
+
+// ══════════════════════════════════════════
+// PERSONAL
+// ══════════════════════════════════════════
+async function cargarTablaPersonal() {
+  document.getElementById('per-tabla').innerHTML = '<tr><td colspan="5" class="loading-cell">Cargando...</td></tr>';
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=listarPersonal');
+    const rows = data.personal || [];
+    document.getElementById('per-tabla').innerHTML = rows.length === 0
+      ? '<tr><td colspan="5" class="loading-cell">Sin personal registrado</td></tr>'
+      : rows.map(p =>
+          '<tr><td class="mono">' + p.nombre_sistema + '</td>' +
+          '<td>' + (p.nombre_completo||'—') + '</td>' +
+          '<td class="mono">' + (p.dni||'—') + '</td>' +
+          '<td>' + (p.cargo||'—') + '</td>' +
+          '<td><button class="btn btn-red" style="height:28px;font-size:11px" onclick="eliminarPersonal('' + p.nombre_sistema + '')">Eliminar</button></td></tr>'
+        ).join('');
+    // Poblar selectores
+    poblarSelectPersonal(rows);
+  } catch(e) {
+    document.getElementById('per-tabla').innerHTML = '<tr><td colspan="5" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
+  }
+}
+
+function poblarSelectPersonal(rows) {
+  ['bio-nombre','ep-nombre','con-trab'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const val = sel.value;
+    sel.innerHTML = '<option value="">Selecciona...</option>';
+    rows.forEach(p => {
+      const op = document.createElement('option');
+      op.value = p.nombre_sistema;
+      op.textContent = (p.nombre_completo || p.nombre_sistema);
+      sel.appendChild(op);
+    });
+    if (val) sel.value = val;
+  });
+}
+
+async function agregarPersonal() {
+  const sistema = document.getElementById('per-sistema').value.trim();
+  const completo = document.getElementById('per-completo').value.trim();
+  const dni = document.getElementById('per-dni').value.trim();
+  const cargo = document.getElementById('per-cargo').value.trim();
+  if (!sistema) { alert('El nombre sistema es obligatorio'); return; }
+  try {
+    const url = SCRIPT_URL + '?accion=agregarPersonal&nombre_sistema=' + encodeURIComponent(sistema) +
+      '&nombre_completo=' + encodeURIComponent(completo) + '&dni=' + encodeURIComponent(dni) + '&cargo=' + encodeURIComponent(cargo);
+    const data = await fetchJSON(url);
+    if (data.status === 'ok') {
+      ['per-sistema','per-completo','per-dni','per-cargo'].forEach(id => document.getElementById(id).value = '');
+      cargarTablaPersonal();
+    } else { alert('Error: ' + data.message); }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function eliminarPersonal(nombre) {
+  if (!confirm('¿Eliminar a ' + nombre + '?')) return;
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=eliminarPersonal&nombre_sistema=' + encodeURIComponent(nombre));
+    if (data.status === 'ok') cargarTablaPersonal();
+    else alert('Error: ' + data.message);
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+// ══════════════════════════════════════════
+// BIOMÉTRICO
+// ══════════════════════════════════════════
+async function agregarBiometrico() {
+  const selNom = document.getElementById('bio-nombre');
+  const nombre = selNom.value;
+  const fecha = document.getElementById('bio-fecha').value;
+  const hora = document.getElementById('bio-hora').value;
+  const tipo = document.getElementById('bio-tipo').value;
+  if (!nombre || !fecha || !hora) { alert('Completa nombre, fecha y hora'); return; }
+  const fechaFmt = fecha.split('-').reverse().join('/');
+  try {
+    const url = SCRIPT_URL + '?accion=agregarBiometrico&nombre=' + encodeURIComponent(nombre) +
+      '&fecha=' + encodeURIComponent(fechaFmt) + '&hora=' + encodeURIComponent(hora) + '&tipo=' + encodeURIComponent(tipo);
+    const data = await fetchJSON(url);
+    if (data.status === 'ok') { alert('✅ Registro agregado'); cargarTablaBio(); }
+    else alert('Error: ' + data.message);
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function cargarBiometricoMasivo() {
+  const texto = document.getElementById('bio-masivo').value.trim();
+  if (!texto) { alert('Pega datos primero'); return; }
+  const lineas = texto.split('
+').filter(l => l.trim());
+  let ok = 0, err = 0;
+  for (const linea of lineas) {
+    const cols = linea.split('	');
+    if (cols.length < 3) { err++; continue; }
+    const nombre = cols[0].trim();
+    const fechaRaw = cols[1].trim();
+    const hora = cols[2].trim();
+    const tipo = cols[3] ? cols[3].trim() : '';
+    if (!nombre || !fechaRaw || !hora) { err++; continue; }
+    // Intentar formatear fecha
+    let fechaFmt = fechaRaw;
+    if (fechaRaw.includes('-')) fechaFmt = fechaRaw.split('-').reverse().join('/');
+    try {
+      const url = SCRIPT_URL + '?accion=agregarBiometrico&nombre=' + encodeURIComponent(nombre) +
+        '&fecha=' + encodeURIComponent(fechaFmt) + '&hora=' + encodeURIComponent(hora) + '&tipo=' + encodeURIComponent(tipo);
+      const data = await fetchJSON(url);
+      if (data.status === 'ok') ok++; else err++;
+    } catch(e) { err++; }
+  }
+  alert('✅ ' + ok + ' registros cargados. ' + (err > 0 ? '⚠️ ' + err + ' con error.' : ''));
+  document.getElementById('bio-masivo').value = '';
+  cargarTablaBio();
+}
+
+async function cargarTablaBio() {
+  document.getElementById('bio-tabla').innerHTML = '<tr><td colspan="7" class="loading-cell">Cargando...</td></tr>';
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=leerBiometrico');
+    const rows = data.registros || [];
+    document.getElementById('bio-tabla').innerHTML = rows.length === 0
+      ? '<tr><td colspan="7" class="loading-cell">Sin registros</td></tr>'
+      : rows.map(r =>
+          '<tr><td class="mono" style="color:var(--text3)">' + r.fila + '</td>' +
+          '<td class="mono">' + (r.dni||'—') + '</td>' +
+          '<td>' + r.nombre + '</td>' +
+          '<td class="mono">' + r.fecha + '</td>' +
+          '<td class="mono" style="color:var(--green)">' + r.hora + '</td>' +
+          '<td>' + (r.tipo||'—') + '</td>' +
+          '<td><button class="btn btn-red" style="height:26px;font-size:11px" onclick="eliminarBio(' + r.fila + ')">✕</button></td></tr>'
+        ).join('');
+  } catch(e) {
+    document.getElementById('bio-tabla').innerHTML = '<tr><td colspan="7" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
+  }
+}
+
+async function eliminarBio(fila) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=eliminarBiometrico&fila=' + fila);
+    if (data.status === 'ok') cargarTablaBio();
+    else alert('Error: ' + data.message);
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+// ══════════════════════════════════════════
+// EDITAR PROGRAMACIÓN
+// ══════════════════════════════════════════
+let progData = [];
+
+async function cargarTablaEditProg() {
+  document.getElementById('ep-tabla').innerHTML = '<tr><td colspan="8" class="loading-cell">Cargando...</td></tr>';
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=leerProgramacion');
+    progData = data.programacion || [];
+    filtrarProg();
+  } catch(e) {
+    document.getElementById('ep-tabla').innerHTML = '<tr><td colspan="8" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
+  }
+}
+
+function filtrarProg() {
+  const filtro = document.getElementById('ep-filtro-estado').value;
+  const rows = filtro ? progData.filter(r => r.estado === filtro) : progData;
+  const ESTADOS = ['PROGRAMADO','DS','CP','REVISION'];
+  document.getElementById('ep-tabla').innerHTML = rows.length === 0
+    ? '<tr><td colspan="8" class="loading-cell">Sin registros</td></tr>'
+    : rows.map(r => {
+        const estadoBadge = r.estado === 'REVISION' ? '<span class="badge b-REVISION" style="background:#7f1d1d;color:#fca5a5">REVISION</span>' : badge(r.estado);
+        return '<tr style="' + (r.estado === 'REVISION' ? 'background:rgba(239,68,68,0.05)' : '') + '">' +
+          '<td class="mono" style="color:var(--text3)">' + r.fila + '</td>' +
+          '<td class="mono">' + r.fecha + '</td>' +
+          '<td>' + r.nombre + '</td>' +
+          '<td><input type="text" value="' + (r.lugar||'') + '" id="ep-lug-' + r.fila + '" style="width:140px;height:28px;font-size:11px" placeholder="Lugar"></td>' +
+          '<td><input type="text" value="' + (r.hora_inicio||'') + '" id="ep-ini-' + r.fila + '" style="width:70px;height:28px;font-size:11px;font-family:var(--mono)" placeholder="00:00"></td>' +
+          '<td><input type="text" value="' + (r.hora_fin||'') + '" id="ep-fin-' + r.fila + '" style="width:70px;height:28px;font-size:11px;font-family:var(--mono)" placeholder="00:00"></td>' +
+          '<td><select id="ep-est-' + r.fila + '" style="height:28px;font-size:11px">' +
+            ESTADOS.map(e => '<option value="' + e + '"' + (r.estado === e ? ' selected' : '') + '>' + e + '</option>').join('') +
+          '</select></td>' +
+          '<td style="display:flex;gap:4px">' +
+          '<button class="btn btn-primary" style="height:26px;font-size:11px" onclick="guardarProg(' + r.fila + ')">💾</button>' +
+          '<button class="btn btn-red" style="height:26px;font-size:11px" onclick="eliminarProg(' + r.fila + ')">✕</button>' +
+          '</td></tr>';
+      }).join('');
+}
+
+async function guardarProg(fila) {
+  const lugar = document.getElementById('ep-lug-' + fila).value;
+  const ini = document.getElementById('ep-ini-' + fila).value;
+  const fin = document.getElementById('ep-fin-' + fila).value;
+  const est = document.getElementById('ep-est-' + fila).value;
+  try {
+    const url = SCRIPT_URL + '?accion=editarProgramacion&fila=' + fila +
+      '&lugar=' + encodeURIComponent(lugar) + '&hora_inicio=' + encodeURIComponent(ini) +
+      '&hora_fin=' + encodeURIComponent(fin) + '&estado=' + encodeURIComponent(est);
+    const data = await fetchJSON(url);
+    if (data.status === 'ok') {
+      // Actualizar local
+      const idx = progData.findIndex(r => r.fila === fila);
+      if (idx >= 0) { progData[idx].lugar = lugar; progData[idx].hora_inicio = ini; progData[idx].hora_fin = fin; progData[idx].estado = est; }
+      // Flash verde
+      const btn = event.target;
+      btn.textContent = '✅'; setTimeout(() => btn.textContent = '💾', 1500);
+    } else { alert('Error: ' + data.message); }
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function eliminarProg(fila) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=eliminarProgramacion&fila=' + fila);
+    if (data.status === 'ok') cargarTablaEditProg();
+    else alert('Error: ' + data.message);
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function agregarProgNuevo() {
+  const nombre = document.getElementById('ep-nombre').value;
+  const fecha = document.getElementById('ep-fecha').value;
+  const lugar = document.getElementById('ep-lugar').value;
+  const ini = document.getElementById('ep-inicio').value;
+  const fin = document.getElementById('ep-fin').value;
+  const est = document.getElementById('ep-estado').value;
+  if (!nombre || !fecha) { alert('Nombre y fecha son obligatorios'); return; }
+  const fechaFmt = fecha.split('-').reverse().join('/');
+  try {
+    const url = SCRIPT_URL + '?accion=agregarProgramacion&nombre=' + encodeURIComponent(nombre) +
+      '&fecha=' + encodeURIComponent(fechaFmt) + '&lugar=' + encodeURIComponent(lugar) +
+      '&hora_inicio=' + encodeURIComponent(ini) + '&hora_fin=' + encodeURIComponent(fin) + '&estado=' + encodeURIComponent(est);
+    const data = await fetchJSON(url);
+    if (data.status === 'ok') { alert('✅ Registro agregado'); cargarTablaEditProg(); }
+    else alert('Error: ' + data.message);
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+// ══════════════════════════════════════════
+// CARGAR DATOS AL CAMBIAR DE PANEL
+// ══════════════════════════════════════════
+const originalNav = nav;
+function nav(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('p-' + id).classList.add('active');
+  el.classList.add('active');
+  // Auto-cargar datos
+  if (id === 'personal') cargarTablaPersonal();
+  if (id === 'biometrico') { cargarTablaBio(); }
+  if (id === 'editar-prog') {}
 }
 </script>
 </body>
