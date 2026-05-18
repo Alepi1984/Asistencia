@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUTRAN UDLL - Panel de Asistencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0F1117;--bg2:#1A1D27;--bg3:#22263A;--border:#2D3250;
+  --blue:#4F8EF7;--blue2:#2563EB;--green:#22C55E;--red:#EF4444;
+  --yellow:#F59E0B;--purple:#A78BFA;--cyan:#22D3EE;--orange:#FB923C;
+  --text:#E2E8F0;--text2:#94A3B8;--text3:#475569;
+  --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
+  --r:10px;--r-sm:6px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-badge{background:var(--blue2);color:white;font-family:var(--mono);font-size:11px;font-weight:500;padding:4px 10px;border-radius:4px;letter-spacing:1px}
+.brand-name{font-size:13px;color:var(--text2)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.reloj{font-family:var(--mono);font-size:12px;color:var(--text3)}
+
+/* LAYOUT */
+.layout{display:flex;height:calc(100vh - 58px)}
+.sidebar{width:228px;background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column}
+.main{flex:1;overflow-y:auto;padding:28px}
+
+/* SIDEBAR */
+.sidebar-label{padding:6px 16px;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:12px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;font-size:13px;color:var(--text2);border-left:2px solid transparent;transition:all 0.15s;margin:1px 0}
+.nav-item:hover{background:rgba(79,142,247,0.06);color:var(--text)}
+.nav-item.active{background:rgba(79,142,247,0.1);color:var(--blue);border-left-color:var(--blue);font-weight:500}
+.nav-item svg{width:15px;height:15px;stroke:currentColor;fill:none;flex-shrink:0}
+.sidebar-bottom{margin-top:auto;padding:12px 16px;border-top:1px solid var(--border)}
+.mes-selector{display:flex;flex-direction:column;gap:6px}
+.mes-selector label{font-size:11px;color:var(--text3);font-weight:500}
+.mes-selector select{width:100%;font-family:var(--sans);font-size:12px;padding:6px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);height:32px}
+
+/* PANEL */
+.panel{display:none}
+.panel.active{display:block}
+.page-title{font-size:20px;font-weight:600;margin-bottom:4px;letter-spacing:-0.3px}
+.page-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.card-title{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:3px 0 0 3px}
+.stat.blue::before{background:var(--blue)}
+.stat.green::before{background:var(--green)}
+.stat.red::before{background:var(--red)}
+.stat.yellow::before{background:var(--yellow)}
+.stat.purple::before{background:var(--purple)}
+.stat.cyan::before{background:var(--cyan)}
+.stat-val{font-family:var(--mono);font-size:28px;font-weight:600;line-height:1}
+.stat.blue .stat-val{color:var(--blue)}
+.stat.green .stat-val{color:var(--green)}
+.stat.red .stat-val{color:var(--red)}
+.stat.yellow .stat-val{color:var(--yellow)}
+.stat.purple .stat-val{color:var(--purple)}
+.stat.cyan .stat-val{color:var(--cyan)}
+.stat-label{font-size:12px;color:var(--text3);margin-top:6px}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.btn{font-family:var(--sans);font-size:13px;padding:0 14px;height:36px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg3);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;white-space:nowrap}
+.btn:hover{background:var(--bg2);border-color:var(--text3)}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn svg{width:14px;height:14px;stroke:currentColor;fill:none}
+.btn-primary{background:var(--blue2);border-color:var(--blue2);color:white;font-weight:500}
+.btn-primary:hover{background:#1D4ED8;border-color:#1D4ED8}
+.btn-green{background:#15803D;border-color:#15803D;color:white;font-weight:500}
+.btn-green:hover{background:#166534}
+.btn-red{background:#991B1B;border-color:#991B1B;color:white;font-weight:500}
+.spinner-btn{width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;display:none}
+
+/* INPUTS */
+input,select,textarea{font-family:var(--sans);font-size:13px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);height:36px;transition:border-color 0.15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
+textarea{height:auto;resize:vertical}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-family:var(--mono);font-size:9.5px;letter-spacing:0.8px;color:var(--text3);padding:10px 12px;text-align:left;background:var(--bg3);border-bottom:1px solid var(--border);white-space:nowrap;text-transform:uppercase}
+td{padding:9px 12px;border-bottom:1px solid rgba(45,50,80,0.6);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(79,142,247,0.03)}
+.mono{font-family:var(--mono);font-size:12px}
+
+/* BADGES */
+.badge{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:500;display:inline-block;white-space:nowrap}
+.b-A{background:#14532D;color:#86EFAC}
+.b-DS{background:#1E3A5F;color:#93C5FD}
+.b-CP,.b-CPSS{background:#78350F;color:#FCD34D}
+.b-V{background:#4C1D95;color:#C4B5FD}
+.b-FE,.b-FR{background:#7F1D1D;color:#FCA5A5}
+.b-CO{background:#0C4A6E;color:#7DD3FC}
+.b-T{background:#451A03;color:#FDE68A}
+.b-F{background:#7F1D1D;color:#FCA5A5}
+.b-DS{background:#1E3A5F;color:#93C5FD}
+.b-REVISION{background:#374151;color:#D1D5DB}
+.b-default{background:var(--bg3);color:var(--text2)}
+
+/* PROGRAMACION */
+.prog-textarea{width:100%;min-height:200px;font-family:var(--mono);font-size:12px;line-height:1.6;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:12px;resize:vertical}
+
+/* ESTADO */
+.estado-bar{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;font-family:var(--mono);font-size:12px;color:var(--text2);margin-bottom:12px;min-height:40px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--text3);flex-shrink:0;animation:pulse 2s infinite}
+.dot.ok{background:var(--green);animation:none}
+.dot.err{background:var(--red);animation:none}
+.dot.loading{background:var(--yellow)}
+
+/* REPORTE GRID */
+.rep-wrap{overflow-x:auto}
+.rep-table{border-collapse:collapse;font-size:11px;white-space:nowrap}
+.rep-table th{font-family:var(--mono);font-size:9px;color:var(--text3);padding:6px 4px;text-align:center;background:var(--bg3);border:1px solid var(--border);min-width:26px}
+.rep-table th.nombre-th{text-align:left;min-width:160px}
+.rep-table td{padding:4px 3px;border:1px solid rgba(45,50,80,0.5);text-align:center}
+.rep-table td.nombre-td{text-align:left;padding:4px 8px;font-size:12px}
+.rep-table .fin{background:rgba(30,58,95,0.3)}
+
+/* CONSULTA RESULT */
+.consulta-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.consulta-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.consulta-nombre{font-size:15px;font-weight:600}
+.consulta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.consulta-item label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:2px}
+.consulta-item span{font-family:var(--mono);font-size:13px}
+
+/* LOADING */
+.loading-cell{text-align:center;padding:32px;color:var(--text3);font-size:13px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+@media print{
+  .topbar,.sidebar,.btn-row,.no-print{display:none!important}
+  .layout{height:auto;display:block}
+  .main{padding:0}
+  body{background:white;color:black}
+  .card{border:none;background:white}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-badge">SUTRAN</div>
+    <div class="brand-name">Unidad Desconcentrada La Libertad — Control de Asistencia</div>
+  </div>
+  <div class="topbar-right">
+    <div class="reloj" id="reloj"></div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-label">Principal</div>
+    <div class="nav-item active" onclick="nav('dashboard',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="nav('programacion',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Programación
+    </div>
+    <div class="sidebar-label">Reportes</div>
+    <div class="nav-item" onclick="nav('asistencia',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Asistencia Final
+    </div>
+    <div class="nav-item" onclick="nav('mensual',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Reporte Mensual
+    </div>
+    <div class="nav-item" onclick="nav('imprimir',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Reporte para Firmas
+    </div>
+    <div class="nav-item" onclick="nav('consulta',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Consulta Trabajador
+    </div>
+    <div class="sidebar-label">Procesos</div>
+    <div class="nav-item" onclick="nav('procesos',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+      Ejecutar Procesos
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="mes-selector">
+        <label>Mes activo</label>
+        <select id="g-mes">
+          <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+          <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+          <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+          <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+        </select>
+        <select id="g-anio" style="margin-top:4px">
+          <option value="2026">2026</option><option value="2025">2025</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="p-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">Resumen general del mes seleccionado</div>
+      <div class="btn-row no-print">
+        <button class="btn btn-primary" onclick="cargarDashboard()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+          Actualizar
+        </button>
+      </div>
+      <div class="stats-grid" id="dash-stats">
+        <div class="stat blue"><div class="stat-val" id="s-personal">—</div><div class="stat-label">Personal registrado</div></div>
+        <div class="stat green"><div class="stat-val" id="s-asist">—</div><div class="stat-label">Asistencias (A)</div></div>
+        <div class="stat red"><div class="stat-val" id="s-faltas">—</div><div class="stat-label">Faltas (F)</div></div>
+        <div class="stat cyan"><div class="stat-val" id="s-foto">—</div><div class="stat-label">Marcaciones foto</div></div>
+        <div class="stat purple"><div class="stat-val" id="s-bio">—</div><div class="stat-label">Marcaciones biométrico</div></div>
+        <div class="stat yellow"><div class="stat-val" id="s-ds">—</div><div class="stat-label">Descansos (DS)</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Últimos registros — Asistencia Final</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nombre</th><th>Lugar</th><th>Fecha</th><th>H. Prog.</th><th>Entrada</th><th>Salida</th><th>Estado</th></tr></thead>
+            <tbody id="dash-tabla"><tr><td colspan="7" class="loading-cell">Haz clic en Actualizar</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRAMACIÓN -->
+    <div class="panel" id="p-programacion">
+      <div class="page-title">Programación</div>
+      <div class="page-sub">Pega aquí el mensaje de WhatsApp con la programación y procésalo</div>
+      <div class="estado-bar" id="prog-estado"><div class="dot"></div>Listo para procesar</div>
+      <div class="card">
+        <div class="card-title">Mensaje de programación (WhatsApp)</div>
+        <textarea class="prog-textarea" id="prog-texto" placeholder="Pega aquí el mensaje de WhatsApp con la programación del día o semana..."></textarea>
+        <div class="btn-row" style="margin-top:12px;margin-bottom:0">
+          <button class="btn btn-primary" onclick="guardarYProcesar()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+            Guardar y Procesar
+          </button>
+          <button class="btn" onclick="cargarProgRaw()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            Cargar actual
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASISTENCIA FINAL -->
+    <div class="panel" id="p-asistencia">
+      <div class="page-title">Asistencia Final</div>
+      <div class="page-sub">Resultado del cruce de programación + marcaciones</div>
+      <div class="btn-row no-print">
+        <button class="btn btn-primary" onclick="cargarAsistencia()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+          Cargar datos
+        </button>
+        <button class="btn" onclick="window.print()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimir
+        </button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Nombre</th><th>Lugar</th><th>Fecha</th><th>H. Prog.</th><th>Entrada</th><th>Salida</th><th>Estado</th></tr></thead>
+            <tbody id="asist-tabla"><tr><td colspan="8" class="loading-cell">Selecciona mes y carga</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTE MENSUAL -->
+    <div class="panel" id="p-mensual">
+      <div class="page-title">Reporte Mensual</div>
+      <div class="page-sub">Vista calendario de asistencia por trabajador</div>
+      <div class="btn-row no-print">
+        <button class="btn btn-primary" onclick="cargarMensual()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+          Cargar reporte
+        </button>
+        <button class="btn" onclick="window.print()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimir
+        </button>
+      </div>
+      <div class="card" style="padding:12px">
+        <div class="rep-wrap" id="mensual-contenido"><div class="loading-cell">Selecciona mes y carga el reporte</div></div>
+      </div>
+    </div>
+
+    <!-- REPORTE IMPRIMIR -->
+    <div class="panel" id="p-imprimir">
+      <div class="page-title">Reporte para Firmas</div>
+      <div class="page-sub">Reporte final — imprime y entrega para firma de conformidad</div>
+      <div class="btn-row no-print">
+        <button class="btn btn-primary" onclick="cargarImprimir()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+          Cargar reporte
+        </button>
+        <button class="btn" onclick="window.print()">
+          <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimir
+        </button>
+      </div>
+      <div class="card" style="padding:12px">
+        <div style="text-align:center;margin-bottom:16px" id="imp-header" class="no-print"></div>
+        <div class="rep-wrap" id="imprimir-contenido"><div class="loading-cell">Selecciona mes y carga el reporte</div></div>
+      </div>
+    </div>
+
+    <!-- CONSULTA -->
+    <div class="panel" id="p-consulta">
+      <div class="page-title">Consulta por Trabajador</div>
+      <div class="page-sub">Historial de asistencia individual</div>
+      <div class="card">
+        <div class="card-title">Filtros de búsqueda</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+          <div>
+            <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Trabajador</label>
+            <select id="con-trab" style="min-width:220px"><option value="">Todos los trabajadores</option></select>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">Fecha específica (opcional)</label>
+            <input type="date" id="con-fecha">
+          </div>
+          <button class="btn btn-primary" onclick="cargarConsulta()">Consultar</button>
+        </div>
+      </div>
+      <div id="con-stats" style="display:none;margin-bottom:16px">
+        <div class="stats-grid" id="con-stats-grid"></div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nombre</th><th>Lugar</th><th>Fecha</th><th>Horario Prog.</th><th>Entrada</th><th>Salida</th><th>Estado</th></tr></thead>
+            <tbody id="con-tabla"><tr><td colspan="7" class="loading-cell">Selecciona un trabajador y consulta</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROCESOS -->
+    <div class="panel" id="p-procesos">
+      <div class="page-title">Ejecutar Procesos</div>
+      <div class="page-sub">Ejecuta los procesos del sistema en orden</div>
+      <div class="estado-bar" id="proc-estado"><div class="dot"></div>Listo</div>
+      <div class="card">
+        <div class="card-title">Secuencia de procesos</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
+            <div>
+              <div style="font-size:13px;font-weight:500">1. Procesar Programación</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">Interpreta el mensaje de WhatsApp y llena la hoja PROGRAMACION</div>
+            </div>
+            <button class="btn btn-primary" onclick="ejecutar('procesarProgramacion','proc-estado')">Ejecutar</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
+            <div>
+              <div style="font-size:13px;font-weight:500">2. Unificar Marcaciones</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">Combina registros de foto y biométrico en MARCACIONES_UNIFICADAS</div>
+            </div>
+            <button class="btn btn-primary" onclick="ejecutar('unificarMarcaciones','proc-estado')">Ejecutar</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
+            <div>
+              <div style="font-size:13px;font-weight:500">3. Generar Asistencia Final</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">Cruza programación con marcaciones y asigna A/F/DS</div>
+            </div>
+            <button class="btn btn-primary" onclick="ejecutar('generarAsistenciaFinal','proc-estado')">Ejecutar</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
+            <div>
+              <div style="font-size:13px;font-weight:500">4. Generar Reporte Mensual</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">Genera el reporte mensual en la hoja REPORTE_MENSUAL</div>
+            </div>
+            <button class="btn btn-primary" onclick="ejecutar('generarReporteMensual','proc-estado')">Ejecutar</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
+            <div>
+              <div style="font-size:13px;font-weight:500">5. Generar Reporte para Imprimir</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">Genera el reporte final con DNI, cargo y columna de firma</div>
+            </div>
+            <button class="btn btn-primary" onclick="ejecutar('generarReporteImprimir','proc-estado')">Ejecutar</button>
+          </div>
+          <div style="margin-top:6px">
+            <button class="btn btn-green" style="width:100%;height:44px;font-size:14px" onclick="ejecutarTodo()">
+              <svg viewBox="0 0 24 24" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Ejecutar Todo en Secuencia
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlRWvo5qnfOQ49x7ZJ_UPBYK0mWhJEUCWpf5AqCQu7Q2FG55zPeuETWkLm_FVVFbV_/exec";
+const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+let personal = [];
+
+// ── Init ──
+window.onload = function() {
+  const now = new Date();
+  document.getElementById('g-mes').value = now.getMonth() + 1;
+  document.getElementById('g-anio').value = now.getFullYear();
+  setInterval(actualizarReloj, 1000);
+  actualizarReloj();
+  cargarPersonal();
+  cargarDashboard();
+};
+
+function actualizarReloj() {
+  const now = new Date();
+  document.getElementById('reloj').textContent =
+    String(now.getHours()).padStart(2,'0') + ':' +
+    String(now.getMinutes()).padStart(2,'0') + ':' +
+    String(now.getSeconds()).padStart(2,'0') + ' · ' +
+    now.toLocaleDateString('es-PE', {weekday:'short', day:'numeric', month:'short'});
+}
+
+function getMes() { return document.getElementById('g-mes').value; }
+function getAnio() { return document.getElementById('g-anio').value; }
+
+function nav(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('p-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+async function fetchJSON(url) {
+  const res = await fetch(url);
+  return res.json();
+}
+
+function badge(nom) {
+  if (!nom) return '<span style="color:var(--text3)">—</span>';
+  const cls = 'b-' + nom;
+  return '<span class="badge ' + cls + '">' + nom + '</span>';
+}
+
+// ── Personal ──
+async function cargarPersonal() {
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=listarPersonal');
+    personal = data.personal || [];
+    const sel = document.getElementById('con-trab');
+    sel.innerHTML = '<option value="">Todos los trabajadores</option>';
+    personal.forEach(p => {
+      const op = document.createElement('option');
+      op.value = p.nombre_sistema;
+      op.textContent = p.nombre_completo || p.nombre_sistema;
+      sel.appendChild(op);
+    });
+  } catch(e) {}
+}
+
+// ── Dashboard ──
+async function cargarDashboard() {
+  const mes = getMes(), anio = getAnio();
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=dashboard&mes=' + mes + '&anio=' + anio);
+    const s = data.stats || {};
+    document.getElementById('s-personal').textContent = s.personal ?? '—';
+    document.getElementById('s-asist').textContent = s.asistencias ?? '—';
+    document.getElementById('s-faltas').textContent = s.faltas ?? '—';
+    document.getElementById('s-foto').textContent = s.registros_foto ?? '—';
+    document.getElementById('s-bio').textContent = s.registros_bio ?? '—';
+    document.getElementById('s-ds').textContent = s.descansos ?? '—';
+
+    // Cargar últimos registros
+    const data2 = await fetchJSON(SCRIPT_URL + '?accion=leerAsistencia&mes=' + mes + '&anio=' + anio);
+    const rows = (data2.asistencia || []).slice(-20).reverse();
+    document.getElementById('dash-tabla').innerHTML = rows.length === 0
+      ? '<tr><td colspan="7" class="loading-cell">Sin datos este mes</td></tr>'
+      : rows.map(r =>
+          '<tr><td>' + r.nombre + '</td><td>' + (r.lugar||'—') + '</td>' +
+          '<td class="mono">' + r.fecha + '</td>' +
+          '<td class="mono">' + (r.hora_inicio ? r.hora_inicio + (r.hora_fin ? ' - ' + r.hora_fin : '') : '—') + '</td>' +
+          '<td class="mono" style="color:var(--green)">' + (r.entrada||'—') + '</td>' +
+          '<td class="mono" style="color:var(--red)">' + (r.salida||'—') + '</td>' +
+          '<td>' + badge(r.estado) + '</td></tr>'
+        ).join('');
+  } catch(e) {
+    document.getElementById('dash-tabla').innerHTML = '<tr><td colspan="7" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
+  }
+}
+
+// ── Programación ──
+async function cargarProgRaw() {
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=leerProgramacionRaw');
+    document.getElementById('prog-texto').value = data.texto || '';
+    setEstado('prog-estado', 'ok', 'Programación actual cargada');
+  } catch(e) {
+    setEstado('prog-estado', 'err', 'Error al cargar');
+  }
+}
+
+async function guardarYProcesar() {
+  const texto = document.getElementById('prog-texto').value.trim();
+  if (!texto) { alert('Pega el mensaje de WhatsApp primero'); return; }
+  setEstado('prog-estado', 'loading', 'Guardando programación...');
+  try {
+    await fetchJSON(SCRIPT_URL + '?accion=guardarProgramacionRaw&texto=' + encodeURIComponent(texto));
+    setEstado('prog-estado', 'loading', 'Procesando...');
+    await fetchJSON(SCRIPT_URL + '?accion=procesarProgramacion');
+    setEstado('prog-estado', 'ok', '✅ Programación guardada y procesada correctamente');
+  } catch(e) {
+    setEstado('prog-estado', 'err', 'Error: ' + e.message);
+  }
+}
+
+// ── Asistencia Final ──
+async function cargarAsistencia() {
+  const mes = getMes(), anio = getAnio();
+  document.getElementById('asist-tabla').innerHTML = '<tr><td colspan="8" class="loading-cell">Cargando...</td></tr>';
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=leerAsistencia&mes=' + mes + '&anio=' + anio);
+    const rows = data.asistencia || [];
+    document.getElementById('asist-tabla').innerHTML = rows.length === 0
+      ? '<tr><td colspan="8" class="loading-cell">Sin datos para ' + MESES[mes] + ' ' + anio + '</td></tr>'
+      : rows.map((r,i) =>
+          '<tr><td class="mono" style="color:var(--text3)">' + (i+1) + '</td>' +
+          '<td>' + r.nombre + '</td><td>' + (r.lugar||'—') + '</td>' +
+          '<td class="mono">' + r.fecha + '</td>' +
+          '<td class="mono">' + (r.hora_inicio||'') + (r.hora_fin ? ' - '+r.hora_fin : '') + '</td>' +
+          '<td class="mono" style="color:var(--green)">' + (r.entrada||'—') + '</td>' +
+          '<td class="mono" style="color:var(--red)">' + (r.salida||'—') + '</td>' +
+          '<td>' + badge(r.estado) + '</td></tr>'
+        ).join('');
+  } catch(e) {
+    document.getElementById('asist-tabla').innerHTML = '<tr><td colspan="8" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
+  }
+}
+
+// ── Reporte Mensual ──
+async function cargarMensual() {
+  const mes = getMes(), anio = getAnio();
+  document.getElementById('mensual-contenido').innerHTML = '<div class="loading-cell">Cargando...</div>';
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=leerReporteMensual');
+    const rows = data.reporte || [];
+    if (rows.length === 0) { document.getElementById('mensual-contenido').innerHTML = '<div class="loading-cell">Sin datos</div>'; return; }
+    const dias = [];
+    for (let d = 1; d <= 31; d++) dias.push(d);
+    let html = '<table class="rep-table"><thead><tr>';
+    html += '<th class="nombre-th">APELLIDOS Y NOMBRES</th>';
+    dias.forEach(d => { html += '<th>' + d + '</th>'; });
+    html += '<th>TOT.F</th><th>TOT.T</th><th>TOT.A</th><th>DÍAS</th></tr></thead><tbody>';
+    rows.forEach(r => {
+      html += '<tr><td class="nombre-td">' + r['NOMBRE'] + '</td>';
+      dias.forEach(d => {
+        const val = r[String(d)] || '';
+        let bg = '';
+        if (val==='F') bg='background:rgba(239,68,68,0.15)';
+        else if (val==='DS') bg='background:rgba(79,142,247,0.1)';
+        else if (val==='CP') bg='background:rgba(245,158,11,0.1)';
+        html += '<td style="' + bg + '">' + (val ? badge(val) : '') + '</td>';
+      });
+      html += '<td class="mono" style="color:var(--red)">' + (r['TOTAL F']||'') + '</td>';
+      html += '<td class="mono" style="color:var(--yellow)">' + (r['TOTAL T']||'') + '</td>';
+      html += '<td class="mono" style="color:var(--green)">' + (r['TOTAL A']||'') + '</td>';
+      html += '<td class="mono" style="color:var(--blue)">' + (r['TOTAL DIAS']||'') + '</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('mensual-contenido').innerHTML = html;
+  } catch(e) {
+    document.getElementById('mensual-contenido').innerHTML = '<div class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</div>';
+  }
+}
+
+// ── Reporte Imprimir ──
+async function cargarImprimir() {
+  const mes = getMes(), anio = getAnio();
+  document.getElementById('imprimir-contenido').innerHTML = '<div class="loading-cell">Cargando...</div>';
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=leerReporteImprimir');
+    const rows = data.reporte || [];
+    if (rows.length === 0) { document.getElementById('imprimir-contenido').innerHTML = '<div class="loading-cell">Sin datos</div>'; return; }
+    document.getElementById('imp-header').innerHTML =
+      '<div style="font-size:15px;font-weight:700;letter-spacing:1px">SUTRAN — UNIDAD DESCONCENTRADA LA LIBERTAD</div>' +
+      '<div style="font-size:12px;color:var(--text2);margin-top:4px">SEGUIMIENTO ASISTENCIA Y TRABAJO REMOTO — ' + MESES[mes].toUpperCase() + ' ' + anio + '</div>';
+    const dias = [];
+    for (let d = 1; d <= 31; d++) dias.push(d);
+    let html = '<table class="rep-table"><thead><tr>';
+    html += '<th>DNI</th><th class="nombre-th">APELLIDOS Y NOMBRES</th><th>CARGO</th>';
+    dias.forEach(d => { html += '<th>' + d + '</th>'; });
+    html += '<th>DÍAS TRAB.</th><th style="min-width:80px">FIRMA</th></tr></thead><tbody>';
+    rows.forEach(r => {
+      html += '<tr>';
+      html += '<td class="mono" style="font-size:11px">' + (r['DNI']||'') + '</td>';
+      html += '<td class="nombre-td" style="font-weight:500">' + (r['NOMBRE']||'') + '</td>';
+      html += '<td style="font-size:11px;color:var(--text2)">' + (r['CARGO']||'') + '</td>';
+      dias.forEach(d => {
+        const val = r[String(d)] || '';
+        let bg = '';
+        if (val==='F') bg='background:rgba(239,68,68,0.15)';
+        else if (val==='DS') bg='background:rgba(79,142,247,0.1)';
+        else if (val==='CP') bg='background:rgba(245,158,11,0.1)';
+        html += '<td style="' + bg + '">' + (val ? badge(val) : '') + '</td>';
+      });
+      html += '<td class="mono" style="color:var(--blue)">' + (r['DIAS TRABAJADOS']||'') + '</td>';
+      html += '<td></td></tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('imprimir-contenido').innerHTML = html;
+  } catch(e) {
+    document.getElementById('imprimir-contenido').innerHTML = '<div class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</div>';
+  }
+}
+
+// ── Consulta ──
+async function cargarConsulta() {
+  const nombre = document.getElementById('con-trab').value;
+  const fechaInput = document.getElementById('con-fecha').value;
+  let fecha = '';
+  if (fechaInput) {
+    const d = new Date(fechaInput + 'T00:00:00');
+    fecha = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+  }
+  document.getElementById('con-tabla').innerHTML = '<tr><td colspan="7" class="loading-cell">Cargando...</td></tr>';
+  document.getElementById('con-stats').style.display = 'none';
+  try {
+    let url = SCRIPT_URL + '?accion=consultarTrabajador';
+    if (nombre) url += '&nombre=' + encodeURIComponent(nombre);
+    if (fecha) url += '&fecha=' + encodeURIComponent(fecha);
+    const data = await fetchJSON(url);
+    const rows = data.resultado || [];
+    // Stats
+    if (nombre && rows.length > 0) {
+      let cntA=0,cntF=0,cntDS=0,cntOtros=0;
+      rows.forEach(r => {
+        if (r.estado==='A') cntA++;
+        else if (r.estado==='F') cntF++;
+        else if (r.estado==='DS') cntDS++;
+        else if (r.estado) cntOtros++;
+      });
+      document.getElementById('con-stats').style.display = 'block';
+      document.getElementById('con-stats-grid').innerHTML =
+        '<div class="stat green"><div class="stat-val">' + cntA + '</div><div class="stat-label">Asistencias</div></div>' +
+        '<div class="stat red"><div class="stat-val">' + cntF + '</div><div class="stat-label">Faltas</div></div>' +
+        '<div class="stat blue"><div class="stat-val">' + cntDS + '</div><div class="stat-label">Descansos</div></div>' +
+        '<div class="stat yellow"><div class="stat-val">' + cntOtros + '</div><div class="stat-label">Otros</div></div>';
+    }
+    document.getElementById('con-tabla').innerHTML = rows.length === 0
+      ? '<tr><td colspan="7" class="loading-cell">Sin resultados</td></tr>'
+      : rows.map(r =>
+          '<tr><td>' + r.nombre + '</td><td>' + (r.lugar||'—') + '</td>' +
+          '<td class="mono">' + r.fecha + '</td>' +
+          '<td class="mono">' + (r.hora_inicio||'') + (r.hora_fin ? ' - '+r.hora_fin : '') + '</td>' +
+          '<td class="mono" style="color:var(--green)">' + (r.entrada||'—') + '</td>' +
+          '<td class="mono" style="color:var(--red)">' + (r.salida||'—') + '</td>' +
+          '<td>' + badge(r.estado) + '</td></tr>'
+        ).join('');
+  } catch(e) {
+    document.getElementById('con-tabla').innerHTML = '<tr><td colspan="7" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
+  }
+}
+
+// ── Procesos ──
+async function ejecutar(accion, estadoId) {
+  setEstado(estadoId, 'loading', 'Ejecutando ' + accion + '...');
+  try {
+    const data = await fetchJSON(SCRIPT_URL + '?accion=' + accion);
+    if (data.status === 'ok') {
+      setEstado(estadoId, 'ok', '✅ ' + (data.message || accion + ' completado'));
+    } else {
+      setEstado(estadoId, 'err', '❌ Error: ' + (data.message || 'desconocido'));
+    }
+  } catch(e) {
+    setEstado(estadoId, 'err', '❌ Error de conexión: ' + e.message);
+  }
+}
+
+async function ejecutarTodo() {
+  const pasos = ['procesarProgramacion','unificarMarcaciones','generarAsistenciaFinal','generarReporteMensual','generarReporteImprimir'];
+  for (const paso of pasos) {
+    await ejecutar(paso, 'proc-estado');
+    await new Promise(r => setTimeout(r, 800));
+  }
+  setEstado('proc-estado', 'ok', '✅ Todos los procesos completados');
+}
+
+function setEstado(id, tipo, msg) {
+  const el = document.getElementById(id);
+  const dot = tipo === 'ok' ? 'ok' : tipo === 'err' ? 'err' : 'loading';
+  el.innerHTML = '<div class="dot ' + dot + '"></div>' + msg;
+}
+</script>
+</body>
+</html>
