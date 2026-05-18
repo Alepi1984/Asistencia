@@ -582,7 +582,7 @@ async function guardarResumen() {
 // ═══════════════════════════════════════════
 // REPORTE 1: DETALLADO
 // ═══════════════════════════════════════════
-async function cargarReporte1() {
+async function generarReporteMensual() {
   const mes = parseInt(document.getElementById('r1-mes').value);
   const anio = parseInt(document.getElementById('r1-anio').value);
   document.getElementById('r1-contenido').innerHTML = '<div class="loading">Generando reporte...</div>';
@@ -628,7 +628,7 @@ async function cargarReporte1() {
 // ═══════════════════════════════════════════
 // REPORTE 2: MENSUAL CON TOTALES
 // ═══════════════════════════════════════════
-async function cargarReporte2() {
+async function generarReporteImprimir() {
   const mes = parseInt(document.getElementById('r2-mes').value);
   const anio = parseInt(document.getElementById('r2-anio').value);
   document.getElementById('r2-contenido').innerHTML = '<div class="loading">Generando reporte...</div>';
