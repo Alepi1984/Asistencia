@@ -461,14 +461,20 @@ async function enviar(){
   });
 
   try{
+    // Paso 1: Registrar datos via JSONP
     const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(nombreSistema)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&lugar="+encodeURIComponent(lugar)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
-    const r1=await fetch(url1);
-    const d1=await r1.json();
+    const d1=await fetchJSONP(url1);
     if(d1.status==="ok"){
-      await fetch(SCRIPT_URL, {
-        method:"POST", mode:"no-cors",
-        body: JSON.stringify({accion:"foto", fila:d1.fila, foto:fotoConMarca})
-      });
+      // Paso 2: Enviar foto via JSONP en chunks
+      btn.textContent="Enviando foto...";
+      const b64=fotoConMarca.includes(",")?fotoConMarca.split(",")[1]:fotoConMarca;
+      const sz=30000;
+      const tot=Math.ceil(b64.length/sz);
+      for(let pi=0;pi<tot;pi++){
+        const chunk=b64.substring(pi*sz,(pi+1)*sz);
+        btn.textContent="Foto "+(pi+1)+"/"+tot+"...";
+        await fetchJSONP(SCRIPT_URL+"?accion=fotoChunk&fila="+d1.fila+"&parte="+pi+"&total="+tot+"&data="+encodeURIComponent(chunk));
+      }
       document.getElementById("form-content").style.display="none";
       document.getElementById("success-panel").style.display="flex";
       document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
