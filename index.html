@@ -295,7 +295,15 @@ async function cargarSelect(){
 async function validarEntrada() {
   const inputPin = document.getElementById("pin-acceso-input").value;
   if (!inputPin) return alert("Por favor, ingresa el PIN");
-  try {
+try {
+
+   ...
+
+} catch(err){
+
+   console.error(err);
+
+}
     const data = await fetchJSONP(SCRIPT_URL + "?accion=obtenerPin&t=" + Date.now());
     if (data.status === "ok" && String(inputPin) === String(data.acceso)) {
       document.getElementById("muro-entrada").style.display = "none";
