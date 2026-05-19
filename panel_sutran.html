@@ -241,7 +241,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
         </div>
       </div>
       <div id="con-stats-wrap" style="display:none;margin-bottom:16px">
-        <div class="stats-grid" id="con-stats-grid"></div>
+        <div id="con-stats-grid" style="display:flex;gap:8px;flex-wrap:wrap"></div>
       </div>
       <div class="card">
         <div class="table-wrap">
@@ -631,10 +631,10 @@ function cargarConsulta() {
       });
       document.getElementById('con-stats-wrap').style.display = 'block';
       document.getElementById('con-stats-grid').innerHTML =
-        '<div class="stat green"><div class="stat-val">' + cntA + '</div><div class="stat-label">Asistencias</div></div>' +
-        '<div class="stat red"><div class="stat-val">' + cntF + '</div><div class="stat-label">Faltas</div></div>' +
-        '<div class="stat blue"><div class="stat-val">' + cntDS + '</div><div class="stat-label">Descansos</div></div>' +
-        '<div class="stat yellow"><div class="stat-val">' + cntO + '</div><div class="stat-label">Otros</div></div>';
+        '<div style="background:rgba(34,197,94,0.1);border:1px solid var(--green);border-radius:6px;padding:6px 14px;display:flex;align-items:center;gap:8px"><span style="font-family:monospace;font-size:18px;font-weight:700;color:var(--green)">' + cntA + '</span><span style="font-size:11px;color:var(--text3)">Asistencias</span></div>' +
+        '<div style="background:rgba(239,68,68,0.1);border:1px solid var(--red);border-radius:6px;padding:6px 14px;display:flex;align-items:center;gap:8px"><span style="font-family:monospace;font-size:18px;font-weight:700;color:var(--red)">' + cntF + '</span><span style="font-size:11px;color:var(--text3)">Faltas</span></div>' +
+        '<div style="background:rgba(79,142,247,0.1);border:1px solid var(--blue);border-radius:6px;padding:6px 14px;display:flex;align-items:center;gap:8px"><span style="font-family:monospace;font-size:18px;font-weight:700;color:var(--blue)">' + cntDS + '</span><span style="font-size:11px;color:var(--text3)">Descansos</span></div>' +
+        '<div style="background:rgba(245,158,11,0.1);border:1px solid var(--yellow);border-radius:6px;padding:6px 14px;display:flex;align-items:center;gap:8px"><span style="font-family:monospace;font-size:18px;font-weight:700;color:var(--yellow)">' + cntO + '</span><span style="font-size:11px;color:var(--text3)">Otros</span></div>';
     }
     document.getElementById('con-tabla').innerHTML = rows.length === 0
       ? '<tr><td colspan="7" class="loading-cell">Sin resultados</td></tr>'
