@@ -461,27 +461,42 @@ async function enviar(){
   });
 
   try{
-    const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(nombreSistema)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&lugar="+encodeURIComponent(lugar)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
-    const r1=await fetch(url1);
-    const d1=await r1.json();
-    if(d1.status==="ok"){
-      await fetch(SCRIPT_URL, {
-        method:"POST", mode:"no-cors",
-        body: JSON.stringify({accion:"foto", fila:d1.fila, foto:fotoConMarca})
-      });
+    // --- CAMBIO CLAVE AQUÍ ---
+    // Preparamos un único paquete con TODO (Datos y Foto) para enviarlo por POST de forma limpia
+    const payload = {
+      accion: "registroCompleto",
+      codigo: nombreSistema,
+      nombre: nombre,
+      tipo: tipo,
+      lugar: lugar,
+      fecha: fecha,
+      hora: hora,
+      latitud: latitud,
+      longitud: longitud,
+      foto: fotoConMarca
+    };
+
+    // Hacemos un único envío usando 'fetch' con método POST
+    const respuesta = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+    
+    const d1 = await respuesta.json();
+    
+    if(d1.status === "ok"){
       document.getElementById("form-content").style.display="none";
       document.getElementById("success-panel").style.display="flex";
-      document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
-    }else{
-      throw new Error(d1.message||"Error al registrar");
+      document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado con foto.";
+    } else {
+      throw new Error(d1.message || "Error al registrar");
     }
   }catch(e){
-    document.getElementById("error-msg").textContent=e.message||"Error al enviar.";
+    document.getElementById("error-msg").textContent=e.message || "Error al enviar datos.";
     document.getElementById("error-msg").style.display="block";
     btn.disabled=false; btn.textContent="Registrar asistencia";
   }
 }
-
 function nuevoRegistro(){
   turnoSel=""; fotoData=null; fotoConMarca=null; latitud="N/D"; longitud="N/D";
   document.getElementById("form-content").style.display="flex";
