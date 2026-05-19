@@ -486,9 +486,20 @@ async function renderWorkers(){
   const list=document.getElementById("worker-list");
   list.innerHTML="Cargando...";
   const data=await fetchJSONP(SCRIPT_URL+"?accion=listarPersonal");
-  list.innerHTML=(data.personal||[]).map(function(t){
-    return "<div class='worker-item'><div><div style='font-weight:600;font-size:14px'>"+( t.nombre_completo||t.nombre_sistema)+"</div><div style='font-size:11px;color:#9CA3AF'>"+t.nombre_sistema+" · "+(t.cargo||"")+"</div></div><button class='btn-delete' data-nom='"+t.nombre_sistema+"' onclick="eliminarTrabajador(this.getAttribute('data-nom'))"><svg viewBox='0 0 24 24' stroke-width='2'><polyline points='3 6 5 6 21 6'/><path d='M19 6l-1 14H6L5 6'/><path d='M10 11v6M14 11v6'/></svg></button></div>";
-  }).join("") || "<div class='loading-txt'>Sin trabajadores</div>";
+  const personal=data.personal||[];
+  if(personal.length===0){list.innerHTML="<div class='loading-txt'>Sin trabajadores</div>";renderLugares();return;}
+  list.innerHTML="";
+  personal.forEach(function(t){
+    const div=document.createElement("div");
+    div.className="worker-item";
+    div.innerHTML="<div><div style='font-weight:600;font-size:14px'>"+(t.nombre_completo||t.nombre_sistema)+"</div><div style='font-size:11px;color:#9CA3AF'>"+t.nombre_sistema+" &middot; "+(t.cargo||"")+"</div></div>";
+    const btn=document.createElement("button");
+    btn.className="btn-delete";
+    btn.innerHTML="<svg viewBox='0 0 24 24' stroke-width='2'><polyline points='3 6 5 6 21 6'/><path d='M19 6l-1 14H6L5 6'/><path d='M10 11v6M14 11v6'/></svg>";
+    btn.onclick=function(){eliminarTrabajador(t.nombre_sistema);};
+    div.appendChild(btn);
+    list.appendChild(div);
+  });
   renderLugares();
 }
 
@@ -511,9 +522,23 @@ async function renderLugares(){
   if(!list)return;
   list.innerHTML="Cargando...";
   const data=await fetchJSONP(SCRIPT_URL+"?accion=listarLugares");
-  list.innerHTML=(data.lugares||[]).map(function(l){
-    return "<div class='worker-item'><span style='font-size:14px;font-weight:500'>"+l+"</span><button class='btn-delete' data-lug='"+l+"' onclick="eliminarLugar(this.getAttribute('data-lug'))"><svg viewBox='0 0 24 24' stroke-width='2'><polyline points='3 6 5 6 21 6'/><path d='M19 6l-1 14H6L5 6'/><path d='M10 11v6M14 11v6'/></svg></button></div>";
-  }).join("") || "<div class='loading-txt'>Sin lugares</div>";
+  const lugares=data.lugares||[];
+  if(lugares.length===0){list.innerHTML="<div class='loading-txt'>Sin lugares</div>";return;}
+  list.innerHTML="";
+  lugares.forEach(function(l){
+    const div=document.createElement("div");
+    div.className="worker-item";
+    const span=document.createElement("span");
+    span.style="font-size:14px;font-weight:500";
+    span.textContent=l;
+    const btn=document.createElement("button");
+    btn.className="btn-delete";
+    btn.innerHTML="<svg viewBox='0 0 24 24' stroke-width='2'><polyline points='3 6 5 6 21 6'/><path d='M19 6l-1 14H6L5 6'/><path d='M10 11v6M14 11v6'/></svg>";
+    btn.onclick=function(){eliminarLugar(l);};
+    div.appendChild(span);
+    div.appendChild(btn);
+    list.appendChild(div);
+  });
 }
 
 async function agregarLugar(){
