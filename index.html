@@ -253,15 +253,19 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzYmuE2qg9eRVCU8qBBT3t
 </div>
 <script>
 function fetchJSONP(url) {
-  return new Promise(function(resolve, reject) {
-    var cb = 'cb' + Date.now() + Math.floor(Math.random()*9999);
-    window[cb] = function(data) { delete window[cb]; var s=document.getElementById('s_'+cb); if(s)s.remove(); resolve(data); };
-    var s = document.createElement('script');
-    s.id = 's_' + cb;
-    s.src = url + (url.indexOf('?')>=0?'&':'?') + 'callback=' + cb;
-    s.onerror = function() { delete window[cb]; s.remove(); reject(new Error('Error de red')); };
-    document.body.appendChild(s);
-  });
+  return fetch(url, {method:'GET', redirect:'follow'})
+    .then(function(r){ return r.json(); })
+    .catch(function() {
+      return new Promise(function(resolve, reject) {
+        var cb = 'cb' + Date.now() + Math.floor(Math.random()*9999);
+        window[cb] = function(data) { delete window[cb]; var s=document.getElementById('s_'+cb); if(s)s.remove(); resolve(data); };
+        var s = document.createElement('script');
+        s.id = 's_' + cb;
+        s.src = url + (url.indexOf('?')>=0?'&':'?') + 'callback=' + cb;
+        s.onerror = function() { delete window[cb]; s.remove(); reject(new Error('Error de red')); };
+        document.body.appendChild(s);
+      });
+    });
 }
 
 async function cargarSelect(){
