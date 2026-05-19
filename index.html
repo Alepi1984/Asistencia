@@ -470,32 +470,11 @@ async function enviar(){
     const d1=await fetchJSONP(url1);
     if(d1.status!=="ok") throw new Error(d1.message||"Error al registrar");
     
-    // Paso 2: Comprimir foto y enviar en chunks via JSONP
-    btn.textContent="Enviando foto...";
-    // Recomprimir a baja calidad para reducir tama?o
-    const canvas2=document.createElement("canvas");
-    const img2=new Image();
-    await new Promise(function(res){
-      img2.onload=function(){
-        const maxW=400;
-        let w=img2.width, h=img2.height;
-        if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-        canvas2.width=w; canvas2.height=h;
-        canvas2.getContext("2d").drawImage(img2,0,0,w,h);
-        res();
-      };
-      img2.src=fotoConMarca;
+    // Paso 2: Enviar foto por POST
+    await fetch(SCRIPT_URL, {
+      method:"POST", mode:"no-cors",
+      body: JSON.stringify({accion:"foto", fila:d1.fila, foto:fotoConMarca})
     });
-    const fotoSmall=canvas2.toDataURL("image/jpeg",0.3);
-    const b64=fotoSmall.split(",")[1];
-    const sz=50000;
-    const tot=Math.ceil(b64.length/sz);
-    for(let pi=0;pi<tot;pi++){
-      const chunk=b64.substring(pi*sz,(pi+1)*sz);
-      btn.textContent="Foto "+(pi+1)+"/"+tot+"...";
-      const res=await fetchJSONP(SCRIPT_URL+"?accion=fotoChunk&fila="+d1.fila+"&parte="+pi+"&total="+tot+"&data="+encodeURIComponent(chunk));
-      if(res.status!=="ok") throw new Error("Error subiendo foto parte "+(pi+1));
-    }
     document.getElementById("form-content").style.display="none";
     document.getElementById("success-panel").style.display="flex";
     document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
