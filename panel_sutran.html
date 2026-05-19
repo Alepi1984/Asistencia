@@ -92,7 +92,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
 <div class="topbar">
   <div class="brand">
     <div class="brand-badge">SUTRAN</div>
-    <div class="brand-name">Unidad Desconcentrada La Libertad — Control de Asistencia</div>
+    <div class="brand-name">Unidad Desconcentrada La Libertad   Control de Asistencia</div>
   </div>
   <div class="reloj" id="reloj"></div>
 </div>
@@ -103,7 +103,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
     </div>
     <div class="nav-item" onclick="nav('programacion',this)">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Programación
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Programaci n
     </div>
     <div class="sidebar-label">Reportes</div>
     <div class="nav-item" onclick="nav('asistencia',this)">
@@ -122,15 +122,15 @@ tr:hover td{background:rgba(79,142,247,0.03)}
     <div class="nav-item" onclick="nav('procesos',this)">
       <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Ejecutar Procesos
     </div>
-    <div class="sidebar-label">Gestión</div>
+    <div class="sidebar-label">Gesti n</div>
     <div class="nav-item" onclick="nav('personal',this)">
       <svg viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Personal
     </div>
     <div class="nav-item" onclick="nav('biometrico',this)">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Biométrico
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Biom trico
     </div>
     <div class="nav-item" onclick="nav('editprog',this)">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar Programación
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar Programaci n
     </div>
     <div class="sidebar-bottom">
       <div class="mes-selector">
@@ -155,15 +155,15 @@ tr:hover td{background:rgba(79,142,247,0.03)}
         <button class="btn btn-primary" onclick="cargarDashboard()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Actualizar</button>
       </div>
       <div class="stats-grid">
-        <div class="stat blue"><div class="stat-val" id="s-personal">—</div><div class="stat-label">Personal registrado</div></div>
-        <div class="stat green"><div class="stat-val" id="s-asist">—</div><div class="stat-label">Asistencias (A)</div></div>
-        <div class="stat red"><div class="stat-val" id="s-faltas">—</div><div class="stat-label">Faltas (F)</div></div>
-        <div class="stat cyan"><div class="stat-val" id="s-foto">—</div><div class="stat-label">Marcaciones foto</div></div>
-        <div class="stat purple"><div class="stat-val" id="s-bio">—</div><div class="stat-label">Marcaciones biométrico</div></div>
-        <div class="stat yellow"><div class="stat-val" id="s-ds">—</div><div class="stat-label">Descansos (DS)</div></div>
+        <div class="stat blue"><div class="stat-val" id="s-personal"> </div><div class="stat-label">Personal registrado</div></div>
+        <div class="stat green"><div class="stat-val" id="s-asist"> </div><div class="stat-label">Asistencias (A)</div></div>
+        <div class="stat red"><div class="stat-val" id="s-faltas"> </div><div class="stat-label">Faltas (F)</div></div>
+        <div class="stat cyan"><div class="stat-val" id="s-foto"> </div><div class="stat-label">Marcaciones foto</div></div>
+        <div class="stat purple"><div class="stat-val" id="s-bio"> </div><div class="stat-label">Marcaciones biom trico</div></div>
+        <div class="stat yellow"><div class="stat-val" id="s-ds"> </div><div class="stat-label">Descansos (DS)</div></div>
       </div>
       <div class="card">
-        <div class="card-title">Últimos registros</div>
+        <div class="card-title"> ltimos registros</div>
         <div class="table-wrap">
           <table><thead><tr><th>Nombre</th><th>Lugar</th><th>Fecha</th><th>H.Prog</th><th>Entrada</th><th>Salida</th><th>Estado</th></tr></thead>
           <tbody id="dash-tabla"><tr><td colspan="7" class="loading-cell">Haz clic en Actualizar</td></tr></tbody></table>
@@ -171,14 +171,14 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       </div>
     </div>
 
-    <!-- PROGRAMACIÓN -->
+    <!-- PROGRAMACI N -->
     <div class="panel" id="p-programacion">
-      <div class="page-title">Programación</div>
-      <div class="page-sub">Pega el mensaje de WhatsApp y procésalo</div>
+      <div class="page-title">Programaci n</div>
+      <div class="page-sub">Pega el mensaje de WhatsApp y proc salo</div>
       <div class="estado-bar" id="prog-estado"><div class="dot"></div>Listo</div>
       <div class="card">
         <div class="card-title">Mensaje de WhatsApp</div>
-        <textarea id="prog-texto" style="width:100%;min-height:200px;font-family:monospace;font-size:12px" placeholder="Pega aquí el mensaje de programación..."></textarea>
+        <textarea id="prog-texto" style="width:100%;min-height:200px;font-family:monospace;font-size:12px" placeholder="Pega aqu  el mensaje de programaci n..."></textarea>
         <div class="btn-row" style="margin-top:12px;margin-bottom:0">
           <button class="btn btn-primary" onclick="guardarYProcesar()"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>Guardar y Procesar</button>
           <button class="btn" onclick="cargarProgRaw()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Cargar actual</button>
@@ -189,7 +189,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
     <!-- ASISTENCIA FINAL -->
     <div class="panel" id="p-asistencia">
       <div class="page-title">Asistencia Final</div>
-      <div class="page-sub">Resultado del cruce de programación + marcaciones</div>
+      <div class="page-sub">Resultado del cruce de programaci n + marcaciones</div>
       <div class="btn-row no-print">
         <button class="btn btn-primary" onclick="cargarAsistencia()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Cargar</button>
         <button class="btn" onclick="window.print()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir</button>
@@ -218,7 +218,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
     <!-- REPORTE IMPRIMIR -->
     <div class="panel" id="p-imprimir">
       <div class="page-title">Reporte para Firmas</div>
-      <div class="page-sub">Reporte final para impresión y firma</div>
+      <div class="page-sub">Reporte final para impresi n y firma</div>
       <div class="btn-row no-print">
         <button class="btn btn-primary" onclick="cargarImprimir()">Cargar reporte</button>
         <button class="btn" onclick="window.print()">Imprimir</button>
@@ -260,15 +260,15 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="card">
         <div style="display:flex;flex-direction:column;gap:10px">
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
-            <div><div style="font-size:13px;font-weight:500">1. Procesar Programación</div><div style="font-size:11px;color:var(--text3)">Interpreta el mensaje de WhatsApp</div></div>
+            <div><div style="font-size:13px;font-weight:500">1. Procesar Programaci n</div><div style="font-size:11px;color:var(--text3)">Interpreta el mensaje de WhatsApp</div></div>
             <button class="btn btn-primary" onclick="ejecutar('procesarProgramacion','proc-estado')">Ejecutar</button>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
-            <div><div style="font-size:13px;font-weight:500">2. Unificar Marcaciones</div><div style="font-size:11px;color:var(--text3)">Combina foto + biométrico</div></div>
+            <div><div style="font-size:13px;font-weight:500">2. Unificar Marcaciones</div><div style="font-size:11px;color:var(--text3)">Combina foto + biom trico</div></div>
             <button class="btn btn-primary" onclick="ejecutar('unificarMarcaciones','proc-estado')">Ejecutar</button>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
-            <div><div style="font-size:13px;font-weight:500">3. Generar Asistencia Final</div><div style="font-size:11px;color:var(--text3)">Cruza programación con marcaciones</div></div>
+            <div><div style="font-size:13px;font-weight:500">3. Generar Asistencia Final</div><div style="font-size:11px;color:var(--text3)">Cruza programaci n con marcaciones</div></div>
             <button class="btn btn-primary" onclick="ejecutar('generarAsistenciaFinal','proc-estado')">Ejecutar</button>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
@@ -279,20 +279,20 @@ tr:hover td{background:rgba(79,142,247,0.03)}
             <div><div style="font-size:13px;font-weight:500">5. Generar Reporte para Imprimir</div><div style="font-size:11px;color:var(--text3)">Genera hoja REPORTE_IMPRIMIR</div></div>
             <button class="btn btn-primary" onclick="ejecutar('generarReporteImprimir','proc-estado')">Ejecutar</button>
           </div>
-          <button class="btn btn-green" style="height:44px;font-size:14px" onclick="ejecutarTodo()">▶ Ejecutar Todo en Secuencia</button>
+          <button class="btn btn-green" style="height:44px;font-size:14px" onclick="ejecutarTodo()">  Ejecutar Todo en Secuencia</button>
         </div>
       </div>
     </div>
 
     <!-- PERSONAL -->
     <div class="panel" id="p-personal">
-      <div class="page-title">Gestión de Personal</div>
+      <div class="page-title">Gesti n de Personal</div>
       <div class="page-sub">Agregar o eliminar trabajadores del sistema</div>
       <div class="card">
         <div class="card-title">Agregar nuevo trabajador</div>
         <div class="form-grid">
           <div class="form-field"><label>Nombre sistema (corto)</label><input type="text" id="per-sistema" placeholder="Ej: Abner"></div>
-          <div class="form-field"><label>Nombre completo</label><input type="text" id="per-completo" placeholder="Ej: Abner León Pichen"></div>
+          <div class="form-field"><label>Nombre completo</label><input type="text" id="per-completo" placeholder="Ej: Abner Le n Pichen"></div>
           <div class="form-field"><label>DNI</label><input type="text" id="per-dni" placeholder="Ej: 42563290"></div>
           <div class="form-field"><label>Cargo</label><input type="text" id="per-cargo" placeholder="Ej: Inspector"></div>
         </div>
@@ -301,18 +301,18 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="card">
         <div class="card-title">Lista de personal</div>
         <div class="table-wrap">
-          <table><thead><tr><th>Nombre sistema</th><th>Nombre completo</th><th>DNI</th><th>Cargo</th><th>Acción</th></tr></thead>
+          <table><thead><tr><th>Nombre sistema</th><th>Nombre completo</th><th>DNI</th><th>Cargo</th><th>Acci n</th></tr></thead>
           <tbody id="per-tabla"><tr><td colspan="5" class="loading-cell">Cargando...</td></tr></tbody></table>
         </div>
       </div>
     </div>
 
-    <!-- BIOMÉTRICO -->
+    <!-- BIOM TRICO -->
     <div class="panel" id="p-biometrico">
-      <div class="page-title">Registros Biométricos</div>
-      <div class="page-sub">Cargar marcaciones del sistema biométrico</div>
+      <div class="page-title">Registros Biom tricos</div>
+      <div class="page-sub">Cargar marcaciones del sistema biom trico</div>
       <div class="card">
-        <div class="card-title">Agregar marcación individual</div>
+        <div class="card-title">Agregar marcaci n individual</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
           <div class="form-field"><label>Trabajador</label><select id="bio-nombre" style="min-width:200px"><option value="">Selecciona...</option></select></div>
           <div class="form-field"><label>Fecha</label><input type="date" id="bio-fecha"></div>
@@ -323,7 +323,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       </div>
       <div class="card">
         <div class="card-title">Carga masiva desde Excel</div>
-        <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Copia y pega desde Excel: columnas Nombre | Fecha | Hora (una fila por línea, separado por TAB)</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Copia y pega desde Excel: columnas Nombre | Fecha | Hora (una fila por l nea, separado por TAB)</div>
         <textarea id="bio-masivo" style="width:100%;height:100px;font-family:monospace;font-size:11px" placeholder="Abner&#9;11/05/2026&#9;13:48&#10;Cristina&#9;11/05/2026&#9;15:07"></textarea>
         <button class="btn btn-primary" style="margin-top:8px" onclick="cargarBiometricoMasivo()">Cargar desde pegado</button>
       </div>
@@ -331,16 +331,16 @@ tr:hover td{background:rgba(79,142,247,0.03)}
         <div class="card-title">Registros cargados</div>
         <div class="btn-row"><button class="btn btn-primary" onclick="cargarTablaBio()">Actualizar lista</button></div>
         <div class="table-wrap">
-          <table><thead><tr><th>Fila</th><th>DNI</th><th>Nombre</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Acción</th></tr></thead>
+          <table><thead><tr><th>Fila</th><th>DNI</th><th>Nombre</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Acci n</th></tr></thead>
           <tbody id="bio-tabla"><tr><td colspan="7" class="loading-cell">Haz clic en Actualizar</td></tr></tbody></table>
         </div>
       </div>
     </div>
 
-    <!-- EDITAR PROGRAMACIÓN -->
+    <!-- EDITAR PROGRAMACI N -->
     <div class="panel" id="p-editprog">
-      <div class="page-title">Editar Programación</div>
-      <div class="page-sub">Edita registros — especialmente los marcados como REVISION</div>
+      <div class="page-title">Editar Programaci n</div>
+      <div class="page-sub">Edita registros   especialmente los marcados como REVISION</div>
       <div class="card">
         <div class="card-title">Agregar registro manual</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
@@ -361,7 +361,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
         </div>
       </div>
       <div class="card">
-        <div class="card-title">Registros de programación</div>
+        <div class="card-title">Registros de programaci n</div>
         <div class="btn-row">
           <button class="btn btn-primary" onclick="cargarTablaEditProg()">Cargar / Actualizar</button>
           <select id="ep-filtro" onchange="filtrarProg()" style="height:36px">
@@ -383,7 +383,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRTIfqkhTcMvpH9OvcxRDzwaE8EeUqvKm-b-AI1MAkcX4Izm1BmSYG2sT1HYeYd0cc/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYmuE2qg9eRVCU8qBBT3tMgeTB6yIATwwj39XvxUrX90Lvnhm_CF1kZHVRfFX8RLLk/exec";
 const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 let personalData = [];
 let progData = [];
@@ -415,7 +415,7 @@ function fetchJSON(url) {
     s.onerror = function() {
       delete window[cbName];
       s.remove();
-      reject(new Error('Error de conexión'));
+      reject(new Error('Error de conexi n'));
     };
     document.body.appendChild(s);
   });
@@ -425,7 +425,7 @@ function getMes() { return document.getElementById('g-mes').value; }
 function getAnio() { return document.getElementById('g-anio').value; }
 
 function badge(nom) {
-  if (!nom) return '<span style="color:var(--text3)">—</span>';
+  if (!nom) return '<span style="color:var(--text3)"> </span>';
   return '<span class="badge b-' + nom + '">' + nom + '</span>';
 }
 
@@ -441,7 +441,7 @@ function actualizarReloj() {
   document.getElementById('reloj').textContent =
     String(now.getHours()).padStart(2,'0') + ':' +
     String(now.getMinutes()).padStart(2,'0') + ':' +
-    String(now.getSeconds()).padStart(2,'0') + ' · ' +
+    String(now.getSeconds()).padStart(2,'0') + '   ' +
     now.toLocaleDateString('es-PE',{weekday:'short',day:'numeric',month:'short'});
 }
 setInterval(actualizarReloj, 1000);
@@ -484,7 +484,7 @@ function cargarDashboard() {
   var mes = getMes(), anio = getAnio();
   fetchJSON(SCRIPT_URL + '?accion=dashboard&mes=' + mes + '&anio=' + anio).then(function(data) {
     var s = data.stats || {};
-    document.getElementById('s-personal').textContent = s.personal || '—';
+    document.getElementById('s-personal').textContent = s.personal || ' ';
     document.getElementById('s-asist').textContent = s.asistencias || '0';
     document.getElementById('s-faltas').textContent = s.faltas || '0';
     document.getElementById('s-foto').textContent = s.registros_foto || '0';
@@ -497,11 +497,11 @@ function cargarDashboard() {
     document.getElementById('dash-tabla').innerHTML = rows.length === 0
       ? '<tr><td colspan="7" class="loading-cell">Sin datos este mes</td></tr>'
       : rows.map(function(r) {
-          return '<tr><td>' + r.nombre + '</td><td>' + (r.lugar||'—') + '</td>' +
+          return '<tr><td>' + r.nombre + '</td><td>' + (r.lugar||' ') + '</td>' +
             '<td class="mono">' + r.fecha + '</td>' +
             '<td class="mono">' + (r.hora_inicio||'') + (r.hora_fin?' - '+r.hora_fin:'') + '</td>' +
-            '<td class="mono" style="color:var(--green)">' + (r.entrada||'—') + '</td>' +
-            '<td class="mono" style="color:var(--red)">' + (r.salida||'—') + '</td>' +
+            '<td class="mono" style="color:var(--green)">' + (r.entrada||' ') + '</td>' +
+            '<td class="mono" style="color:var(--red)">' + (r.salida||' ') + '</td>' +
             '<td>' + badge(r.estado) + '</td></tr>';
         }).join('');
   }).catch(function(e) {
@@ -509,11 +509,11 @@ function cargarDashboard() {
   });
 }
 
-// PROGRAMACIÓN
+// PROGRAMACI N
 function cargarProgRaw() {
   fetchJSON(SCRIPT_URL + '?accion=leerProgramacionRaw').then(function(data) {
     document.getElementById('prog-texto').value = data.texto || '';
-    setEstado('prog-estado','ok','Programación cargada');
+    setEstado('prog-estado','ok','Programaci n cargada');
   }).catch(function(e) { setEstado('prog-estado','err','Error: ' + e.message); });
 }
 
@@ -525,7 +525,7 @@ function guardarYProcesar() {
     setEstado('prog-estado','loading','Procesando...');
     return fetchJSON(SCRIPT_URL + '?accion=procesarProgramacion');
   }).then(function() {
-    setEstado('prog-estado','ok','✅ Programación procesada correctamente');
+    setEstado('prog-estado','ok','  Programaci n procesada correctamente');
   }).catch(function(e) { setEstado('prog-estado','err','Error: ' + e.message); });
 }
 
@@ -539,11 +539,11 @@ function cargarAsistencia() {
       ? '<tr><td colspan="8" class="loading-cell">Sin datos para ' + MESES[mes] + ' ' + anio + '</td></tr>'
       : rows.map(function(r,i) {
           return '<tr><td class="mono" style="color:var(--text3)">' + (i+1) + '</td>' +
-            '<td>' + r.nombre + '</td><td>' + (r.lugar||'—') + '</td>' +
+            '<td>' + r.nombre + '</td><td>' + (r.lugar||' ') + '</td>' +
             '<td class="mono">' + r.fecha + '</td>' +
             '<td class="mono">' + (r.hora_inicio||'') + (r.hora_fin?' - '+r.hora_fin:'') + '</td>' +
-            '<td class="mono" style="color:var(--green)">' + (r.entrada||'—') + '</td>' +
-            '<td class="mono" style="color:var(--red)">' + (r.salida||'—') + '</td>' +
+            '<td class="mono" style="color:var(--green)">' + (r.entrada||' ') + '</td>' +
+            '<td class="mono" style="color:var(--red)">' + (r.salida||' ') + '</td>' +
             '<td>' + badge(r.estado) + '</td></tr>';
         }).join('');
   }).catch(function(e) {
@@ -559,7 +559,7 @@ function cargarMensual() {
     if (rows.length === 0) { document.getElementById('mensual-contenido').innerHTML = '<div class="loading-cell">Sin datos</div>'; return; }
     var html = '<table class="rep-table"><thead><tr><th class="lname">APELLIDOS Y NOMBRES</th>';
     for (var d=1;d<=31;d++) html += '<th>' + d + '</th>';
-    html += '<th>F</th><th>T</th><th>A</th><th>DÍAS</th></tr></thead><tbody>';
+    html += '<th>F</th><th>T</th><th>A</th><th>D AS</th></tr></thead><tbody>';
     rows.forEach(function(r) {
       html += '<tr><td class="lname">' + r['NOMBRE'] + '</td>';
       for (var d=1;d<=31;d++) {
@@ -587,7 +587,7 @@ function cargarImprimir() {
     if (rows.length === 0) { document.getElementById('imprimir-contenido').innerHTML = '<div class="loading-cell">Sin datos</div>'; return; }
     var html = '<table class="rep-table"><thead><tr><th>DNI</th><th class="lname">APELLIDOS Y NOMBRES</th><th>CARGO</th>';
     for (var d=1;d<=31;d++) html += '<th>' + d + '</th>';
-    html += '<th>DÍAS</th><th style="min-width:80px">FIRMA</th></tr></thead><tbody>';
+    html += '<th>D AS</th><th style="min-width:80px">FIRMA</th></tr></thead><tbody>';
     rows.forEach(function(r) {
       html += '<tr><td class="mono" style="font-size:10px">' + (r['DNI']||'') + '</td>';
       html += '<td class="lname" style="font-weight:500">' + (r['NOMBRE']||'') + '</td>';
@@ -639,11 +639,11 @@ function cargarConsulta() {
     document.getElementById('con-tabla').innerHTML = rows.length === 0
       ? '<tr><td colspan="7" class="loading-cell">Sin resultados</td></tr>'
       : rows.map(function(r) {
-          return '<tr><td>' + r.nombre + '</td><td>' + (r.lugar||'—') + '</td>' +
+          return '<tr><td>' + r.nombre + '</td><td>' + (r.lugar||' ') + '</td>' +
             '<td class="mono">' + r.fecha + '</td>' +
             '<td class="mono">' + (r.hora_inicio||'') + (r.hora_fin?' - '+r.hora_fin:'') + '</td>' +
-            '<td class="mono" style="color:var(--green)">' + (r.entrada||'—') + '</td>' +
-            '<td class="mono" style="color:var(--red)">' + (r.salida||'—') + '</td>' +
+            '<td class="mono" style="color:var(--green)">' + (r.entrada||' ') + '</td>' +
+            '<td class="mono" style="color:var(--red)">' + (r.salida||' ') + '</td>' +
             '<td>' + badge(r.estado) + '</td></tr>';
         }).join('');
     // Mostrar fotos
@@ -653,9 +653,9 @@ function cargarConsulta() {
       var bios = r.biometrico || [];
       if (fotos.length === 0 && bios.length === 0) return;
       detalle += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:12px">';
-      detalle += '<div style="font-size:13px;font-weight:600;margin-bottom:12px">' + r.nombre + ' — ' + r.fecha + ' ' + badge(r.estado) + '</div>';
+      detalle += '<div style="font-size:13px;font-weight:600;margin-bottom:12px">' + r.nombre + '   ' + r.fecha + ' ' + badge(r.estado) + '</div>';
       if (fotos.length > 0) {
-        detalle += '<div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">📷 Marcaciones por foto</div>';
+        detalle += '<div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">  Marcaciones por foto</div>';
         detalle += '<div style="display:flex;gap:12px;flex-wrap:wrap">';
         fotos.forEach(function(f) {
           detalle += '<div style="text-align:center">';
@@ -667,18 +667,18 @@ function cargarConsulta() {
             detalle += '</a>';
           }
           detalle += '<div class="mono" style="font-size:11px;color:var(--green);margin-top:4px">' + (f.hora||'') + '</div>';
-          detalle += '<div style="font-size:10px;color:var(--text3)">' + (f.tipo||'') + ' · ' + (f.lugar||'') + '</div>';
+          detalle += '<div style="font-size:10px;color:var(--text3)">' + (f.tipo||'') + '   ' + (f.lugar||'') + '</div>';
           detalle += '</div>';
         });
         detalle += '</div>';
       }
       if (bios.length > 0) {
-        detalle += '<div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin:12px 0 8px">👆 Marcaciones biométrico</div>';
+        detalle += '<div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin:12px 0 8px">  Marcaciones biom trico</div>';
         detalle += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
         bios.forEach(function(b) {
           detalle += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-align:center">';
           detalle += '<div class="mono" style="font-size:14px;color:var(--blue)">' + (b.hora||'') + '</div>';
-          detalle += '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + (b.tipo||'Biométrico') + '</div>';
+          detalle += '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + (b.tipo||'Biom trico') + '</div>';
           detalle += '</div>';
         });
         detalle += '</div>';
@@ -695,21 +695,21 @@ function cargarConsulta() {
 function ejecutar(accion, estadoId) {
   setEstado(estadoId, 'loading', 'Ejecutando ' + accion + '...');
   fetchJSON(SCRIPT_URL + '?accion=' + accion).then(function(data) {
-    if (data.status === 'ok') setEstado(estadoId, 'ok', '✅ ' + (data.message || 'Completado'));
-    else setEstado(estadoId, 'err', '❌ ' + (data.message || 'Error'));
-  }).catch(function(e) { setEstado(estadoId, 'err', '❌ Error: ' + e.message); });
+    if (data.status === 'ok') setEstado(estadoId, 'ok', '  ' + (data.message || 'Completado'));
+    else setEstado(estadoId, 'err', '  ' + (data.message || 'Error'));
+  }).catch(function(e) { setEstado(estadoId, 'err', '  Error: ' + e.message); });
 }
 
 function ejecutarTodo() {
   var pasos = ['procesarProgramacion','unificarMarcaciones','generarAsistenciaFinal','generarReporteMensual','generarReporteImprimir'];
   var i = 0;
   function siguiente() {
-    if (i >= pasos.length) { setEstado('proc-estado','ok','✅ Todo completado'); return; }
+    if (i >= pasos.length) { setEstado('proc-estado','ok','  Todo completado'); return; }
     var paso = pasos[i++];
     setEstado('proc-estado','loading','Ejecutando ' + paso + ' (' + i + '/' + pasos.length + ')...');
     fetchJSON(SCRIPT_URL + '?accion=' + paso).then(function() {
       setTimeout(siguiente, 500);
-    }).catch(function(e) { setEstado('proc-estado','err','❌ Error en ' + paso + ': ' + e.message); });
+    }).catch(function(e) { setEstado('proc-estado','err','  Error en ' + paso + ': ' + e.message); });
   }
   siguiente();
 }
@@ -724,9 +724,9 @@ function cargarTablaPersonal() {
       ? '<tr><td colspan="5" class="loading-cell">Sin personal</td></tr>'
       : personalData.map(function(p) {
           return '<tr><td class="mono">' + p.nombre_sistema + '</td>' +
-            '<td>' + (p.nombre_completo||'—') + '</td>' +
-            '<td class="mono">' + (p.dni||'—') + '</td>' +
-            '<td>' + (p.cargo||'—') + '</td>' +
+            '<td>' + (p.nombre_completo||' ') + '</td>' +
+            '<td class="mono">' + (p.dni||' ') + '</td>' +
+            '<td>' + (p.cargo||' ') + '</td>' +
             '<td><button class="btn btn-red" style="height:28px;font-size:11px" data-nom="' + p.nombre_sistema + '" onclick="eliminarPersonal(this.getAttribute(\'data-nom\'))">Eliminar</button></td></tr>';
         }).join('');
   }).catch(function(e) {
@@ -758,7 +758,7 @@ function eliminarPersonal(nombre) {
   }).catch(function(e){ alert('Error: ' + e.message); });
 }
 
-// BIOMÉTRICO
+// BIOM TRICO
 function agregarBiometrico() {
   var nom = document.getElementById('bio-nombre').value;
   var fecha = document.getElementById('bio-fecha').value;
@@ -769,7 +769,7 @@ function agregarBiometrico() {
   fetchJSON(SCRIPT_URL + '?accion=agregarBiometrico&nombre=' + encodeURIComponent(nom) +
     '&fecha=' + encodeURIComponent(fechaFmt) + '&hora=' + encodeURIComponent(hora) + '&tipo=' + encodeURIComponent(tipo))
   .then(function(data) {
-    if (data.status === 'ok') { alert('✅ Agregado'); cargarTablaBio(); }
+    if (data.status === 'ok') { alert('  Agregado'); cargarTablaBio(); }
     else alert('Error: ' + data.message);
   }).catch(function(e){ alert('Error: ' + e.message); });
 }
@@ -791,7 +791,7 @@ function cargarBiometricoMasivo() {
   });
   Promise.all(promesas).then(function(results) {
     var ok = results.filter(function(r){return r.status==='ok';}).length;
-    alert('✅ ' + ok + ' de ' + results.length + ' registros cargados');
+    alert('  ' + ok + ' de ' + results.length + ' registros cargados');
     document.getElementById('bio-masivo').value = '';
     cargarTablaBio();
   });
@@ -805,11 +805,11 @@ function cargarTablaBio() {
       ? '<tr><td colspan="7" class="loading-cell">Sin registros</td></tr>'
       : rows.map(function(r) {
           return '<tr><td class="mono" style="color:var(--text3)">' + r.fila + '</td>' +
-            '<td class="mono">' + (r.dni||'—') + '</td><td>' + r.nombre + '</td>' +
+            '<td class="mono">' + (r.dni||' ') + '</td><td>' + r.nombre + '</td>' +
             '<td class="mono">' + r.fecha + '</td>' +
             '<td class="mono" style="color:var(--green)">' + r.hora + '</td>' +
-            '<td>' + (r.tipo||'—') + '</td>' +
-            '<td><button class="btn btn-red" style="height:26px;font-size:11px" data-fila="' + r.fila + '" onclick="eliminarBio(this.getAttribute(\'data-fila\'))">✕</button></td></tr>';
+            '<td>' + (r.tipo||' ') + '</td>' +
+            '<td><button class="btn btn-red" style="height:26px;font-size:11px" data-fila="' + r.fila + '" onclick="eliminarBio(this.getAttribute(\'data-fila\'))"> </button></td></tr>';
         }).join('');
   }).catch(function(e) {
     document.getElementById('bio-tabla').innerHTML = '<tr><td colspan="7" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
@@ -824,7 +824,7 @@ function eliminarBio(fila) {
   }).catch(function(e){ alert('Error: ' + e.message); });
 }
 
-// EDITAR PROGRAMACIÓN
+// EDITAR PROGRAMACI N
 function cargarTablaEditProg() {
   document.getElementById('ep-tabla').innerHTML = '<tr><td colspan="8" class="loading-cell">Cargando...</td></tr>';
   fetchJSON(SCRIPT_URL + '?accion=leerProgramacion').then(function(data) {
@@ -853,8 +853,8 @@ function filtrarProg() {
           '<td><input type="text" id="fin'+r.fila+'" value="' + (r.hora_fin||'') + '" style="width:65px;height:28px;font-size:11px;font-family:monospace" placeholder="00:00"></td>' +
           '<td><select id="est'+r.fila+'" style="height:28px;font-size:11px">' + opts + '</select></td>' +
           '<td style="display:flex;gap:4px">' +
-          '<button class="btn btn-primary" style="height:26px;font-size:11px;padding:0 8px" data-fila="'+r.fila+'" onclick="guardarProg(this.getAttribute(\'data-fila\'),this)">💾</button>' +
-          '<button class="btn btn-red" style="height:26px;font-size:11px;padding:0 8px" data-fila="'+r.fila+'" onclick="eliminarProg(this.getAttribute(\'data-fila\'))">✕</button>' +
+          '<button class="btn btn-primary" style="height:26px;font-size:11px;padding:0 8px" data-fila="'+r.fila+'" onclick="guardarProg(this.getAttribute(\'data-fila\'),this)"> </button>' +
+          '<button class="btn btn-red" style="height:26px;font-size:11px;padding:0 8px" data-fila="'+r.fila+'" onclick="eliminarProg(this.getAttribute(\'data-fila\'))"> </button>' +
           '</td></tr>';
       }).join('');
 }
@@ -869,8 +869,8 @@ function guardarProg(fila, btn) {
     '&hora_fin=' + encodeURIComponent(fin) + '&estado=' + encodeURIComponent(est);
   fetchJSON(url).then(function(data) {
     if (data.status === 'ok') {
-      btn.textContent = '✅';
-      setTimeout(function(){btn.textContent='💾';}, 1500);
+      btn.textContent = ' ';
+      setTimeout(function(){btn.textContent=' ';}, 1500);
     } else alert('Error: ' + data.message);
   }).catch(function(e){ alert('Error: ' + e.message); });
 }
@@ -896,7 +896,7 @@ function agregarProgNuevo() {
     '&fecha=' + encodeURIComponent(fechaFmt) + '&lugar=' + encodeURIComponent(lugar) +
     '&hora_inicio=' + encodeURIComponent(ini) + '&hora_fin=' + encodeURIComponent(fin) +
     '&estado=' + encodeURIComponent(est)).then(function(data) {
-    if (data.status === 'ok') { alert('✅ Agregado'); cargarTablaEditProg(); }
+    if (data.status === 'ok') { alert('  Agregado'); cargarTablaEditProg(); }
     else alert('Error: ' + data.message);
   }).catch(function(e){ alert('Error: ' + e.message); });
 }
