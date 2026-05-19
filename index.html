@@ -117,7 +117,7 @@ input[type=file]{display:none}
 
 <div id="contenedor-principal" style="display:none;">
   <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzQk0gU6reQrLSSBNwurwHUnP9LVPSFiYEl3dsB1h2AswOaZ7rDDy52Z5_fUz-LbJHx/exec";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyvw5TGLnrBazbnfHR0fE2r-Gye27TvYQIWyUuZDo7tSM0KyBtpNagH06srPMNMB93k/exec";
     </script>
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-box">
@@ -300,7 +300,8 @@ async function validarEntrada() {
     if (data.status === "ok" && String(inputPin) === String(data.acceso)) {
       document.getElementById("muro-entrada").style.display = "none";
       document.getElementById("contenedor-principal").style.display = "block";
-      if (typeof cargarSelect === "function") cargarSelect();
+      initFecha();
+      cargarSelect();
     } else {
       alert("PIN incorrecto");
     }
@@ -463,7 +464,14 @@ async function enviar(){
     const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(nombreSistema)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&lugar="+encodeURIComponent(lugar)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
     const d1=await fetchJSONP(url1);
     if(d1.status==="ok"){
-      await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({accion:"foto",fila:d1.fila,foto:fotoConMarca})});
+      // Enviar foto en partes via JSONP
+      const fotoB64 = fotoConMarca.split(",")[1];
+      const parteSize = 5000;
+      const totalPartes = Math.ceil(fotoB64.length / parteSize);
+      for(let pi=0; pi<totalPartes; pi++){
+        const parte = fotoB64.substring(pi*parteSize, (pi+1)*parteSize);
+        await fetchJSONP(SCRIPT_URL+"?accion=fotoChunk&fila="+d1.fila+"&parte="+pi+"&total="+totalPartes+"&data="+encodeURIComponent(parte));
+      }
       document.getElementById("form-content").style.display="none";
       document.getElementById("success-panel").style.display="flex";
       document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
@@ -554,6 +562,5 @@ async function eliminarLugar(lugar){
 }
 
 // --- INICIO ---
-initFecha();
 cargarSelect();
 </script>
