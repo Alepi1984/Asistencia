@@ -121,7 +121,7 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyvw5TGLnrBazbnfHR0fE2
     </script>
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-box">
-    <div class="pin-title">Administración</div>
+    <div class="pin-title">Administracion</div>
     <div class="pin-sub">Ingresa el PIN para continuar</div>
     <input class="pin-input" type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="****">
     <div class="pin-error" id="pin-error">PIN incorrecto</div>
@@ -152,7 +152,7 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyvw5TGLnrBazbnfHR0fE2
   <div id="form-content" style="display:flex;flex-direction:column;gap:12px">
     
     <div class="card">
-      <div class="card-title">Identificación</div>
+      <div class="card-title">Identificacion</div>
       <div class="select-wrap">
         <select id="trabajador" onchange="this.classList.toggle('selected',this.value!=='');if(fotoData)aplicarMarcaAgua();">
           <option value="">Cargando trabajadores...</option>
@@ -190,7 +190,7 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyvw5TGLnrBazbnfHR0fE2
           <svg viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
         </div>
         <div class="foto-txt">Tomar foto</div>
-        <div class="foto-sub">La foto mostrará nombre, fecha, hora y turno</div>
+        <div class="foto-sub">La foto mostrara nombre, fecha, hora y turno</div>
       </div>
       <input type="file" id="foto-input" accept="image/*" capture="environment" onchange="cargarFoto(this)">
       <div class="meta">
@@ -222,7 +222,7 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyvw5TGLnrBazbnfHR0fE2
     <h4>Trabajadores</h4>
     <div style="display:flex; gap:5px; margin-bottom:10px;">
       <input type="text" id="nuevoNombre" placeholder="Nombre completo" style="flex:1; padding:8px;">
-      <button onclick="ejecutarAccion('agregarTrabajador')" style="background:#28a745; color:white; border:none; padding:8px;">+ Añadir</button>
+      <button onclick="ejecutarAccion('agregarTrabajador')" style="background:#28a745; color:white; border:none; padding:8px;">+ Anadir</button>
     </div>
     <div style="display:flex; gap:5px;">
       <select id="listaTrabajadoresEliminar" style="flex:1; padding:8px;"></select>
@@ -234,7 +234,7 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyvw5TGLnrBazbnfHR0fE2
     <h4>Lugares de Servicio</h4>
     <div style="display:flex; gap:5px; margin-bottom:10px;">
       <input type="text" id="nuevoLugar" placeholder="Nombre del lugar" style="flex:1; padding:8px;">
-      <button onclick="ejecutarAccion('agregarLugar')" style="background:#28a745; color:white; border:none; padding:8px;">+ Añadir</button>
+      <button onclick="ejecutarAccion('agregarLugar')" style="background:#28a745; color:white; border:none; padding:8px;">+ Anadir</button>
     </div>
     <div style="display:flex; gap:5px;">
       <select id="listaLugaresEliminar" style="flex:1; padding:8px;"></select>
@@ -245,7 +245,7 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyvw5TGLnrBazbnfHR0fE2
 <div class="admin-section" style="padding:15px; background: #f9f9f9; border-radius: 8px;">
   <h4>Seguridad</h4>
   <div style="display:flex; gap:5px;">
-    <input type="password" id="inputNuevoPin" placeholder="Nuevo PIN (4 dígitos)" maxlength="4" style="flex:1; padding:8px;">
+    <input type="password" id="inputNuevoPin" placeholder="Nuevo PIN (4 digitos)" maxlength="4" style="flex:1; padding:8px;">
     <button onclick="cambiarPin()" style="background:#007bff; color:white; border:none; padding:8px; border-radius:5px;">Actualizar PIN</button>
   </div>
 </div>
@@ -306,7 +306,7 @@ async function validarEntrada() {
       alert("PIN incorrecto");
     }
   } catch(e) {
-    alert("Error de conexión: " + e.message);
+    alert("Error de conexion: " + e.message);
   }
 }
 
@@ -345,7 +345,7 @@ let turnoSel="", fotoData=null, fotoConMarca=null, latitud="N/D", longitud="N/D"
 function initFecha(){
   const d=new Date();
   const dd=String(d.getDate()).padStart(2,"0"), mm=String(d.getMonth()+1).padStart(2,"0");
-  const dias=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+  const dias=["Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"];
   const meses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
   document.getElementById("fecha-hoy").textContent=dias[d.getDay()]+" "+d.getDate()+" de "+meses[d.getMonth()];
   document.getElementById("meta-fecha").textContent=dd+"/"+mm+"/"+d.getFullYear();
@@ -485,7 +485,19 @@ async function enviar(){
   }
 }
 
-function nuevoRegistro(){ location.reload(); }
+function nuevoRegistro(){
+  turnoSel=""; fotoData=null; fotoConMarca=null; latitud="N/D"; longitud="N/D";
+  document.getElementById("form-content").style.display="flex";
+  document.getElementById("success-panel").style.display="none";
+  document.getElementById("foto-area").innerHTML='<div class="foto-cam"><svg viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg></div><div class="foto-txt">Tomar foto</div><div class="foto-sub">La hora se registra al momento de enviar</div>';
+  document.getElementById("foto-area").classList.remove("has-foto");
+  document.getElementById("btn-inicio").className="turno-btn";
+  document.getElementById("btn-fin").className="turno-btn";
+  document.getElementById("btn-enviar").disabled=false;
+  document.getElementById("btn-enviar").textContent="Registrar asistencia";
+  document.getElementById("error-msg").style.display="none";
+  initFecha();
+}
 function abrirPin(){ document.getElementById("pin-overlay").style.display="flex"; }
 function cerrarPin(){ document.getElementById("pin-overlay").style.display="none"; document.getElementById("pin-input").value=""; }
 
