@@ -464,11 +464,14 @@ async function enviar(){
     const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(nombreSistema)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&lugar="+encodeURIComponent(lugar)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
     const d1=await fetchJSONP(url1);
     if(d1.status==="ok"){
-      // Enviar foto por POST
-      fetch(SCRIPT_URL, {
-        method:"POST", mode:"no-cors",
-        body: JSON.stringify({accion:"foto", fila:d1.fila, foto:fotoConMarca})
-      });
+      // Enviar foto por POST (no-cors, en background)
+      setTimeout(function(){
+        fetch(SCRIPT_URL, {
+          method:"POST", mode:"no-cors",
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({accion:"foto", fila:d1.fila, foto:fotoConMarca})
+        }).catch(function(e){ console.log("Foto POST error:", e); });
+      }, 500);
       document.getElementById("form-content").style.display="none";
       document.getElementById("success-panel").style.display="flex";
       document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
