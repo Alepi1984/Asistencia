@@ -264,6 +264,34 @@ function fetchJSONP(url) {
   });
 }
 
+async function cargarSelect(){
+  const sel=document.getElementById("trabajador");
+  const selLug=document.getElementById("lugar-servicio");
+  try{
+    const data=await fetchJSONP(SCRIPT_URL+"?accion=listarPersonal");
+    sel.innerHTML='<option value="">Selecciona tu nombre</option>';
+    if(data.personal && data.personal.length>0){
+      data.personal.forEach(function(t){
+        const op=document.createElement("option");
+        op.value=t.nombre_sistema;
+        op.textContent=t.nombre_completo || t.nombre_sistema;
+        sel.appendChild(op);
+      });
+    }
+  }catch(e){ sel.innerHTML='<option value="">Error al cargar lista</option>'; }
+  try{
+    const data2=await fetchJSONP(SCRIPT_URL+"?accion=listarLugares");
+    selLug.innerHTML='<option value="">Selecciona el lugar...</option>';
+    if(data2.lugares && data2.lugares.length>0){
+      data2.lugares.forEach(function(l){
+        const op=document.createElement("option");
+        op.value=l; op.textContent=l;
+        selLug.appendChild(op);
+      });
+    }
+  }catch(e){ selLug.innerHTML='<option value="">Error al cargar lugares</option>'; }
+}
+
 async function validarEntrada() {
   const inputPin = document.getElementById("pin-acceso-input").value;
   if (!inputPin) return alert("Por favor, ingresa el PIN");
