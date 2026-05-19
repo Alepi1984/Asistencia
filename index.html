@@ -252,248 +252,35 @@ const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwo-xYRaYQhBR24R-lMaWq
 </div>
 </div>
 <script>
+function fetchJSONP(url) {
+  return new Promise(function(resolve, reject) {
+    var cb = 'cb' + Date.now() + Math.floor(Math.random()*9999);
+    window[cb] = function(data) { delete window[cb]; var s=document.getElementById('s_'+cb); if(s)s.remove(); resolve(data); };
+    var s = document.createElement('script');
+    s.id = 's_' + cb;
+    s.src = url + (url.indexOf('?')>=0?'&':'?') + 'callback=' + cb;
+    s.onerror = function() { delete window[cb]; s.remove(); reject(new Error('Error de red')); };
+    document.body.appendChild(s);
+  });
+}
+
 async function validarEntrada() {
   const inputPin = document.getElementById("pin-acceso-input").value;
   if (!inputPin) return alert("Por favor, ingresa el PIN");
-
   try {
-    // Añadimos un parámetro aleatorio (?t=...) para que Google no use datos viejos
-    const res = await fetch(SCRIPT_URL + "?accion=obtenerPin&t=" + Date.now());
-    
-    if (!res.ok) throw new Error("Error en el servidor");
-    
-    const data = await res.json();
-    
-    // VALIDACIÓN ESTRICTA: Solo entra si el PIN coincide con la celda B3
+    const data = await fetchJSONP(SCRIPT_URL + "?accion=obtenerPin&t=" + Date.now());
     if (data.status === "ok" && String(inputPin) === String(data.acceso)) {
       document.getElementById("muro-entrada").style.display = "none";
       document.getElementById("contenedor-principal").style.display = "block";
-      
-      // Carga de datos
-      if (typeof cargarTrabajadores === "function") cargarTrabajadores();
-      if (typeof cargarLugares === "function") cargarLugares();
+      if (typeof cargarSelect === "function") cargarSelect();
     } else {
-      alert("PIN de acceso incorrecto. Verifica...");
-    }
-  } catch (e) {
-    console.error(e);
-    alert("Hubo un problema de conexión. Asegúrate de haber publicado la App como 'Cualquier persona'.");
-  }
-}
-let turnoSel="",fotoData=null,fotoConMarca=null,latitud="N/D",longitud="N/D";
-
-// --- CONFIGURACIÓN INICIAL ---
-function initFecha(){
-  const d=new Date();
-  const dd=String(d.getDate()).padStart(2,"0"),mm=String(d.getMonth()+1).padStart(2,"0");
-  const dias=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
-  const meses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-  document.getElementById("fecha-hoy").textContent=dias[d.getDay()]+" "+d.getDate()+" de "+meses[d.getMonth()];
-  document.getElementById("meta-fecha").textContent=dd+"/"+mm+"/"+d.getFullYear();
-  document.getElementById("meta-hora").textContent=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
-}
-async function cambiarPin() {
-  const nuevo = document.getElementById("inputNuevoPin").value;
-  if (nuevo.length < 4) return alert("El PIN debe ser de 4 dígitos");
-  
-  if (!confirm("¿Seguro que quieres cambiar la contraseña de acceso?")) return;
-
-  const res = await fetch(SCRIPT_URL + "?accion=cambiarPin&nuevoPin=" + nuevo);
-  const data = await res.json();
-  if (data.status === "ok") {
-    alert("PIN actualizado correctamente. Se reiniciará la app.");
-    location.reload();
-  }
-}
-// --- CARGA DE DATOS (SELECTORES) ---
-async function cargarSelect() {
-  const selTrab = document.getElementById("trabajador");
-  const selLug = document.getElementById("lugar-servicio");
-  const delTrab = document.getElementById("listaTrabajadoresEliminar");
-  const delLug = document.getElementById("listaLugaresEliminar");
-
-  try {
-    const res = await fetch(SCRIPT_URL + "?accion=listar");
-    const data = await res.json();
-
-    if (data.status === "ok") {
-      // Llenar Trabajadores (Registro y Panel Admin)
-      const opcionesTrab = '<option value="">Seleccione trabajador...</option>' + 
-        data.trabajadores.map(t => `<option value="${t.codigo}">${t.codigo} - ${t.nombre}</option>`).join("");
-      
-      if(selTrab) selTrab.innerHTML = opcionesTrab;
-      if(delTrab) delTrab.innerHTML = opcionesTrab;
-
-      // Llenar Lugares (Registro y Panel Admin)
-      const opcionesLug = '<option value="">Seleccione lugar...</option>' + 
-        data.lugares.map(l => `<option value="${l}">${l}</option>`).join("");
-      
-      if(selLug) selLug.innerHTML = opcionesLug;
-      if(delLug) delLug.innerHTML = opcionesLug;
-    }
-  } catch (e) {
-    console.error("Error cargando listas:", e);
-  }
-}
-
-// --- FUNCIONES DE ADMINISTRACIÓN (NUEVAS) ---
-async function ejecutarAccion(tipo) {
-  let url = SCRIPT_URL + "?accion=" + tipo;
-  
-  if (tipo === 'agregarTrabajador') {
-    const nom = document.getElementById("nuevoNombre").value;
-    if (!nom) return alert("Ingresa un nombre");
-    url += "&nombre=" + encodeURIComponent(nom);
-  } 
-  else if (tipo === 'eliminarTrabajador') {
-    const cod = document.getElementById("listaTrabajadoresEliminar").value;
-    if (!cod) return alert("Selecciona un trabajador");
-    url += "&codigo=" + cod;
-  } 
-  else if (tipo === 'agregarLugar') {
-    const lug = document.getElementById("nuevoLugar").value;
-    if (!lug) return alert("Ingresa un lugar");
-    url += "&lugar=" + encodeURIComponent(lug);
-  } 
-  else if (tipo === 'eliminarLugar') {
-    const lug = document.getElementById("listaLugaresEliminar").value;
-    if (!lug) return alert("Selecciona un lugar");
-    url += "&lugar=" + encodeURIComponent(lug);
-  }
-
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    if (data.status === "ok") {
-      alert("¡Operación exitosa!");
-      if (document.getElementById("nuevoNombre")) document.getElementById("nuevoNombre").value = "";
-      if (document.getElementById("nuevoLugar")) document.getElementById("nuevoLugar").value = "";
-      cargarSelect(); // Refresca todos los selectores automáticamente
-    }
-  } catch (e) {
-    alert("Error al ejecutar acción");
-  }
-}
-
-// --- LÓGICA DE REGISTRO Y FOTO (TUS FUNCIONES ORIGINALES) ---
-function selTurno(t){
-  turnoSel=t;
-  document.getElementById("btn-inicio").className="turno-btn"+(t==="inicio"?" active-inicio":"");
-  document.getElementById("btn-fin").className="turno-btn"+(t==="fin"?" active-fin":"");
-  if(fotoData)aplicarMarcaAgua();
-}
-
-function cargarFoto(input){
-  if(!input.files || !input.files[0]) return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const img=new Image();
-    img.onload=function(){
-      const canvas=document.createElement('canvas');
-      const MAX=800; let w=img.width, h=img.height;
-      if(w>h && w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
-      canvas.width=w; canvas.height=h;
-      canvas.getContext('2d').drawImage(img,0,0,w,h);
-      fotoData=canvas.toDataURL('image/jpeg',0.7);
-      if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(p=>{
-          latitud=p.coords.latitude.toFixed(6); longitud=p.coords.longitude.toFixed(6);
-          document.getElementById("meta-gps").textContent=latitud+","+longitud;
-          aplicarMarcaAgua();
-        },()=>aplicarMarcaAgua());
-      }else{aplicarMarcaAgua();}
-    };
-    img.src=e.target.result;
-  };
-  reader.readAsDataURL(input.files[0]);
-}
-
-function aplicarMarcaAgua(){
-  if(!fotoData)return;
-  const sel=document.getElementById("trabajador");
-  const lug=document.getElementById("lugar-servicio");
-  const nombre=sel.value?sel.selectedOptions[0].text:"N/D";
-  const lugar=lug.value || "LUGAR NO SELEC.";
-  const tipo=turnoSel==="inicio"?"INICIO DE TURNO":"FIN DE TURNO";
-  const fecha=document.getElementById("meta-fecha").textContent;
-  const hora=document.getElementById("meta-hora").textContent;
-  
-  const img=new Image();
-  img.onload=function(){
-    const canvas=document.createElement('canvas');
-    canvas.width=img.width; canvas.height=img.height;
-    const ctx=canvas.getContext('2d');
-    ctx.drawImage(img,0,0);
-    ctx.fillStyle="rgba(0,0,0,0.6)";
-    ctx.fillRect(0,img.height-140,img.width,140);
-    ctx.fillStyle="#FFFFFF"; ctx.font="bold 24px Arial";
-    ctx.fillText(tipo + " - " + lugar, 20, img.height-100);
-    ctx.font="20px Arial";
-    ctx.fillText("Nombre: "+nombre, 20, img.height-70);
-    ctx.fillText("Fecha: "+fecha+"  Hora: "+hora, 20, img.height-40);
-    fotoConMarca=canvas.toDataURL('image/jpeg',0.8);
-    document.getElementById("foto-area").innerHTML='<img src="'+fotoConMarca+'">';
-    document.getElementById("foto-area").classList.add("has-foto");
-  };
-  img.src=fotoData;
-}
-
-async function enviar(){
-  const sel=document.getElementById("trabajador");
-  const lug=document.getElementById("lugar-servicio");
-  if(!sel.value || !lug.value || !turnoSel || !fotoConMarca){
-    alert("Completa todos los campos y toma la foto."); return;
-  }
-  
-  const btn=document.getElementById("btn-enviar");
-  btn.disabled=true; btn.textContent="Enviando...";
-  document.getElementById("error-msg").style.display="none";
-
-  const codigo=sel.value;
-  const nombre=sel.selectedOptions[0].text; // nombre completo
-  const lugar=lug.value;
-  const tipo=turnoSel==="inicio"?"Inicio de turno":"Fin de turno";
-  const fecha=document.getElementById("meta-fecha").textContent;
-  const hora=document.getElementById("meta-hora").textContent;
-
-  try {
-    const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(codigo)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&lugar="+encodeURIComponent(lugar)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
-    const r1=await fetch(url1);
-    const d1=await r1.json();
-
-    if(d1.status==="ok"){
-      await fetch(SCRIPT_URL, {
-        method:'POST', mode:'no-cors',
-        body: JSON.stringify({accion:"foto", fila:d1.fila, foto:fotoConMarca})
-      });
-      document.getElementById("form-content").style.display="none";
-      document.getElementById("success-panel").style.display="flex";
-      document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
-    } else {
-      throw new Error(d1.message);
+      alert("PIN incorrecto");
     }
   } catch(e) {
-    document.getElementById("error-msg").textContent=e.message || "Error al enviar.";
-    document.getElementById("error-msg").style.display="block";
-    btn.disabled=false; btn.textContent="Registrar asistencia";
+    alert("Error de conexión: " + e.message);
   }
 }
 
-// --- NAVEGACIÓN ---
-function nuevoRegistro(){ 
-  location.reload(); 
-}
-
-function abrirPin(){ 
-  document.getElementById("pin-overlay").style.display = "flex"; 
-}
-
-function cerrarPin(){ 
-  document.getElementById("pin-overlay").style.display = "none"; 
-  document.getElementById("pin-input").value = ""; 
-}
-
-// ESTA ES LA ÚNICA QUE DEBE QUEDAR. 
 async function verificarPin() {
   const btn = document.querySelector("#pin-overlay button");
   const input = document.getElementById("pin-input");
@@ -503,8 +290,7 @@ async function verificarPin() {
   btn.disabled = true;
 
   try {
-    const res = await fetch(SCRIPT_URL + "?accion=obtenerPin");
-    const data = await res.json();
+    const data = await fetchJSONP(SCRIPT_URL + "?accion=obtenerPin");
 
     if (String(input.value) === String(data.pin)) {
       cerrarPin();
