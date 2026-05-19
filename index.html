@@ -117,7 +117,7 @@ input[type=file]{display:none}
 
 <div id="contenedor-principal" style="display:none;">
   <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzuKcr2jzvHbHA_v7S7IBKiJUO2nyNHauiVM8Wqr6M-BLveCGY24gPFzYyPIIfirbI/exec";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyRTIfqkhTcMvpH9OvcxRDzwaE8EeUqvKm-b-AI1MAkcX4Izm1BmSYG2sT1HYeYd0cc/exec";
     </script>
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-box">
@@ -464,14 +464,11 @@ async function enviar(){
     const url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(nombreSistema)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&lugar="+encodeURIComponent(lugar)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
     const d1=await fetchJSONP(url1);
     if(d1.status==="ok"){
-      // Enviar foto en partes via JSONP
-      const fotoB64 = fotoConMarca.split(",")[1];
-      const parteSize = 5000;
-      const totalPartes = Math.ceil(fotoB64.length / parteSize);
-      for(let pi=0; pi<totalPartes; pi++){
-        const parte = fotoB64.substring(pi*parteSize, (pi+1)*parteSize);
-        await fetchJSONP(SCRIPT_URL+"?accion=fotoChunk&fila="+d1.fila+"&parte="+pi+"&total="+totalPartes+"&data="+encodeURIComponent(parte));
-      }
+      // Enviar foto por POST
+      fetch(SCRIPT_URL, {
+        method:"POST", mode:"no-cors",
+        body: JSON.stringify({accion:"foto", fila:d1.fila, foto:fotoConMarca})
+      });
       document.getElementById("form-content").style.display="none";
       document.getElementById("success-panel").style.display="flex";
       document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
