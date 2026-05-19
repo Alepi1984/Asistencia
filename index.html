@@ -293,31 +293,47 @@ async function cargarSelect(){
 }
 
 async function validarEntrada() {
+
   const inputPin = document.getElementById("pin-acceso-input").value;
-  if (!inputPin) return alert("Por favor, ingresa el PIN");
-try {
 
-   ...
+  if (!inputPin) {
 
-} catch(err){
+    return alert("Por favor, ingresa el PIN");
 
-   console.error(err);
-
-}
-    const data = await fetchJSONP(SCRIPT_URL + "?accion=obtenerPin&t=" + Date.now());
-    if (data.status === "ok" && String(inputPin) === String(data.acceso)) {
-      document.getElementById("muro-entrada").style.display = "none";
-      document.getElementById("contenedor-principal").style.display = "block";
-      initFecha();
-      cargarSelect();
-    } else {
-      alert("PIN incorrecto");
-    }
-  } catch(e) {
-    alert("Error de conexion: " + e.message);
   }
-}
 
+  try {
+
+    const data = await fetchJSONP(
+      SCRIPT_URL + "?accion=obtenerPin&t=" + Date.now()
+    );
+
+    if (
+      data.status === "ok" &&
+      String(inputPin) === String(data.acceso)
+    ) {
+
+      document.getElementById("muro-entrada").style.display = "none";
+
+      document.getElementById("contenedor-principal").style.display = "block";
+
+      initFecha();
+
+      cargarSelect();
+
+    } else {
+
+      alert("PIN incorrecto");
+
+    }
+
+  } catch(e) {
+
+    alert("Error de conexion: " + e.message);
+
+  }
+
+}
 async function verificarPin() {
   const btn = document.querySelector("#pin-overlay button");
   const input = document.getElementById("pin-input");
