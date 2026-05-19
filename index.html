@@ -497,7 +497,12 @@ async function enviar(){
       document.getElementById("form-content").style.display="none";
       document.getElementById("success-panel").style.display="flex";
       document.getElementById("success-detail").innerHTML="<strong>"+nombre+"</strong><br>"+lugar+"<br>"+tipo+" registrado.";
-    }else{
+  } catch(err){
+
+   console.error(err);
+
+} 
+  }else{
       throw new Error(d1.message||"Error al registrar");
     }
   }catch(e){
