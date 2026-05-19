@@ -117,7 +117,7 @@ input[type=file]{display:none}
 
 <div id="contenedor-principal" style="display:none;">
   <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxWPRA6OWQUWV0IVVSBoUL4k_BWCrOIB4lu8I_6qgl4-r995KVJuVRTuAq-FZGaCg-v/exec";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwo-xYRaYQhBR24R-lMaWq3Y4m-kEZH_w5txXvRRsq9PfWkT_feOKWt2IenVpSfs9UV/exec";
     </script>
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-box">
@@ -412,7 +412,7 @@ function aplicarMarcaAgua(){
   if(!fotoData)return;
   const sel=document.getElementById("trabajador");
   const lug=document.getElementById("lugar-servicio");
-  const nombre=sel.value?sel.selectedOptions[0].text.split(" - ")[1]:"N/D";
+  const nombre=sel.value?sel.selectedOptions[0].text:"N/D";
   const lugar=lug.value || "LUGAR NO SELEC.";
   const tipo=turnoSel==="inicio"?"INICIO DE TURNO":"FIN DE TURNO";
   const fecha=document.getElementById("meta-fecha").textContent;
@@ -450,7 +450,7 @@ async function enviar(){
   document.getElementById("error-msg").style.display="none";
 
   const codigo=sel.value;
-  const nombre=sel.selectedOptions[0].text.split(" - ")[1];
+  const nombre=sel.selectedOptions[0].text; // nombre completo
   const lugar=lug.value;
   const tipo=turnoSel==="inicio"?"Inicio de turno":"Fin de turno";
   const fecha=document.getElementById("meta-fecha").textContent;
