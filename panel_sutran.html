@@ -853,8 +853,8 @@ function filtrarProg() {
           '<td><input type="text" id="fin'+r.fila+'" value="' + (r.hora_fin||'') + '" style="width:65px;height:28px;font-size:11px;font-family:monospace" placeholder="00:00"></td>' +
           '<td><select id="est'+r.fila+'" style="height:28px;font-size:11px">' + opts + '</select></td>' +
           '<td style="display:flex;gap:4px">' +
-          '<button class="btn btn-primary" style="height:26px;font-size:11px;padding:0 8px" data-fila="'+r.fila+'" onclick="guardarProg(this.getAttribute(\'data-fila\'),this)"> </button>' +
-          '<button class="btn btn-red" style="height:26px;font-size:11px;padding:0 8px" data-fila="'+r.fila+'" onclick="eliminarProg(this.getAttribute(\'data-fila\'))"> </button>' +
+          '<button class="btn btn-primary" style="height:34px;font-size:13px;padding:0 12px" data-fila="'+r.fila+'" onclick="guardarProg(this.getAttribute(\'data-fila\'),this)"> </button>' +
+          '<button class="btn btn-red" style="height:34px;font-size:13px;padding:0 12px" data-fila="'+r.fila+'" onclick="eliminarProg(this.getAttribute(\'data-fila\'))"> </button>' +
           '</td></tr>';
       }).join('');
 }
