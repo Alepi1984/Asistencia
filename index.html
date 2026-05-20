@@ -341,13 +341,15 @@ async function enviar(){
     var d1=await fetchJSONP(url1);
     if(d1.status!=="ok") throw new Error(d1.message||"Error al registrar");
 
-    // Paso 2: Enviar foto en una sola peticion POST
-    await fetch(SCRIPT_URL, {
-      method:"POST",
-      mode:"no-cors",
-      headers:{"Content-Type":"text/plain"},
-      body: JSON.stringify({accion:"foto", fila:d1.fila, foto:fotoConMarca})
-    });
+    // Paso 2: Enviar foto en chunks via JSONP
+    var fotoB64=fotoConMarca;
+    var parteSize=5000;
+    var totalPartes=Math.ceil(fotoB64.length/parteSize);
+    for(var pi=0; pi<totalPartes; pi++){
+      var parte=encodeURIComponent(fotoB64.substring(pi*parteSize,(pi+1)*parteSize));
+      var urlFoto=SCRIPT_URL+"?accion=fotoChunk&fila="+d1.fila+"&parte="+pi+"&total="+totalPartes+"&data="+parte;
+      await fetchJSONP(urlFoto);
+    }
 
     document.getElementById("form-content").style.display="none";
     document.getElementById("success-panel").style.display="flex";
