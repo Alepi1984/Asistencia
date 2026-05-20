@@ -396,6 +396,12 @@ function nav(id, el) {
   el.classList.add('active');
   if (id === 'personal') cargarTablaPersonal();
   if (id === 'biometrico') cargarTablaBio();
+  if (id === 'editprog') {
+    // Cargar lugares al cache
+    fetchJSON(SCRIPT_URL + '?accion=listarLugares').then(function(data) {
+      window._lugaresCache = data.lugares || [];
+    });
+  }
 }
 
 // JSONP fetch
@@ -833,6 +839,19 @@ function cargarTablaEditProg() {
   }).catch(function(e) {
     document.getElementById('ep-tabla').innerHTML = '<tr><td colspan="8" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
   });
+}
+
+function getLugaresOpts(seleccionado) {
+  const lugares = window._lugaresCache || [];
+  let opts = '<option value="">Sin lugar</option>';
+  lugares.forEach(function(l) {
+    opts += '<option value="' + l + '"' + (l === seleccionado ? ' selected' : '') + '>' + l + '</option>';
+  });
+  // Si el lugar actual no está en la lista, agregarlo
+  if (seleccionado && !lugares.includes(seleccionado)) {
+    opts += '<option value="' + seleccionado + '" selected>' + seleccionado + '</option>';
+  }
+  return opts;
 }
 
 function filtrarProg() {
