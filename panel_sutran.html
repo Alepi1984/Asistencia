@@ -858,22 +858,28 @@ function filtrarProg() {
   var filtro = document.getElementById('ep-filtro').value;
   var rows = filtro ? progData.filter(function(r){return r.estado===filtro;}) : progData;
   var ESTADOS = ['PROGRAMADO','DS','CP','REVISION'];
+  var lugares = window._lugaresCache || [];
+
   document.getElementById('ep-tabla').innerHTML = rows.length === 0
     ? '<tr><td colspan="8" class="loading-cell">Sin registros</td></tr>'
     : rows.map(function(r) {
         var rowBg = r.estado === 'REVISION' ? 'background:rgba(239,68,68,0.05)' : '';
-        var opts = ESTADOS.map(function(e){return '<option value="'+e+'"'+(r.estado===e?' selected':'')+'>'+e+'</option>';}).join('');
+        var optsEstado = ESTADOS.map(function(e){return '<option value="'+e+'"'+(r.estado===e?' selected':'')+'>'+e+'</option>';}).join('');
+        // Opciones de lugar
+        var optsLugar = '<option value="">Sin lugar</option>';
+        lugares.forEach(function(l){ optsLugar += '<option value="'+l+'"'+(r.lugar===l?' selected':'')+'>'+l+'</option>'; });
+        if (r.lugar && !lugares.includes(r.lugar)) optsLugar += '<option value="'+r.lugar+'" selected>'+r.lugar+'</option>';
         return '<tr style="' + rowBg + '">' +
           '<td class="mono" style="color:var(--text3)">' + r.fila + '</td>' +
           '<td class="mono">' + r.fecha + '</td>' +
           '<td>' + r.nombre + '</td>' +
-          '<td><input type="text" id="lug'+r.fila+'" value="' + (r.lugar||'') + '" style="width:140px;height:28px;font-size:11px" placeholder="Lugar"></td>' +
-          '<td><input type="text" id="ini'+r.fila+'" value="' + (r.hora_inicio||'') + '" style="width:65px;height:28px;font-size:11px;font-family:monospace" placeholder="00:00"></td>' +
-          '<td><input type="text" id="fin'+r.fila+'" value="' + (r.hora_fin||'') + '" style="width:65px;height:28px;font-size:11px;font-family:monospace" placeholder="00:00"></td>' +
-          '<td><select id="est'+r.fila+'" style="height:28px;font-size:11px">' + opts + '</select></td>' +
-          '<td style="display:flex;gap:4px">' +
-          '<button class="btn btn-primary" style="height:34px;font-size:13px;padding:0 12px" data-fila="'+r.fila+'" onclick="guardarProg(this.getAttribute(\'data-fila\'),this)"> </button>' +
-          '<button class="btn btn-red" style="height:34px;font-size:13px;padding:0 12px" data-fila="'+r.fila+'" onclick="eliminarProg(this.getAttribute(\'data-fila\'))"> </button>' +
+          '<td><select id="lug'+r.fila+'" style="height:34px;font-size:12px;width:140px">' + optsLugar + '</select></td>' +
+          '<td><input type="text" id="ini'+r.fila+'" value="' + (r.hora_inicio||'') + '" style="width:65px;height:34px;font-size:12px;font-family:monospace" placeholder="00:00"></td>' +
+          '<td><input type="text" id="fin'+r.fila+'" value="' + (r.hora_fin||'') + '" style="width:65px;height:34px;font-size:12px;font-family:monospace" placeholder="00:00"></td>' +
+          '<td><select id="est'+r.fila+'" style="height:34px;font-size:12px">' + optsEstado + '</select></td>' +
+          '<td style="display:flex;gap:6px;padding:4px">' +
+          '<button class="btn btn-primary" style="height:34px;font-size:12px" data-fila="'+r.fila+'" onclick="guardarProg(this.getAttribute('data-fila'),this)"><svg viewBox="0 0 24 24" stroke-width="2" style="width:14px;height:14px;stroke:white;fill:none;display:inline-block;vertical-align:middle;margin-right:4px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Guardar</button>' +
+          '<button class="btn btn-red" style="height:34px;font-size:12px" data-fila="'+r.fila+'" onclick="eliminarProg(this.getAttribute('data-fila'))"><svg viewBox="0 0 24 24" stroke-width="2" style="width:14px;height:14px;stroke:white;fill:none;display:inline-block;vertical-align:middle;margin-right:4px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Eliminar</button>' +
           '</td></tr>';
       }).join('');
 }
