@@ -130,7 +130,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Biom trico
     </div>
     <div class="nav-item" onclick="nav('editprog',this)">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar Programaci n
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar Programacion
     </div>
     <div class="sidebar-bottom">
       <div class="mes-selector">
@@ -339,14 +339,14 @@ tr:hover td{background:rgba(79,142,247,0.03)}
 
     <!-- EDITAR PROGRAMACI N -->
     <div class="panel" id="p-editprog">
-      <div class="page-title">Editar Programaci n</div>
+      <div class="page-title">Editar Programacion</div>
       <div class="page-sub">Edita registros   especialmente los marcados como REVISION</div>
       <div class="card">
         <div class="card-title">Agregar registro manual</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
-          <div class="form-field"><label>Trabajador</label><select id="ep-nombre" style="min-width:180px"><option value="">Selecciona...</option></select></div>
+          <div class="form-field"><label>Trabajador</label><input type="text" id="ep-nombre" placeholder="Nombre del trabajador" style="min-width:180px"></div>
           <div class="form-field"><label>Fecha</label><input type="date" id="ep-fecha"></div>
-          <div class="form-field"><label>Lugar</label><input type="text" id="ep-lugar" placeholder="PEAJE CHICAMA" style="width:160px"></div>
+          <div class="form-field"><label>Lugar</label><select id="ep-lugar" style="width:160px;height:36px"><option value="">Sin lugar</option></select></div>
           <div class="form-field"><label>H. Inicio</label><input type="time" id="ep-inicio"></div>
           <div class="form-field"><label>H. Fin</label><input type="time" id="ep-fin"></div>
           <div class="form-field"><label>Estado</label>
@@ -397,9 +397,18 @@ function nav(id, el) {
   if (id === 'personal') cargarTablaPersonal();
   if (id === 'biometrico') cargarTablaBio();
   if (id === 'editprog') {
-    // Cargar lugares al cache
+    // Cargar lugares al cache y poblar select del formulario
     fetchJSON(SCRIPT_URL + '?accion=listarLugares').then(function(data) {
       window._lugaresCache = data.lugares || [];
+      var sel = document.getElementById('ep-lugar');
+      if (sel) {
+        sel.innerHTML = '<option value="">Sin lugar</option>';
+        (data.lugares||[]).forEach(function(l){
+          var op = document.createElement('option');
+          op.value = l; op.textContent = l;
+          sel.appendChild(op);
+        });
+      }
     });
   }
 }
@@ -833,7 +842,10 @@ function eliminarBio(fila) {
 // EDITAR PROGRAMACI N
 function cargarTablaEditProg() {
   document.getElementById('ep-tabla').innerHTML = '<tr><td colspan="8" class="loading-cell">Cargando...</td></tr>';
-  fetchJSON(SCRIPT_URL + '?accion=leerProgramacion').then(function(data) {
+  fetchJSON(SCRIPT_URL + '?accion=listarLugares').then(function(dataLug) {
+    window._lugaresCache = dataLug.lugares || [];
+    return fetchJSON(SCRIPT_URL + '?accion=leerProgramacion');
+  }).then(function(data) {
     progData = data.programacion || [];
     filtrarProg();
   }).catch(function(e) {
@@ -859,29 +871,60 @@ function filtrarProg() {
   var rows = filtro ? progData.filter(function(r){return r.estado===filtro;}) : progData;
   var ESTADOS = ['PROGRAMADO','DS','CP','REVISION'];
   var lugares = window._lugaresCache || [];
+  var tbody = document.getElementById('ep-tabla');
 
-  document.getElementById('ep-tabla').innerHTML = rows.length === 0
-    ? '<tr><td colspan="8" class="loading-cell">Sin registros</td></tr>'
-    : rows.map(function(r) {
-        var rowBg = r.estado === 'REVISION' ? 'background:rgba(239,68,68,0.05)' : '';
-        var optsEstado = ESTADOS.map(function(e){return '<option value="'+e+'"'+(r.estado===e?' selected':'')+'>'+e+'</option>';}).join('');
-        // Opciones de lugar
-        var optsLugar = '<option value="">Sin lugar</option>';
-        lugares.forEach(function(l){ optsLugar += '<option value="'+l+'"'+(r.lugar===l?' selected':'')+'>'+l+'</option>'; });
-        if (r.lugar && !lugares.includes(r.lugar)) optsLugar += '<option value="'+r.lugar+'" selected>'+r.lugar+'</option>';
-        return '<tr style="' + rowBg + '">' +
-          '<td class="mono" style="color:var(--text3)">' + r.fila + '</td>' +
-          '<td class="mono">' + r.fecha + '</td>' +
-          '<td>' + r.nombre + '</td>' +
-          '<td><select id="lug'+r.fila+'" style="height:34px;font-size:12px;width:140px">' + optsLugar + '</select></td>' +
-          '<td><input type="text" id="ini'+r.fila+'" value="' + (r.hora_inicio||'') + '" style="width:65px;height:34px;font-size:12px;font-family:monospace" placeholder="00:00"></td>' +
-          '<td><input type="text" id="fin'+r.fila+'" value="' + (r.hora_fin||'') + '" style="width:65px;height:34px;font-size:12px;font-family:monospace" placeholder="00:00"></td>' +
-          '<td><select id="est'+r.fila+'" style="height:34px;font-size:12px">' + optsEstado + '</select></td>' +
-          '<td style="display:flex;gap:6px;padding:4px">' +
-          '<button class="btn btn-primary" style="height:34px;font-size:12px" data-fila="'+r.fila+'" onclick="guardarProg(this.getAttribute('data-fila'),this)"><svg viewBox="0 0 24 24" stroke-width="2" style="width:14px;height:14px;stroke:white;fill:none;display:inline-block;vertical-align:middle;margin-right:4px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Guardar</button>' +
-          '<button class="btn btn-red" style="height:34px;font-size:12px" data-fila="'+r.fila+'" onclick="eliminarProg(this.getAttribute('data-fila'))"><svg viewBox="0 0 24 24" stroke-width="2" style="width:14px;height:14px;stroke:white;fill:none;display:inline-block;vertical-align:middle;margin-right:4px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Eliminar</button>' +
-          '</td></tr>';
-      }).join('');
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="loading-cell">Sin registros</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = '';
+  rows.forEach(function(r) {
+    var tr = document.createElement('tr');
+    if (r.estado === 'REVISION') tr.style.background = 'rgba(239,68,68,0.05)';
+
+    // Opciones estado
+    var optsEstado = ESTADOS.map(function(e){
+      return '<option value="'+e+'"'+(r.estado===e?' selected':'')+'>'+e+'</option>';
+    }).join('');
+
+    // Opciones lugar
+    var optsLugar = '<option value="">Sin lugar</option>';
+    lugares.forEach(function(l){
+      optsLugar += '<option value="'+l+'"'+(r.lugar===l?' selected':'')+'>'+l+'</option>';
+    });
+    if (r.lugar && lugares.indexOf(r.lugar) === -1) {
+      optsLugar += '<option value="'+r.lugar+'" selected>'+r.lugar+'</option>';
+    }
+
+    tr.innerHTML =
+      '<td class="mono" style="color:var(--text3)">'+r.fila+'</td>'+
+      '<td class="mono">'+r.fecha+'</td>'+
+      '<td>'+r.nombre+'</td>'+
+      '<td><select id="lug'+r.fila+'" style="height:34px;font-size:12px;width:140px">'+optsLugar+'</select></td>'+
+      '<td><input type="text" id="ini'+r.fila+'" value="'+(r.hora_inicio||'')+'" style="width:65px;height:34px;font-size:12px;font-family:monospace" placeholder="00:00"></td>'+
+      '<td><input type="text" id="fin'+r.fila+'" value="'+(r.hora_fin||'')+'" style="width:65px;height:34px;font-size:12px;font-family:monospace" placeholder="00:00"></td>'+
+      '<td><select id="est'+r.fila+'" style="height:34px;font-size:12px">'+optsEstado+'</select></td>'+
+      '<td style="display:flex;gap:6px;padding:4px"></td>';
+
+    // Botón guardar
+    var btnG = document.createElement('button');
+    btnG.className = 'btn btn-primary';
+    btnG.style.cssText = 'height:34px;font-size:12px';
+    btnG.textContent = 'Guardar';
+    btnG.onclick = function(){ guardarProg(r.fila, btnG); };
+
+    // Botón eliminar
+    var btnE = document.createElement('button');
+    btnE.className = 'btn btn-red';
+    btnE.style.cssText = 'height:34px;font-size:12px';
+    btnE.textContent = 'Eliminar';
+    btnE.onclick = function(){ eliminarProg(r.fila); };
+
+    tr.lastElementChild.appendChild(btnG);
+    tr.lastElementChild.appendChild(btnE);
+    tbody.appendChild(tr);
+  });
 }
 
 function guardarProg(fila, btn) {
