@@ -69,7 +69,7 @@ input[type=file]{display:none}
 
 <div id="contenedor-principal" style="display:none;">
 <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbx8oVEyQqwdgSqU5XJbKADNi5blmd9kojIpUrj7D4DcMBYWWRkfppZObNZhJpYLfP100A/exec";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwmnaCFLWXK_COX8j1QtLRlNjNLH_vbv_1dzL4wCxK0957wRzO_rFrzSSOHEFYpr97N_Q/exec";
 </script>
 <div class="header">
   <div class="header-left">
@@ -334,7 +334,7 @@ async function enviar(){
 
     // Paso 2: Enviar foto en chunks
     var fotoB64=fotoConMarca;
-    var parteSize=5000;
+    var parteSize=8000;
     var totalPartes=Math.ceil(fotoB64.length/parteSize);
     for(var pi=0; pi<totalPartes; pi++){
       var parte=encodeURIComponent(fotoB64.substring(pi*parteSize,(pi+1)*parteSize));
