@@ -334,7 +334,7 @@ async function enviar(){
 
     // Paso 2: Enviar foto en chunks
     var fotoB64=fotoConMarca;
-    var parteSize=8000;
+    var parteSize=5000;
     var totalPartes=Math.ceil(fotoB64.length/parteSize);
     for(var pi=0; pi<totalPartes; pi++){
       var parte=encodeURIComponent(fotoB64.substring(pi*parteSize,(pi+1)*parteSize));
