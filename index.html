@@ -241,11 +241,11 @@ function cargarFoto(input){
     var img=new Image();
     img.onload=function(){
       var canvas=document.createElement("canvas");
-      var MAX=400; var w=img.width, h=img.height;
+      var MAX=600; var w=img.width, h=img.height;
       if(w>h && w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
       canvas.width=w; canvas.height=h;
       canvas.getContext("2d").drawImage(img,0,0,w,h);
-      fotoData=canvas.toDataURL("image/jpeg",0.4);
+      fotoData=canvas.toDataURL("image/jpeg",0.6);
       if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(p){
           latitud=p.coords.latitude.toFixed(6); longitud=p.coords.longitude.toFixed(6);
@@ -282,7 +282,7 @@ function aplicarMarcaAgua(){
     ctx.font="20px Arial";
     ctx.fillText("Nombre: "+nombre, 20, img.height-70);
     ctx.fillText("Fecha: "+fecha+"  Hora: "+hora, 20, img.height-40);
-    fotoConMarca=canvas.toDataURL("image/jpeg",0.5);
+    fotoConMarca=canvas.toDataURL("image/jpeg",0.6);
     document.getElementById("foto-area").innerHTML="<img src='"+fotoConMarca+"'>";
     document.getElementById("foto-area").classList.add("has-foto");
   };
@@ -322,12 +322,13 @@ async function enviar(){
       ctx.drawImage(img,0,0);
       ctx.fillStyle="rgba(0,0,0,0.6)";
       ctx.fillRect(0,img.height-140,img.width,140);
-      ctx.fillStyle="#FFFFFF"; ctx.font="bold 24px Arial";
-      ctx.fillText(tipoMarca+" - "+lugar, 20, img.height-100);
-      ctx.font="20px Arial";
-      ctx.fillText("Nombre: "+nombre, 20, img.height-70);
-      ctx.fillText("Fecha: "+fecha+"  Hora: "+hora, 20, img.height-40);
-      fotoConMarca=canvas.toDataURL("image/jpeg",0.5);
+      var fs=Math.max(16, Math.round(img.width/22));
+      ctx.fillStyle="#FFFFFF"; ctx.font="bold "+fs+"px Arial";
+      ctx.fillText(tipoMarca+" - "+lugar, 10, img.height-Math.round(fs*3.2));
+      ctx.font=(fs-2)+"px Arial";
+      ctx.fillText("Nombre: "+nombre, 10, img.height-Math.round(fs*1.8));
+      ctx.fillText("Fecha: "+fecha+"  Hora: "+hora, 10, img.height-Math.round(fs*0.4));
+      fotoConMarca=canvas.toDataURL("image/jpeg",0.6);
       document.getElementById("foto-area").innerHTML="<img src='"+fotoConMarca+"'>";
       document.getElementById("foto-area").classList.add("has-foto");
       resolve();
