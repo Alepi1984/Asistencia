@@ -195,27 +195,36 @@ function validarEntrada() {
 function cargarSelect(){
   var sel=document.getElementById("trabajador");
   var selLug=document.getElementById("lugar-servicio");
-  fetchJSONP(SCRIPT_URL+"?accion=listarPersonal").then(function(data){
-    sel.innerHTML='<option value="">Selecciona tu nombre</option>';
-    if(data.personal && data.personal.length>0){
-      data.personal.forEach(function(t){
-        var op=document.createElement("option");
-        op.value=t.nombre_sistema;
-        op.textContent=t.nombre_completo || t.nombre_sistema;
-        sel.appendChild(op);
-      });
-    }
-  }).catch(function(e){ sel.innerHTML='<option value="">Error al cargar lista</option>'; });
-  fetchJSONP(SCRIPT_URL+"?accion=listarLugares").then(function(data){
-    selLug.innerHTML='<option value="">Selecciona el lugar...</option>';
-    if(data.lugares && data.lugares.length>0){
-      data.lugares.forEach(function(l){
-        var op=document.createElement("option");
-        op.value=l; op.textContent=l;
-        selLug.appendChild(op);
-      });
-    }
-  }).catch(function(e){ selLug.innerHTML='<option value="">Error al cargar lugares</option>'; });
+  // Solo cargar si aun no tiene opciones reales
+  if(sel.options.length <= 1){
+    fetchJSONP(SCRIPT_URL+"?accion=listarPersonal").then(function(data){
+      var valActual = sel.value;
+      sel.innerHTML='<option value="">Selecciona tu nombre</option>';
+      if(data.personal && data.personal.length>0){
+        data.personal.forEach(function(t){
+          var op=document.createElement("option");
+          op.value=t.nombre_sistema;
+          op.textContent=t.nombre_completo || t.nombre_sistema;
+          sel.appendChild(op);
+        });
+      }
+      if(valActual) sel.value=valActual;
+    }).catch(function(e){ sel.innerHTML='<option value="">Error al cargar lista</option>'; });
+  }
+  if(selLug.options.length <= 1){
+    fetchJSONP(SCRIPT_URL+"?accion=listarLugares").then(function(data){
+      var valActual = selLug.value;
+      selLug.innerHTML='<option value="">Selecciona el lugar...</option>';
+      if(data.lugares && data.lugares.length>0){
+        data.lugares.forEach(function(l){
+          var op=document.createElement("option");
+          op.value=l; op.textContent=l;
+          selLug.appendChild(op);
+        });
+      }
+      if(valActual) selLug.value=valActual;
+    }).catch(function(e){ selLug.innerHTML='<option value="">Error al cargar lugares</option>'; });
+  }
 }
 
 function selTurno(t){
@@ -236,7 +245,7 @@ function cargarFoto(input){
       if(w>h && w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
       canvas.width=w; canvas.height=h;
       canvas.getContext("2d").drawImage(img,0,0,w,h);
-      fotoData=canvas.toDataURL("image/jpeg",0.7);
+      fotoData=canvas.toDataURL("image/jpeg",0.4);
       if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(p){
           latitud=p.coords.latitude.toFixed(6); longitud=p.coords.longitude.toFixed(6);
@@ -273,7 +282,7 @@ function aplicarMarcaAgua(){
     ctx.font="20px Arial";
     ctx.fillText("Nombre: "+nombre, 20, img.height-70);
     ctx.fillText("Fecha: "+fecha+"  Hora: "+hora, 20, img.height-40);
-    fotoConMarca=canvas.toDataURL("image/jpeg",0.8);
+    fotoConMarca=canvas.toDataURL("image/jpeg",0.5);
     document.getElementById("foto-area").innerHTML="<img src='"+fotoConMarca+"'>";
     document.getElementById("foto-area").classList.add("has-foto");
   };
@@ -318,7 +327,7 @@ async function enviar(){
       ctx.font="20px Arial";
       ctx.fillText("Nombre: "+nombre, 20, img.height-70);
       ctx.fillText("Fecha: "+fecha+"  Hora: "+hora, 20, img.height-40);
-      fotoConMarca=canvas.toDataURL("image/jpeg",0.8);
+      fotoConMarca=canvas.toDataURL("image/jpeg",0.5);
       document.getElementById("foto-area").innerHTML="<img src='"+fotoConMarca+"'>";
       document.getElementById("foto-area").classList.add("has-foto");
       resolve();
