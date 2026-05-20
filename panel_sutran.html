@@ -124,7 +124,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
     </div>
     <div class="sidebar-label">Gesti n</div>
     <div class="nav-item" onclick="nav('personal',this)">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Personal
+      <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Configuracion
     </div>
     <div class="nav-item" onclick="nav('biometrico',this)">
       <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Biom trico
@@ -287,7 +287,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
     <!-- PERSONAL -->
     <div class="panel" id="p-personal">
       <div class="page-title">Gesti n de Personal</div>
-      <div class="page-sub">Agregar o eliminar trabajadores del sistema</div>
+      <div class="page-sub">Administra trabajadores, lugares y PINs del sistema</div>
       <div class="card">
         <div class="card-title">Agregar nuevo trabajador</div>
         <div class="form-grid">
@@ -303,6 +303,30 @@ tr:hover td{background:rgba(79,142,247,0.03)}
         <div class="table-wrap">
           <table><thead><tr><th>Nombre sistema</th><th>Nombre completo</th><th>DNI</th><th>Cargo</th><th>Acci n</th></tr></thead>
           <tbody id="per-tabla"><tr><td colspan="5" class="loading-cell">Cargando...</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Agregar lugar de servicio</div>
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <div class="form-field" style="flex:1"><label>Nombre del lugar</label><input type="text" id="lug-nuevo" placeholder="Ej: Chicama" style="width:100%"></div>
+          <button class="btn btn-green" onclick="agregarLugarPanel()">+ Agregar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Lista de lugares</div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Lugar</th><th>Accion</th></tr></thead>
+          <tbody id="lug-tabla"><tr><td colspan="2" class="loading-cell">Cargando...</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">PIN de acceso</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:12px">PIN para ingresar al formulario de registro de fotos</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="password" id="pin-acceso-new" placeholder="Nuevo PIN" maxlength="10" style="width:150px;font-family:monospace">
+          <button class="btn btn-primary" onclick="cambiarPinAcceso()">Cambiar PIN</button>
         </div>
       </div>
     </div>
@@ -394,7 +418,7 @@ function nav(id, el) {
   document.querySelectorAll('.nav-item').forEach(function(i){i.classList.remove('active');});
   document.getElementById('p-' + id).classList.add('active');
   el.classList.add('active');
-  if (id === 'personal') cargarTablaPersonal();
+  if (id === 'personal') { cargarTablaPersonal(); cargarTablaLugares(); }
   if (id === 'biometrico') cargarTablaBio();
   if (id === 'editprog') {
     // Cargar lugares al cache y poblar select del formulario
@@ -727,6 +751,75 @@ function ejecutarTodo() {
     }).catch(function(e) { setEstado('proc-estado','err','  Error en ' + paso + ': ' + e.message); });
   }
   siguiente();
+}
+
+// PINES
+function cambiarPinAcceso() {
+  var pin = document.getElementById('pin-acceso-new').value.trim();
+  if (!pin) { alert('Escribe el nuevo PIN'); return; }
+  fetchJSON(SCRIPT_URL + '?accion=cambiarPinAcceso&pin=' + encodeURIComponent(pin)).then(function(data) {
+    if (data.status === 'ok') { alert('PIN de acceso actualizado'); document.getElementById('pin-acceso-new').value = ''; }
+    else alert('Error: ' + data.message);
+  }).catch(function(e) { alert('Error: ' + e.message); });
+}
+
+function cambiarPinAdmin() {
+  var pin = document.getElementById('pin-admin-new').value.trim();
+  if (!pin) { alert('Escribe el nuevo PIN'); return; }
+  fetchJSON(SCRIPT_URL + '?accion=cambiarPin&nuevoPin=' + encodeURIComponent(pin)).then(function(data) {
+    if (data.status === 'ok') { alert('PIN admin actualizado'); document.getElementById('pin-admin-new').value = ''; }
+    else alert('Error: ' + data.message);
+  }).catch(function(e) { alert('Error: ' + e.message); });
+}
+
+// LUGARES EN PANEL
+function cargarTablaLugares() {
+  document.getElementById('lug-tabla').innerHTML = '<tr><td colspan="2" class="loading-cell">Cargando...</td></tr>';
+  fetchJSON(SCRIPT_URL + '?accion=listarLugares').then(function(data) {
+    var lugares = data.lugares || [];
+    if (lugares.length === 0) {
+      document.getElementById('lug-tabla').innerHTML = '<tr><td colspan="2" class="loading-cell">Sin lugares</td></tr>';
+      return;
+    }
+    var tbody = document.getElementById('lug-tabla');
+    tbody.innerHTML = '';
+    lugares.forEach(function(l) {
+      var tr = document.createElement('tr');
+      var tdNom = document.createElement('td');
+      tdNom.textContent = l;
+      var tdAcc = document.createElement('td');
+      var btn = document.createElement('button');
+      btn.className = 'btn btn-red';
+      btn.style.cssText = 'height:28px;font-size:11px';
+      btn.textContent = 'Eliminar';
+      btn.onclick = function() { eliminarLugarPanel(l); };
+      tdAcc.appendChild(btn);
+      tr.appendChild(tdNom);
+      tr.appendChild(tdAcc);
+      tbody.appendChild(tr);
+    });
+  }).catch(function(e) {
+    document.getElementById('lug-tabla').innerHTML = '<tr><td colspan="2" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
+  });
+}
+
+function agregarLugarPanel() {
+  var nom = document.getElementById('lug-nuevo').value.trim();
+  if (!nom) { alert('Escribe el nombre del lugar'); return; }
+  fetchJSON(SCRIPT_URL + '?accion=agregarLugar&lugar=' + encodeURIComponent(nom)).then(function(data) {
+    if (data.status === 'ok') {
+      document.getElementById('lug-nuevo').value = '';
+      cargarTablaLugares();
+    } else alert('Error: ' + data.message);
+  }).catch(function(e) { alert('Error: ' + e.message); });
+}
+
+function eliminarLugarPanel(lugar) {
+  if (!confirm('Eliminar lugar: ' + lugar + '?')) return;
+  fetchJSON(SCRIPT_URL + '?accion=eliminarLugar&lugar=' + encodeURIComponent(lugar)).then(function(data) {
+    if (data.status === 'ok') cargarTablaLugares();
+    else alert('Error: ' + data.message);
+  }).catch(function(e) { alert('Error: ' + e.message); });
 }
 
 // PERSONAL
