@@ -277,11 +277,12 @@ function aplicarMarcaAgua(){
     ctx.drawImage(img,0,0);
     ctx.fillStyle="rgba(0,0,0,0.6)";
     ctx.fillRect(0,img.height-140,img.width,140);
-    ctx.fillStyle="#FFFFFF"; ctx.font="bold 24px Arial";
-    ctx.fillText(tipo+" - "+lugar, 20, img.height-100);
-    ctx.font="20px Arial";
-    ctx.fillText("Nombre: "+nombre, 20, img.height-70);
-    ctx.fillText("Fecha: "+fecha+"  Hora: "+hora, 20, img.height-40);
+    var fs2=Math.max(16, Math.round(img.width/22));
+    ctx.fillStyle="#FFFFFF"; ctx.font="bold "+fs2+"px Arial";
+    ctx.fillText(tipo+" - "+lugar, 10, img.height-Math.round(fs2*3.2));
+    ctx.font=(fs2-2)+"px Arial";
+    ctx.fillText("Nombre: "+nombre, 10, img.height-Math.round(fs2*1.8));
+    ctx.fillText("Fecha: "+fecha+"  Hora: "+hora, 10, img.height-Math.round(fs2*0.4));
     fotoConMarca=canvas.toDataURL("image/jpeg",0.6);
     document.getElementById("foto-area").innerHTML="<img src='"+fotoConMarca+"'>";
     document.getElementById("foto-area").classList.add("has-foto");
