@@ -122,7 +122,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
     <div class="nav-item" onclick="nav('procesos',this)">
       <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Ejecutar Procesos
     </div>
-    <div class="sidebar-label">Gesti n</div>
+    <div class="sidebar-label">Gestion</div>
     <div class="nav-item" onclick="nav('personal',this)">
       <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Configuracion
     </div>
@@ -686,12 +686,12 @@ function cargarConsulta() {
         detalle += '</div>';
       }
       if (bios.length > 0) {
-        detalle += '<div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin:12px 0 8px">  Marcaciones biom trico</div>';
+        detalle += '<div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin:12px 0 8px">  Marcaciones biometrico</div>';
         detalle += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
         bios.forEach(function(b) {
           detalle += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;text-align:center">';
           detalle += '<div class="mono" style="font-size:14px;color:var(--blue)">' + (b.hora||'') + '</div>';
-          detalle += '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + (b.tipo||'Biom trico') + '</div>';
+          detalle += '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + (b.tipo||'Biometrico') + '</div>';
           detalle += '</div>';
         });
         detalle += '</div>';
@@ -929,7 +929,7 @@ function eliminarPersonal(nombre) {
   }).catch(function(e){ alert('Error: ' + e.message); });
 }
 
-// BIOM TRICO
+// BIOMETRICO
 function agregarBiometrico() {
   var nom = document.getElementById('bio-nombre').value;
   var fecha = document.getElementById('bio-fecha').value;
