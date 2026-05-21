@@ -184,6 +184,22 @@ tr:hover td{background:rgba(79,142,247,0.03)}
           <button class="btn" onclick="cargarProgRaw()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Cargar actual</button>
         </div>
       </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-title">Editar programacion por dia</div>
+        <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px">
+          <div class="form-field">
+            <label>Selecciona el dia</label>
+            <input type="date" id="prog-fecha-filtro" style="height:36px">
+          </div>
+          <button class="btn btn-primary" onclick="cargarProgDia()">Ver programacion</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nombre</th><th>Lugar</th><th>H.Inicio</th><th>H.Fin</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="prog-dia-tabla"><tr><td colspan="6" class="loading-cell">Selecciona un dia</td></tr></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- ASISTENCIA FINAL -->
@@ -361,49 +377,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       </div>
     </div>
 
-    <!-- EDITAR PROGRAMACI N -->
-    <div class="panel" id="p-editprog">
-      <div class="page-title">Editar Programacion</div>
-      <div class="page-sub">Edita registros   especialmente los marcados como REVISION</div>
-      <div class="card">
-        <div class="card-title">Agregar registro manual</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
-          <div class="form-field"><label>Trabajador</label><input type="text" id="ep-nombre" placeholder="Nombre del trabajador" style="min-width:180px"></div>
-          <div class="form-field"><label>Fecha</label><input type="date" id="ep-fecha"></div>
-          <div class="form-field"><label>Lugar</label><select id="ep-lugar" style="width:160px;height:36px"><option value="">Sin lugar</option></select></div>
-          <div class="form-field"><label>H. Inicio</label><input type="time" id="ep-inicio"></div>
-          <div class="form-field"><label>H. Fin</label><input type="time" id="ep-fin"></div>
-          <div class="form-field"><label>Estado</label>
-            <select id="ep-estado">
-              <option value="PROGRAMADO">PROGRAMADO</option>
-              <option value="DS">DS</option>
-              <option value="CP">CP</option>
-              <option value="REVISION">REVISION</option>
-            </select>
-          </div>
-          <button class="btn btn-green" onclick="agregarProgNuevo()">+ Agregar</button>
-        </div>
       </div>
-      <div class="card">
-        <div class="card-title">Registros de programaci n</div>
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="cargarTablaEditProg()">Cargar / Actualizar</button>
-          <select id="ep-filtro" onchange="filtrarProg()" style="height:36px">
-            <option value="">Todos</option>
-            <option value="REVISION">Solo REVISION</option>
-            <option value="PROGRAMADO">Solo PROGRAMADO</option>
-            <option value="DS">Solo DS</option>
-            <option value="CP">Solo CP</option>
-          </select>
-        </div>
-        <div class="table-wrap">
-          <table><thead><tr><th>Fila</th><th>Fecha</th><th>Nombre</th><th>Lugar</th><th>H.Inicio</th><th>H.Fin</th><th>Estado</th><th>Acciones</th></tr></thead>
-          <tbody id="ep-tabla"><tr><td colspan="8" class="loading-cell">Carga los registros</td></tr></tbody></table>
-        </div>
-      </div>
-    </div>
-
-  </div>
 </div>
 
 <script>
@@ -770,6 +744,95 @@ function cambiarPinAdmin() {
     if (data.status === 'ok') { alert('PIN admin actualizado'); document.getElementById('pin-admin-new').value = ''; }
     else alert('Error: ' + data.message);
   }).catch(function(e) { alert('Error: ' + e.message); });
+}
+
+// PROGRAMACION POR DIA
+function cargarProgDia() {
+  var fecha = document.getElementById('prog-fecha-filtro').value;
+  if (!fecha) { alert('Selecciona una fecha'); return; }
+  // Convertir de yyyy-mm-dd a dd/MM/yyyy
+  var parts = fecha.split('-');
+  var fechaFmt = parts[2] + '/' + parts[1] + '/' + parts[0];
+  document.getElementById('prog-dia-tabla').innerHTML = '<tr><td colspan="6" class="loading-cell">Cargando...</td></tr>';
+  var lugares = window._lugaresCache || [];
+  // Cargar lugares si no estan en cache
+  var lugaresPromise = lugares.length > 0 
+    ? Promise.resolve({lugares: lugares})
+    : fetchJSON(SCRIPT_URL + '?accion=listarLugares');
+  lugaresPromise.then(function(dataLug) {
+    window._lugaresCache = dataLug.lugares || [];
+    return fetchJSON(SCRIPT_URL + '?accion=leerProgramacion');
+  }).then(function(data) {
+    progData = data.programacion || [];
+    var rows = progData.filter(function(r) { return r.fecha === fechaFmt; });
+    var tbody = document.getElementById('prog-dia-tabla');
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="loading-cell">Sin programacion para ' + fechaFmt + '</td></tr>';
+      return;
+    }
+    var ESTADOS = ['PROGRAMADO','DS','CP','REVISION'];
+    var lug = window._lugaresCache || [];
+    tbody.innerHTML = '';
+    rows.forEach(function(r) {
+      var tr = document.createElement('tr');
+      if (r.estado === 'REVISION') tr.style.background = 'rgba(239,68,68,0.05)';
+      var optsEstado = ESTADOS.map(function(e){
+        return '<option value="'+e+'"'+(r.estado===e?' selected':'')+'>'+e+'</option>';
+      }).join('');
+      var optsLugar = '<option value="">Sin lugar</option>';
+      lug.forEach(function(l){
+        optsLugar += '<option value="'+l+'"'+(r.lugar===l?' selected':'')+'>'+l+'</option>';
+      });
+      if (r.lugar && lug.indexOf(r.lugar) === -1) optsLugar += '<option value="'+r.lugar+'" selected>'+r.lugar+'</option>';
+      tr.innerHTML =
+        '<td>'+r.nombre+'</td>'+
+        '<td><select id="dlug'+r.fila+'" style="height:32px;font-size:12px;width:130px">'+optsLugar+'</select></td>'+
+        '<td><input type="text" id="dini'+r.fila+'" value="'+(r.hora_inicio||'')+'" style="width:60px;height:32px;font-size:12px;font-family:monospace" placeholder="00:00"></td>'+
+        '<td><input type="text" id="dfin'+r.fila+'" value="'+(r.hora_fin||'')+'" style="width:60px;height:32px;font-size:12px;font-family:monospace" placeholder="00:00"></td>'+
+        '<td><select id="dest'+r.fila+'" style="height:32px;font-size:12px">'+optsEstado+'</select></td>'+
+        '<td style="display:flex;gap:4px;padding:4px"></td>';
+      var btnG = document.createElement('button');
+      btnG.className = 'btn btn-primary';
+      btnG.style.cssText = 'height:32px;font-size:11px';
+      btnG.textContent = 'Guardar';
+      btnG.onclick = function(){ guardarProgDia(r.fila, btnG); };
+      var btnE = document.createElement('button');
+      btnE.className = 'btn btn-red';
+      btnE.style.cssText = 'height:32px;font-size:11px';
+      btnE.textContent = 'Eliminar';
+      btnE.onclick = function(){ eliminarProgDia(r.fila); };
+      tr.lastElementChild.appendChild(btnG);
+      tr.lastElementChild.appendChild(btnE);
+      tbody.appendChild(tr);
+    });
+  }).catch(function(e) {
+    document.getElementById('prog-dia-tabla').innerHTML = '<tr><td colspan="6" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
+  });
+}
+
+function guardarProgDia(fila, btn) {
+  var lugar = document.getElementById('dlug'+fila).value;
+  var ini = document.getElementById('dini'+fila).value;
+  var fin = document.getElementById('dfin'+fila).value;
+  var est = document.getElementById('dest'+fila).value;
+  fetchJSON(SCRIPT_URL + '?accion=editarProgramacion&fila=' + fila +
+    '&lugar=' + encodeURIComponent(lugar) + '&hora_inicio=' + encodeURIComponent(ini) +
+    '&hora_fin=' + encodeURIComponent(fin) + '&estado=' + encodeURIComponent(est))
+  .then(function(data) {
+    if (data.status === 'ok') {
+      btn.textContent = 'Guardado';
+      setTimeout(function(){btn.textContent='Guardar';}, 1500);
+    } else alert('Error: ' + data.message);
+  }).catch(function(e){ alert('Error: ' + e.message); });
+}
+
+function eliminarProgDia(fila) {
+  if (!confirm('Eliminar este registro?')) return;
+  fetchJSON(SCRIPT_URL + '?accion=eliminarProgramacion&fila=' + fila)
+  .then(function(data) {
+    if (data.status === 'ok') cargarProgDia();
+    else alert('Error: ' + data.message);
+  }).catch(function(e){ alert('Error: ' + e.message); });
 }
 
 // LUGARES EN PANEL
