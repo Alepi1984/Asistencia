@@ -176,7 +176,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="estado-bar" id="prog-estado"><div class="dot"></div>Listo</div>
       <div class="card">
         <div class="card-title">Mensaje de WhatsApp</div>
-        <textarea id="prog-texto" style="width:100%;min-height:200px;font-family:monospace;font-size:12px" placeholder="Pega aqui el mensaje de programacion..." oninput="document.getElementById('btn-guardar-prog').disabled=this.value.trim()===''"></textarea>
+        <textarea id="prog-texto" style="width:100%;min-height:200px;font-family:monospace;font-size:12px" placeholder="Pega aqui el mensaje de programacion..." oninput="var v=this.value.trim()!=='';document.getElementById('btn-guardar-prog').disabled=!v;document.getElementById('btn-proc-prog').disabled=!v;"></textarea>
         <div class="btn-row" style="margin-top:12px;margin-bottom:0">
           <button id="btn-guardar-prog" class="btn btn-primary" onclick="guardarYProcesar()" disabled><svg viewBox="0 0 24 24" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>Guardar y Procesar</button>
           <button class="btn" onclick="cargarProgRaw()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Cargar actual</button>
@@ -275,7 +275,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
         <div style="display:flex;flex-direction:column;gap:10px">
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
             <div><div style="font-size:13px;font-weight:500">1. Procesar Programacion</div><div style="font-size:11px;color:var(--text3)">Interpreta el mensaje de WhatsApp</div></div>
-            <button class="btn btn-primary" onclick="ejecutar('procesarProgramacion','proc-estado')">Ejecutar</button>
+            <button id="btn-proc-prog" class="btn btn-primary" onclick="ejecutar('procesarProgramacion','proc-estado')" disabled>Ejecutar</button>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
             <div><div style="font-size:13px;font-weight:500">2. Unificar Marcaciones</div><div style="font-size:11px;color:var(--text3)">Combina foto + biometrico</div></div>
