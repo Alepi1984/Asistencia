@@ -103,7 +103,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
     </div>
     <div class="nav-item" onclick="nav('programacion',this)">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Programaci n
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Programacion
     </div>
     <div class="sidebar-label">Reportes</div>
     <div class="nav-item" onclick="nav('asistencia',this)">
@@ -127,11 +127,9 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Configuracion
     </div>
     <div class="nav-item" onclick="nav('biometrico',this)">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Biom trico
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Biometrico
     </div>
-    <div class="nav-item" onclick="nav('editprog',this)">
-      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Editar Programacion
-    </div>
+
     <div class="sidebar-bottom">
       <div class="mes-selector">
         <label>Mes activo</label>
@@ -159,7 +157,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
         <div class="stat green"><div class="stat-val" id="s-asist"> </div><div class="stat-label">Asistencias (A)</div></div>
         <div class="stat red"><div class="stat-val" id="s-faltas"> </div><div class="stat-label">Faltas (F)</div></div>
         <div class="stat cyan"><div class="stat-val" id="s-foto"> </div><div class="stat-label">Marcaciones foto</div></div>
-        <div class="stat purple"><div class="stat-val" id="s-bio"> </div><div class="stat-label">Marcaciones biom trico</div></div>
+        <div class="stat purple"><div class="stat-val" id="s-bio"> </div><div class="stat-label">Marcaciones biometrico</div></div>
         <div class="stat yellow"><div class="stat-val" id="s-ds"> </div><div class="stat-label">Descansos (DS)</div></div>
       </div>
       <div class="card">
@@ -178,7 +176,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="estado-bar" id="prog-estado"><div class="dot"></div>Listo</div>
       <div class="card">
         <div class="card-title">Mensaje de WhatsApp</div>
-        <textarea id="prog-texto" style="width:100%;min-height:200px;font-family:monospace;font-size:12px" placeholder="Pega aqu  el mensaje de programaci n..."></textarea>
+        <textarea id="prog-texto" style="width:100%;min-height:200px;font-family:monospace;font-size:12px" placeholder="Pega aqu  el mensaje de programacion..."></textarea>
         <div class="btn-row" style="margin-top:12px;margin-bottom:0">
           <button class="btn btn-primary" onclick="guardarYProcesar()"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>Guardar y Procesar</button>
           <button class="btn" onclick="cargarProgRaw()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Cargar actual</button>
@@ -205,7 +203,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
     <!-- ASISTENCIA FINAL -->
     <div class="panel" id="p-asistencia">
       <div class="page-title">Asistencia Final</div>
-      <div class="page-sub">Resultado del cruce de programaci n + marcaciones</div>
+      <div class="page-sub">Resultado del cruce de programacion + marcaciones</div>
       <div class="btn-row no-print">
         <button class="btn btn-primary" onclick="cargarAsistencia()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Cargar</button>
         <button class="btn" onclick="window.print()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir</button>
@@ -276,15 +274,15 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="card">
         <div style="display:flex;flex-direction:column;gap:10px">
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
-            <div><div style="font-size:13px;font-weight:500">1. Procesar Programaci n</div><div style="font-size:11px;color:var(--text3)">Interpreta el mensaje de WhatsApp</div></div>
+            <div><div style="font-size:13px;font-weight:500">1. Procesar Programacion</div><div style="font-size:11px;color:var(--text3)">Interpreta el mensaje de WhatsApp</div></div>
             <button class="btn btn-primary" onclick="ejecutar('procesarProgramacion','proc-estado')">Ejecutar</button>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
-            <div><div style="font-size:13px;font-weight:500">2. Unificar Marcaciones</div><div style="font-size:11px;color:var(--text3)">Combina foto + biom trico</div></div>
+            <div><div style="font-size:13px;font-weight:500">2. Unificar Marcaciones</div><div style="font-size:11px;color:var(--text3)">Combina foto + biometrico</div></div>
             <button class="btn btn-primary" onclick="ejecutar('unificarMarcaciones','proc-estado')">Ejecutar</button>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
-            <div><div style="font-size:13px;font-weight:500">3. Generar Asistencia Final</div><div style="font-size:11px;color:var(--text3)">Cruza programaci n con marcaciones</div></div>
+            <div><div style="font-size:13px;font-weight:500">3. Generar Asistencia Final</div><div style="font-size:11px;color:var(--text3)">Cruza programacion con marcaciones</div></div>
             <button class="btn btn-primary" onclick="ejecutar('generarAsistenciaFinal','proc-estado')">Ejecutar</button>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
@@ -302,7 +300,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
 
     <!-- PERSONAL -->
     <div class="panel" id="p-personal">
-      <div class="page-title">Gesti n de Personal</div>
+      <div class="page-title">Gestion de Personal</div>
       <div class="page-sub">Administra trabajadores, lugares y PINs del sistema</div>
       <div class="card">
         <div class="card-title">Agregar nuevo trabajador</div>
@@ -317,7 +315,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="card">
         <div class="card-title">Lista de personal</div>
         <div class="table-wrap">
-          <table><thead><tr><th>Nombre sistema</th><th>Nombre completo</th><th>DNI</th><th>Cargo</th><th>Acci n</th></tr></thead>
+          <table><thead><tr><th>Nombre sistema</th><th>Nombre completo</th><th>DNI</th><th>Cargo</th><th>Accion</th></tr></thead>
           <tbody id="per-tabla"><tr><td colspan="5" class="loading-cell">Cargando...</td></tr></tbody></table>
         </div>
       </div>
@@ -349,10 +347,10 @@ tr:hover td{background:rgba(79,142,247,0.03)}
 
     <!-- BIOM TRICO -->
     <div class="panel" id="p-biometrico">
-      <div class="page-title">Registros Biom tricos</div>
-      <div class="page-sub">Cargar marcaciones del sistema biom trico</div>
+      <div class="page-title">Registros Biometricos</div>
+      <div class="page-sub">Cargar marcaciones del sistema biometrico</div>
       <div class="card">
-        <div class="card-title">Agregar marcaci n individual</div>
+        <div class="card-title">Agregar marcacion individual</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
           <div class="form-field"><label>Trabajador</label><select id="bio-nombre" style="min-width:200px"><option value="">Selecciona...</option></select></div>
           <div class="form-field"><label>Fecha</label><input type="date" id="bio-fecha"></div>
@@ -371,7 +369,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
         <div class="card-title">Registros cargados</div>
         <div class="btn-row"><button class="btn btn-primary" onclick="cargarTablaBio()">Actualizar lista</button></div>
         <div class="table-wrap">
-          <table><thead><tr><th>Fila</th><th>DNI</th><th>Nombre</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Acci n</th></tr></thead>
+          <table><thead><tr><th>Fila</th><th>DNI</th><th>Nombre</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Accion</th></tr></thead>
           <tbody id="bio-tabla"><tr><td colspan="7" class="loading-cell">Haz clic en Actualizar</td></tr></tbody></table>
         </div>
       </div>
@@ -428,7 +426,7 @@ function fetchJSON(url) {
     s.onerror = function() {
       delete window[cbName];
       s.remove();
-      reject(new Error('Error de conexi n'));
+      reject(new Error('Error de conexion'));
     };
     document.body.appendChild(s);
   });
@@ -526,7 +524,7 @@ function cargarDashboard() {
 function cargarProgRaw() {
   fetchJSON(SCRIPT_URL + '?accion=leerProgramacionRaw').then(function(data) {
     document.getElementById('prog-texto').value = data.texto || '';
-    setEstado('prog-estado','ok','Programaci n cargada');
+    setEstado('prog-estado','ok','Programacion cargada');
   }).catch(function(e) { setEstado('prog-estado','err','Error: ' + e.message); });
 }
 
@@ -538,7 +536,7 @@ function guardarYProcesar() {
     setEstado('prog-estado','loading','Procesando...');
     return fetchJSON(SCRIPT_URL + '?accion=procesarProgramacion');
   }).then(function() {
-    setEstado('prog-estado','ok','  Programaci n procesada correctamente');
+    setEstado('prog-estado','ok','  Programacion procesada correctamente');
   }).catch(function(e) { setEstado('prog-estado','err','Error: ' + e.message); });
 }
 
@@ -929,7 +927,7 @@ function eliminarPersonal(nombre) {
   }).catch(function(e){ alert('Error: ' + e.message); });
 }
 
-// BIOMETRICO
+// BIOM TRICO
 function agregarBiometrico() {
   var nom = document.getElementById('bio-nombre').value;
   var fecha = document.getElementById('bio-fecha').value;
@@ -1015,7 +1013,7 @@ function getLugaresOpts(seleccionado) {
   lugares.forEach(function(l) {
     opts += '<option value="' + l + '"' + (l === seleccionado ? ' selected' : '') + '>' + l + '</option>';
   });
-  // Si el lugar actual no está en la lista, agregarlo
+  // Si el lugar actual no esta en la lista, agregarlo
   if (seleccionado && !lugares.includes(seleccionado)) {
     opts += '<option value="' + seleccionado + '" selected>' + seleccionado + '</option>';
   }
@@ -1063,14 +1061,14 @@ function filtrarProg() {
       '<td><select id="est'+r.fila+'" style="height:34px;font-size:12px">'+optsEstado+'</select></td>'+
       '<td style="display:flex;gap:6px;padding:4px"></td>';
 
-    // Botón guardar
+    // Boton guardar
     var btnG = document.createElement('button');
     btnG.className = 'btn btn-primary';
     btnG.style.cssText = 'height:34px;font-size:12px';
     btnG.textContent = 'Guardar';
     btnG.onclick = function(){ guardarProg(r.fila, btnG); };
 
-    // Botón eliminar
+    // Boton eliminar
     var btnE = document.createElement('button');
     btnE.className = 'btn btn-red';
     btnE.style.cssText = 'height:34px;font-size:12px';
