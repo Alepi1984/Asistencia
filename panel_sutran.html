@@ -362,7 +362,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="card">
         <div class="card-title">Carga masiva desde Excel</div>
         <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Copia y pega desde Excel: columnas Nombre | Fecha | Hora (una fila por l nea, separado por TAB)</div>
-        <textarea id="bio-masivo" style="width:100%;height:100px;font-family:monospace;font-size:11px" placeholder="Abner&#9;11/05/2026&#9;13:48&#10;Cristina&#9;11/05/2026&#9;15:07"></textarea>
+        <textarea id="bio-masivo" style="width:100%;height:100px;font-family:monospace;font-size:11px" placeholder="18098607&#9;Joe Tejada Rios&#9;1/04/2026 07:00:59&#9;Entrada"></textarea>
         <button class="btn btn-primary" style="margin-top:8px" onclick="cargarBiometricoMasivo()">Cargar desde pegado</button>
       </div>
       <div class="card">
@@ -483,7 +483,7 @@ function poblarSelectores(rows) {
     rows.forEach(function(p) {
       var op = document.createElement('option');
       op.value = p.nombre_sistema;
-      op.textContent = p.nombre_completo || p.nombre_sistema;
+      op.textContent = p.nombre_sistema;
       sel.appendChild(op);
     });
     if (val) sel.value = val;
@@ -950,17 +950,33 @@ function cargarBiometricoMasivo() {
   var promesas = lineas.map(function(linea) {
     var cols = linea.split('\t');
     if (cols.length < 3) return Promise.resolve({status:'error'});
-    var nombre = cols[0].trim();
-    var fechaRaw = cols[1].trim();
-    var hora = cols[2].trim();
+    // Formato biometrico real: DNI | Nombre | FechaHora | Tipo
+    var dni = cols[0].trim();
+    var nombre = cols[1].trim();
+    var fechaHora = cols[2].trim();
     var tipo = cols[3] ? cols[3].trim() : '';
-    var fechaFmt = fechaRaw.includes('-') ? fechaRaw.split('-').reverse().join('/') : fechaRaw;
-    return fetchJSON(SCRIPT_URL + '?accion=agregarBiometrico&nombre=' + encodeURIComponent(nombre) +
-      '&fecha=' + encodeURIComponent(fechaFmt) + '&hora=' + encodeURIComponent(hora) + '&tipo=' + encodeURIComponent(tipo));
+    // Separar fecha y hora del campo "1/04/2026 07:00:59"
+    var partes = fechaHora.split(' ');
+    var fechaRaw = partes[0] || '';
+    var horaRaw = partes[1] ? partes[1].substring(0,5) : '';
+    // Formatear fecha a dd/MM/yyyy
+    var fechaFmt = fechaRaw;
+    if (fechaRaw.includes('/')) {
+      var fp = fechaRaw.split('/');
+      if (fp.length === 3) fechaFmt = fp[0].padStart(2,'0') + '/' + fp[1].padStart(2,'0') + '/' + fp[2];
+    } else if (fechaRaw.includes('-')) {
+      fechaFmt = fechaRaw.split('-').reverse().join('/');
+    }
+    if (!nombre || !fechaFmt || !horaRaw) return Promise.resolve({status:'error'});
+    return fetchJSON(SCRIPT_URL + '?accion=agregarBiometrico&dni=' + encodeURIComponent(dni) +
+      '&nombre=' + encodeURIComponent(nombre) +
+      '&fecha=' + encodeURIComponent(fechaFmt) +
+      '&hora=' + encodeURIComponent(horaRaw) +
+      '&tipo=' + encodeURIComponent(tipo));
   });
   Promise.all(promesas).then(function(results) {
-    var ok = results.filter(function(r){return r.status==='ok';}).length;
-    alert('  ' + ok + ' de ' + results.length + ' registros cargados');
+    var ok = results.filter(function(r){return r && r.status==='ok';}).length;
+    alert(ok + ' de ' + results.length + ' registros cargados');
     document.getElementById('bio-masivo').value = '';
     cargarTablaBio();
   });
