@@ -139,7 +139,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
           <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
           <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
         </select>
-        <select id="g-anio"><option value="2026">2026</option><option value="2025">2025</option></select>
+        <select id="g-anio"><option value="2027">2027</option><option value="2026" selected>2026</option><option value="2025">2025</option><option value="2024">2024</option></select>
       </div>
     </div>
   </div>
@@ -178,7 +178,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
         <div class="card-title">Mensaje de WhatsApp</div>
         <textarea id="prog-texto" style="width:100%;min-height:200px;font-family:monospace;font-size:12px" placeholder="Pega aqu  el mensaje de programacion..."></textarea>
         <div class="btn-row" style="margin-top:12px;margin-bottom:0">
-          <button class="btn btn-primary" onclick="guardarYProcesar()"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>Guardar y Procesar</button>
+          <button id="btn-guardar-prog" class="btn btn-primary" onclick="guardarYProcesar()" disabled><svg viewBox="0 0 24 24" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>Guardar y Procesar</button>
           <button class="btn" onclick="cargarProgRaw()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Cargar actual</button>
         </div>
       </div>
@@ -522,6 +522,7 @@ function cargarDashboard() {
 
 // PROGRAMACI N
 function cargarProgRaw() {
+  document.getElementById('btn-guardar-prog').disabled = true;
   fetchJSON(SCRIPT_URL + '?accion=leerProgramacionRaw').then(function(data) {
     document.getElementById('prog-texto').value = data.texto || '';
     setEstado('prog-estado','ok','Programacion cargada');
@@ -715,7 +716,7 @@ function ejecutar(accion, estadoId) {
 }
 
 function ejecutarTodo() {
-  var pasos = ['procesarProgramacion','unificarMarcaciones','generarAsistenciaFinal','generarReporteMensual','generarReporteImprimir'];
+  var pasos = ['unificarMarcaciones','generarAsistenciaFinal','generarReporteMensual','generarReporteImprimir'];
   var i = 0;
   function siguiente() {
     if (i >= pasos.length) { setEstado('proc-estado','ok','  Todo completado'); return; }
