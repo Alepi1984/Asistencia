@@ -123,6 +123,10 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Ejecutar Procesos
     </div>
     <div class="sidebar-label">Gestion</div>
+    <div class="nav-item" onclick="nav('regmanual',this)">
+      <svg viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Registro Manual
+    </div>
     <div class="nav-item" onclick="nav('personal',this)">
       <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Configuracion
     </div>
@@ -298,6 +302,59 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       </div>
     </div>
 
+    <!-- REGISTRO MANUAL -->
+    <div class="panel" id="p-regmanual">
+      <div class="page-header">
+        <div class="page-title">Registro Manual</div>
+        <div class="page-sub">Subsanar marcaciones olvidadas o no registradas</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Nuevo registro manual</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-field">
+            <label>Trabajador</label>
+            <select id="rm-trabajador" style="height:36px;width:100%"><option value="">Cargando...</option></select>
+          </div>
+          <div class="form-field">
+            <label>Lugar</label>
+            <select id="rm-lugar" style="height:36px;width:100%"><option value="">Cargando...</option></select>
+          </div>
+          <div class="form-field">
+            <label>Fecha</label>
+            <input type="date" id="rm-fecha" style="height:36px;width:100%">
+          </div>
+          <div class="form-field">
+            <label>Hora</label>
+            <input type="time" id="rm-hora" style="height:36px;width:100%">
+          </div>
+          <div class="form-field">
+            <label>Tipo</label>
+            <select id="rm-tipo" style="height:36px;width:100%">
+              <option value="Inicio de turno">Inicio de turno</option>
+              <option value="Fin de turno">Fin de turno</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Observacion</label>
+            <input type="text" id="rm-obs" placeholder="Motivo del registro manual" style="height:36px;width:100%">
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+          <button class="btn btn-primary" onclick="guardarRegistroManual()">Guardar Registro</button>
+          <span id="rm-estado" style="font-size:13px"></span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Registros manuales del mes</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Trabajador</th><th>Lugar</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Observacion</th><th>Accion</th></tr></thead>
+            <tbody id="rm-tabla"><tr><td colspan="7" class="loading-cell">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- PERSONAL -->
     <div class="panel" id="p-personal">
       <div class="page-title">Gestion de Personal</div>
@@ -391,6 +448,7 @@ function nav(id, el) {
   document.getElementById('p-' + id).classList.add('active');
   el.classList.add('active');
   if (id === 'personal') { cargarTablaPersonal(); cargarTablaLugares(); }
+  if (id === 'regmanual') cargarRegistroManual();
   if (id === 'biometrico') cargarTablaBio();
   if (id === 'editprog') {
     // Cargar lugares al cache y poblar select del formulario
@@ -835,6 +893,124 @@ function eliminarProgDia(fila) {
     if (data.status === 'ok') cargarProgDia();
     else alert('Error: ' + data.message);
   }).catch(function(e){ alert('Error: ' + e.message); });
+}
+
+// REGISTRO MANUAL
+function cargarRegistroManual() {
+  // Cargar trabajadores
+  fetchJSON(SCRIPT_URL + '?accion=listarPersonal').then(function(data) {
+    var sel = document.getElementById('rm-trabajador');
+    sel.innerHTML = '<option value="">Selecciona trabajador</option>';
+    (data.personal || []).forEach(function(p) {
+      var op = document.createElement('option');
+      op.value = p.nombre_sistema;
+      op.textContent = p.nombre_sistema;
+      sel.appendChild(op);
+    });
+  });
+  // Cargar lugares
+  fetchJSON(SCRIPT_URL + '?accion=listarLugares').then(function(data) {
+    var sel = document.getElementById('rm-lugar');
+    sel.innerHTML = '<option value="">Selecciona lugar</option>';
+    (data.lugares || []).forEach(function(l) {
+      var op = document.createElement('option');
+      op.value = l; op.textContent = l;
+      sel.appendChild(op);
+    });
+  });
+  // Fecha de hoy por defecto
+  var hoy = new Date();
+  var dd = String(hoy.getDate()).padStart(2,'0');
+  var mm = String(hoy.getMonth()+1).padStart(2,'0');
+  document.getElementById('rm-fecha').value = hoy.getFullYear()+'-'+mm+'-'+dd;
+  // Cargar tabla
+  cargarTablaRegistroManual();
+}
+
+function guardarRegistroManual() {
+  var trabajador = document.getElementById('rm-trabajador').value;
+  var lugar = document.getElementById('rm-lugar').value;
+  var fechaInput = document.getElementById('rm-fecha').value;
+  var hora = document.getElementById('rm-hora').value;
+  var tipo = document.getElementById('rm-tipo').value;
+  var obs = document.getElementById('rm-obs').value.trim();
+
+  if (!trabajador || !lugar || !fechaInput || !hora) {
+    alert('Completa todos los campos obligatorios');
+    return;
+  }
+
+  // Convertir fecha de yyyy-mm-dd a dd/MM/yyyy
+  var fp = fechaInput.split('-');
+  var fecha = fp[2] + '/' + fp[1] + '/' + fp[0];
+
+  var estado = document.getElementById('rm-estado');
+  estado.textContent = 'Guardando...';
+
+  fetchJSON(SCRIPT_URL + '?accion=registroManual' +
+    '&trabajador=' + encodeURIComponent(trabajador) +
+    '&lugar=' + encodeURIComponent(lugar) +
+    '&fecha=' + encodeURIComponent(fecha) +
+    '&hora=' + encodeURIComponent(hora) +
+    '&tipo=' + encodeURIComponent(tipo) +
+    '&obs=' + encodeURIComponent(obs)
+  ).then(function(data) {
+    if (data.status === 'ok') {
+      estado.textContent = 'Registro guardado correctamente';
+      estado.style.color = 'var(--green)';
+      setTimeout(function(){ estado.textContent = ''; }, 3000);
+      document.getElementById('rm-hora').value = '';
+      document.getElementById('rm-obs').value = '';
+      cargarTablaRegistroManual();
+    } else {
+      estado.textContent = 'Error: ' + data.message;
+      estado.style.color = 'var(--red)';
+    }
+  }).catch(function(e) {
+    estado.textContent = 'Error: ' + e.message;
+    estado.style.color = 'var(--red)';
+  });
+}
+
+function cargarTablaRegistroManual() {
+  var mes = document.getElementById('g-mes').value;
+  var anio = document.getElementById('g-anio').value;
+  var tbody = document.getElementById('rm-tabla');
+  tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Cargando...</td></tr>';
+  fetchJSON(SCRIPT_URL + '?accion=listarRegistroManual&mes=' + mes + '&anio=' + anio).then(function(data) {
+    var registros = data.registros || [];
+    if (registros.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Sin registros manuales este mes</td></tr>';
+      return;
+    }
+    tbody.innerHTML = '';
+    registros.forEach(function(r) {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>'+r.trabajador+'</td>'+
+        '<td>'+r.lugar+'</td>'+
+        '<td>'+r.fecha+'</td>'+
+        '<td>'+r.hora+'</td>'+
+        '<td>'+r.tipo+'</td>'+
+        '<td>'+r.obs+'</td>'+
+        '<td></td>';
+      var btn = document.createElement('button');
+      btn.className = 'btn btn-red';
+      btn.style.cssText = 'height:28px;font-size:11px';
+      btn.textContent = 'Eliminar';
+      btn.onclick = function(){ eliminarRegistroManual(r.fila); };
+      tr.lastElementChild.appendChild(btn);
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+function eliminarRegistroManual(fila) {
+  if (!confirm('Eliminar este registro manual?')) return;
+  fetchJSON(SCRIPT_URL + '?accion=eliminarRegistroManual&fila=' + fila).then(function(data) {
+    if (data.status === 'ok') cargarTablaRegistroManual();
+    else alert('Error: ' + data.message);
+  });
 }
 
 // LUGARES EN PANEL
