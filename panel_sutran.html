@@ -704,11 +704,14 @@ function cargarConsulta() {
 
 // PROCESOS
 function ejecutar(accion, estadoId) {
-  setEstado(estadoId, 'loading', 'Ejecutando ' + accion + '...');
-  fetchJSON(SCRIPT_URL + '?accion=' + accion).then(function(data) {
-    if (data.status === 'ok') setEstado(estadoId, 'ok', '  ' + (data.message || 'Completado'));
-    else setEstado(estadoId, 'err', '  ' + (data.message || 'Error'));
-  }).catch(function(e) { setEstado(estadoId, 'err', '  Error: ' + e.message); });
+  var mes = document.getElementById('g-mes').value;
+  var anio = document.getElementById('g-anio').value;
+  var url = SCRIPT_URL + '?accion=' + accion + '&mes=' + mes + '&anio=' + anio;
+  setEstado(estadoId, 'loading', 'Ejecutando ' + accion + ' (' + mes + '/' + anio + ')...');
+  fetchJSON(url).then(function(data) {
+    if (data.status === 'ok') setEstado(estadoId, 'ok', 'OK ' + (data.message || 'Completado'));
+    else setEstado(estadoId, 'err', 'Error: ' + (data.message || 'Error'));
+  }).catch(function(e) { setEstado(estadoId, 'err', 'Error: ' + e.message); });
 }
 
 function ejecutarTodo() {
