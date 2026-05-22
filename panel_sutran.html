@@ -226,6 +226,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="page-sub">Vista calendario por trabajador</div>
       <div class="btn-row no-print">
         <button class="btn btn-primary" onclick="cargarMensual()">Cargar reporte</button>
+        <button class="btn btn-green" onclick="descargarExcel('generarExcelMensual',this)">Descargar Excel</button>
         <button class="btn" onclick="window.print()">Imprimir</button>
       </div>
       <div class="card" style="padding:12px">
@@ -239,6 +240,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="page-sub">Reporte final para impresi n y firma</div>
       <div class="btn-row no-print">
         <button class="btn btn-primary" onclick="cargarImprimir()">Cargar reporte</button>
+        <button class="btn btn-green" id="btn-excel-firmas" onclick="descargarExcel('generarExcelFirmas',this)">Descargar Excel</button>
         <button class="btn" onclick="window.print()">Imprimir</button>
       </div>
       <div class="card" style="padding:12px">
@@ -436,7 +438,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4IxfWSD-U4rxu18MtjdkgQLMIekUmyLytzuQSiwKQbzq_nRoQiewyF2Amdmt9jlJo/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVW2dQGGhqscQ71kpw_Hd8mSLyVgr0uXvilTZapcSOEVOksHHtQfOYNbC6bVJnUIhu/exec";
 const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 let personalData = [];
 let progData = [];
@@ -807,7 +809,7 @@ function cambiarPinAdmin() {
 }
 
 // DESCARGAR EXCEL
-function descargarExcel(accion) {
+function descargarExcel(accion, btn) {
   var mes = document.getElementById('g-mes').value;
   var anio = document.getElementById('g-anio').value;
   var btn = event.currentTarget;
