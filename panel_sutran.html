@@ -8,20 +8,20 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0F1117;--bg2:#1A1D27;--bg3:#22263A;--border:#2D3250;
-  --blue:#4F8EF7;--blue2:#2563EB;--green:#22C55E;--red:#EF4444;
-  --yellow:#F59E0B;--purple:#A78BFA;--cyan:#22D3EE;
-  --text:#E2E8F0;--text2:#94A3B8;--text3:#475569;
+  --bg:#0B0F1E;--bg2:#141929;--bg3:#1C2440;--border:#2A3560;
+  --blue:#5B9BFF;--blue2:#2563EB;--green:#10D9A0;--red:#FF5B7A;
+  --yellow:#FFB830;--purple:#A78BFA;--cyan:#22D3EE;--orange:#FB923C;
+  --text:#EEF2FF;--text2:#8BA3CC;--text3:#4A6080;
   --r:10px;--r-sm:6px;
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.topbar{background:linear-gradient(90deg,#1C2440,#0B0F1E);border-bottom:1px solid #2A3560;padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
 .brand{display:flex;align-items:center;gap:10px}
 .brand-badge{background:var(--blue2);color:white;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;padding:4px 10px;border-radius:4px;letter-spacing:1px}
 .brand-name{font-size:13px;color:var(--text2)}
 .reloj{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text3)}
 .layout{display:flex;height:calc(100vh - 58px)}
-.sidebar{width:228px;background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column}
+.sidebar{width:228px;background:linear-gradient(180deg,#1C2440 0%,#0B0F1E 100%);border-right:1px solid var(--border);padding:12px 0;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column}
 .main{flex:1;overflow-y:auto;padding:28px}
 .sidebar-label{padding:6px 16px;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:12px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;font-size:13px;color:var(--text2);border-left:2px solid transparent;transition:all 0.15s}
@@ -34,7 +34,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .panel{display:none}.panel.active{display:block}
 .page-title{font-size:20px;font-weight:600;margin-bottom:4px;letter-spacing:-0.3px}
 .page-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,0.4);padding:20px;margin-bottom:16px}
 .card-title{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
 .stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
@@ -176,7 +176,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
     <!-- PROGRAMACI N -->
     <div class="panel" id="p-programacion">
       <div class="page-title">Programacion</div>
-      <div class="page-sub">Pega el mensaje de WhatsApp y proc salo</div>
+      <div class="page-sub">Pega el mensaje de WhatsApp y procesalo</div>
       <div class="estado-bar" id="prog-estado"><div class="dot"></div>Listo</div>
       <div class="card">
         <div class="card-title">Mensaje de WhatsApp</div>
@@ -237,7 +237,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
     <!-- REPORTE IMPRIMIR -->
     <div class="panel" id="p-imprimir">
       <div class="page-title">Reporte para Firmas</div>
-      <div class="page-sub">Reporte final para impresi n y firma</div>
+      <div class="page-sub">Reporte final para impresion y firma</div>
       <div class="btn-row no-print">
         <button class="btn btn-primary" onclick="cargarImprimir()">Cargar reporte</button>
         <button class="btn btn-green" id="btn-excel-firmas" onclick="descargarExcel('generarExcelFirmas',this)">Descargar Excel</button>
@@ -365,7 +365,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
         <div class="card-title">Agregar nuevo trabajador</div>
         <div class="form-grid">
           <div class="form-field"><label>Nombre sistema (corto)</label><input type="text" id="per-sistema" placeholder="Ej: Abner"></div>
-          <div class="form-field"><label>Nombre completo</label><input type="text" id="per-completo" placeholder="Ej: Abner Le n Pichen"></div>
+          <div class="form-field"><label>Nombre completo</label><input type="text" id="per-completo" placeholder="Ej: Abner Leon Pichen"></div>
           <div class="form-field"><label>DNI</label><input type="text" id="per-dni" placeholder="Ej: 42563290"></div>
           <div class="form-field"><label>Cargo</label><input type="text" id="per-cargo" placeholder="Ej: Inspector"></div>
         </div>
@@ -438,7 +438,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVW2dQGGhqscQ71kpw_Hd8mSLyVgr0uXvilTZapcSOEVOksHHtQfOYNbC6bVJnUIhu/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUWCocx3jCgicgs0wTJNwNCI2RZiSvlt_jJuHk_XAMKnLWKKDZi_mPsMEGRmS7B_-3/exec";
 const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 let personalData = [];
 let progData = [];
