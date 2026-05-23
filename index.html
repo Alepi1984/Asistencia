@@ -204,7 +204,7 @@ function cargarSelect(){
         data.personal.forEach(function(t){
           var op=document.createElement("option");
           op.value=t.nombre_sistema;
-          op.textContent=t.nombre_completo || t.nombre_sistema;
+          op.textContent=t.nombre_sistema;
           op.setAttribute('data-completo', t.nombre_completo || t.nombre_sistema);
           sel.appendChild(op);
         });
