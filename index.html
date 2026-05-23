@@ -308,7 +308,7 @@ async function enviar(){
   document.getElementById("meta-fecha").textContent=fecha;
   document.getElementById("meta-hora").textContent=hora;
 
-  var nombre=sel.selectedOptions[0].text;
+  var nombre=sel.selectedOptions[0].getAttribute('data-completo')||sel.selectedOptions[0].text;
   var nombreSistema=sel.value;
   var lugar=lug.value;
   var tipo=turnoSel==="inicio"?"Inicio de turno":"Fin de turno";
