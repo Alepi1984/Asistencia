@@ -474,6 +474,31 @@ function nav(id, el) {
   if (id === 'personal') { cargarTablaPersonal(); cargarTablaLugares(); }
   if (id === 'regmanual') cargarRegistroManual();
   if (id === 'biometrico') cargarTablaBio();
+  if (id === 'programacion') {
+    // Cargar selects de agregar trabajador por dia
+    fetchJSON(SCRIPT_URL + '?accion=listarPersonal').then(function(data) {
+      var sel = document.getElementById('prog-add-nombre');
+      if (sel) {
+        sel.innerHTML = '<option value="">Selecciona...</option>';
+        (data.personal||[]).forEach(function(p) {
+          var op = document.createElement('option');
+          op.value = p.nombre_sistema; op.textContent = p.nombre_sistema;
+          sel.appendChild(op);
+        });
+      }
+    });
+    fetchJSON(SCRIPT_URL + '?accion=listarLugares').then(function(data) {
+      var sel = document.getElementById('prog-add-lugar');
+      if (sel) {
+        sel.innerHTML = '<option value="">Sin lugar</option>';
+        (data.lugares||[]).forEach(function(l) {
+          var op = document.createElement('option');
+          op.value = l; op.textContent = l;
+          sel.appendChild(op);
+        });
+      }
+    });
+  }
   if (id === 'editprog') {
     // Cargar lugares al cache y poblar select del formulario
     fetchJSON(SCRIPT_URL + '?accion=listarLugares').then(function(data) {
