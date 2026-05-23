@@ -204,7 +204,8 @@ function cargarSelect(){
         data.personal.forEach(function(t){
           var op=document.createElement("option");
           op.value=t.nombre_sistema;
-          op.textContent=t.nombre_sistema;
+          op.textContent=t.nombre_completo || t.nombre_sistema;
+          op.setAttribute('data-completo', t.nombre_completo || t.nombre_sistema);
           sel.appendChild(op);
         });
       }
@@ -263,7 +264,7 @@ function aplicarMarcaAgua(){
   if(!fotoData)return;
   var sel=document.getElementById("trabajador");
   var lug=document.getElementById("lugar-servicio");
-  var nombre=sel.value?sel.selectedOptions[0].text:"N/D";
+  var nombre=sel.value?(sel.selectedOptions[0].getAttribute('data-completo')||sel.selectedOptions[0].text):"N/D";
   var lugar=lug.value || "LUGAR NO SELEC.";
   var tipo=turnoSel==="inicio"?"INICIO DE TURNO":"FIN DE TURNO";
   var ahora=new Date();
