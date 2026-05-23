@@ -70,6 +70,7 @@ input[type=file]{display:none}
 <div id="contenedor-principal" style="display:none;">
 <script>
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxNsgTxniqG3SfulxwEqg9Sk8-cvBM2xwjhMHxVuX6bbGWyQbZXVWte66IhL25pTY4t/exec";
+const SCRIPT_FOTO_URL="https://script.google.com/macros/s/AKfycbxg9vqjaKgnAng0fNlS4KFUbJ0r7sDqx_AV9T9nS-jlNzghr7CPXJolOJWVLXcU7qpLGw/exec";
 </script>
 <div class="header">
   <div class="header-left">
@@ -340,7 +341,7 @@ async function enviar(){
 
   try{
     // Paso 1: Registrar datos
-    var url1=SCRIPT_URL+"?accion=registro&codigo="+encodeURIComponent(nombreSistema)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&lugar="+encodeURIComponent(lugar)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
+    var url1=SCRIPT_FOTO_URL+"?accion=registro&codigo="+encodeURIComponent(nombreSistema)+"&nombre="+encodeURIComponent(nombre)+"&tipo="+encodeURIComponent(tipo)+"&lugar="+encodeURIComponent(lugar)+"&fecha="+encodeURIComponent(fecha)+"&hora="+encodeURIComponent(hora)+"&latitud="+encodeURIComponent(latitud)+"&longitud="+encodeURIComponent(longitud);
     var d1=await fetchJSONP(url1);
     if(d1.status!=="ok") throw new Error(d1.message||"Error al registrar");
 
@@ -350,7 +351,7 @@ async function enviar(){
     var totalPartes=Math.ceil(fotoB64.length/parteSize);
     for(var pi=0; pi<totalPartes; pi++){
       var parte=encodeURIComponent(fotoB64.substring(pi*parteSize,(pi+1)*parteSize));
-      var urlFoto=SCRIPT_URL+"?accion=fotoChunk&fila="+d1.fila+"&parte="+pi+"&total="+totalPartes+"&data="+parte;
+      var urlFoto=SCRIPT_FOTO_URL+"?accion=fotoChunk&fila="+d1.fila+"&parte="+pi+"&total="+totalPartes+"&data="+parte;
       await fetchJSONP(urlFoto);
     }
 
