@@ -460,7 +460,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxB41UCG4tmZMwyDAfkaMrYYRfTS4rcn7B3pVEz4TCI0_l3gdK52BA6lnGZF39FGeE/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNsgTxniqG3SfulxwEqg9Sk8-cvBM2xwjhMHxVuX6bbGWyQbZXVWte66IhL25pTY4t/exec";
 const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 let personalData = [];
 let progData = [];
@@ -475,6 +475,12 @@ function nav(id, el) {
   if (id === 'regmanual') cargarRegistroManual();
   if (id === 'biometrico') cargarTablaBio();
   if (id === 'programacion') {
+    // Cargar estados desde LEYENDA
+    fetchJSON(SCRIPT_URL + '?accion=listarEstados').then(function(data) {
+      if (data.estados && data.estados.length > 0) {
+        window._estadosCache = ['PROGRAMADO'].concat(data.estados);
+      }
+    });
     // Cargar selects de agregar trabajador por dia
     fetchJSON(SCRIPT_URL + '?accion=listarPersonal').then(function(data) {
       var sel = document.getElementById('prog-add-nombre');
@@ -926,7 +932,7 @@ function cargarProgDia() {
       tbody.innerHTML = '<tr><td colspan="6" class="loading-cell">Sin programacion para ' + fechaFmt + '</td></tr>';
       return;
     }
-    var ESTADOS = ['PROGRAMADO','DS','CP','REVISION'];
+    var ESTADOS = window._estadosCache || ['PROGRAMADO','DS','CP','REVISION','T','FE','FR','CO','CPSS','DM','LM','LP','LO','LUB','LS','V','C'];
     var lug = window._lugaresCache || [];
     tbody.innerHTML = '';
     rows.forEach(function(r) {
@@ -1315,7 +1321,7 @@ function getLugaresOpts(seleccionado) {
 function filtrarProg() {
   var filtro = document.getElementById('ep-filtro').value;
   var rows = filtro ? progData.filter(function(r){return r.estado===filtro;}) : progData;
-  var ESTADOS = ['PROGRAMADO','DS','CP','REVISION'];
+  var ESTADOS = window._estadosCache || ['PROGRAMADO','DS','CP','REVISION','T','FE','FR','CO','CPSS','DM','LM','LP','LO','LUB','LS','V','C'];
   var lugares = window._lugaresCache || [];
   var tbody = document.getElementById('ep-tabla');
 
