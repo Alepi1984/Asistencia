@@ -201,6 +201,28 @@ tr:hover td{background:rgba(79,142,247,0.03)}
             <tbody id="prog-dia-tabla"><tr><td colspan="6" class="loading-cell">Selecciona un dia</td></tr></tbody>
           </table>
         </div>
+        <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:10px">Agregar trabajador al dia seleccionado</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:8px;align-items:flex-end">
+            <div class="form-field">
+              <label>Trabajador</label>
+              <select id="prog-add-nombre" style="height:34px;width:100%"><option value="">Selecciona...</option></select>
+            </div>
+            <div class="form-field">
+              <label>Lugar</label>
+              <select id="prog-add-lugar" style="height:34px;width:100%"><option value="">Selecciona...</option></select>
+            </div>
+            <div class="form-field">
+              <label>H. Inicio</label>
+              <input type="text" id="prog-add-inicio" placeholder="08:00" style="height:34px;width:100%;font-family:monospace">
+            </div>
+            <div class="form-field">
+              <label>H. Fin</label>
+              <input type="text" id="prog-add-fin" placeholder="17:00" style="height:34px;width:100%;font-family:monospace">
+            </div>
+            <button class="btn btn-green" onclick="agregarProgDia()" style="height:34px">+ Agregar</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -831,6 +853,31 @@ function descargarExcel(accion, btn) {
 }
 
 // PROGRAMACION POR DIA
+function agregarProgDia() {
+  var fecha = document.getElementById('prog-fecha-filtro').value;
+  if (!fecha) { alert('Primero selecciona un dia'); return; }
+  var fp = fecha.split('-');
+  var fechaFmt = fp[2] + '/' + fp[1] + '/' + fp[0];
+  var nombre = document.getElementById('prog-add-nombre').value;
+  var lugar = document.getElementById('prog-add-lugar').value;
+  var inicio = document.getElementById('prog-add-inicio').value;
+  var fin = document.getElementById('prog-add-fin').value;
+  if (!nombre) { alert('Selecciona un trabajador'); return; }
+  fetchJSON(SCRIPT_URL + '?accion=agregarProgramacion&fecha=' + encodeURIComponent(fechaFmt) +
+    '&nombre=' + encodeURIComponent(nombre) +
+    '&lugar=' + encodeURIComponent(lugar) +
+    '&hora_inicio=' + encodeURIComponent(inicio) +
+    '&hora_fin=' + encodeURIComponent(fin) +
+    '&estado=PROGRAMADO'
+  ).then(function(data) {
+    if (data.status === 'ok') {
+      document.getElementById('prog-add-inicio').value = '';
+      document.getElementById('prog-add-fin').value = '';
+      cargarProgDia();
+    } else alert('Error: ' + data.message);
+  }).catch(function(e) { alert('Error: ' + e.message); });
+}
+
 function cargarProgDia() {
   var fecha = document.getElementById('prog-fecha-filtro').value;
   if (!fecha) { alert('Selecciona una fecha'); return; }
