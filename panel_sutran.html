@@ -154,7 +154,8 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="page-title">Dashboard</div>
       <div class="page-sub">Resumen general del mes seleccionado</div>
       <div class="btn-row no-print">
-        <button class="btn btn-primary" onclick="cargarDashboard()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Actualizar</button>
+        <button class="btn btn-primary" id="btn-actualizar-dash" onclick="cargarDashboard()"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Actualizar</button>
+        <span id="dash-estado" style="font-size:12px;color:var(--text3);margin-left:8px"></span>
       </div>
       <div class="stats-grid">
         <div class="stat blue"><div class="stat-val" id="s-personal"> </div><div class="stat-label">Personal registrado</div></div>
@@ -194,6 +195,7 @@ tr:hover td{background:rgba(79,142,247,0.03)}
             <input type="date" id="prog-fecha-filtro" style="height:36px">
           </div>
           <button class="btn btn-primary" onclick="cargarProgDia()">Ver programacion</button>
+          <button class="btn btn-red" onclick="limpiarProgDia()">Limpiar dia</button>
         </div>
         <div class="table-wrap">
           <table>
@@ -219,6 +221,10 @@ tr:hover td{background:rgba(79,142,247,0.03)}
             <div class="form-field">
               <label>H. Fin</label>
               <input type="text" id="prog-add-fin" placeholder="17:00" style="height:34px;width:100%;font-family:monospace">
+            </div>
+            <div class="form-field">
+              <label>Observacion</label>
+              <input type="text" id="prog-add-obs" placeholder="Ej: Compensa 15/03/2026" style="height:34px;width:100%">
             </div>
             <button class="btn btn-green" onclick="agregarProgDia()" style="height:34px">+ Agregar</button>
           </div>
@@ -320,6 +326,13 @@ tr:hover td{background:rgba(79,142,247,0.03)}
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border)">
             <div><div style="font-size:13px;font-weight:500">5. Generar Reporte para Imprimir</div><div style="font-size:11px;color:var(--text3)">Genera hoja REPORTE_IMPRIMIR</div></div>
             <button class="btn btn-primary" onclick="ejecutar('generarReporteImprimir','proc-estado')">Ejecutar</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border);margin-top:8px">
+            <div><div style="font-size:13px;font-weight:500">6. Corregir nombres en Programacion</div><div style="font-size:11px;color:var(--text3)">Elimina tildes y corrige mayusculas en nombres</div></div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button class="btn" style="background:var(--yellow);color:#000" onclick="ejecutar('unificarNombresProg','proc6-estado')">Ejecutar</button>
+              <span id="proc6-estado" style="font-size:12px"></span>
+            </div>
           </div>
           <button class="btn btn-green" style="height:44px;font-size:14px" onclick="ejecutarTodo()">  Ejecutar Todo en Secuencia</button>
         </div>
@@ -433,7 +446,8 @@ tr:hover td{background:rgba(79,142,247,0.03)}
       <div class="card">
         <div class="card-title">Agregar marcacion individual</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
-          <div class="form-field"><label>Trabajador</label><select id="bio-nombre" style="min-width:200px"><option value="">Selecciona...</option></select></div>
+          <div class="form-field"><label>Trabajador</label><select id="bio-nombre" style="min-width:200px" onchange="autoFillDni()"><option value="">Selecciona...</option></select></div>
+          <div class="form-field"><label>DNI</label><input type="text" id="bio-dni" style="width:100px" placeholder="DNI"></div>
           <div class="form-field"><label>Fecha</label><input type="date" id="bio-fecha"></div>
           <div class="form-field"><label>Hora</label><input type="time" id="bio-hora"></div>
           <div class="form-field"><label>Tipo</label><select id="bio-tipo"><option value="">Sin especificar</option><option>Entrada</option><option>Salida</option></select></div>
@@ -460,7 +474,8 @@ tr:hover td{background:rgba(79,142,247,0.03)}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTQiXr_fNbitqxiolm4b-3srL9meq0Vw_jJOd41jxwBfvj9KQ1zGBZ5wD8LNIDSZTH/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxEgNMW4ElgW3XHkzOIUWGWQ-DBx_GTQUntj3HrzMXuIlSB9yVBN3ZQB3g6hG7vyEaw/exec";
+const EXCEL_URL = "https://sutran-excel.onrender.com/excel";
 const MESES = ["","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 let personalData = [];
 let progData = [];
@@ -473,7 +488,22 @@ function nav(id, el) {
   el.classList.add('active');
   if (id === 'personal') { cargarTablaPersonal(); cargarTablaLugares(); }
   if (id === 'regmanual') cargarRegistroManual();
-  if (id === 'biometrico') cargarTablaBio();
+  if (id === 'biometrico') {
+    cargarTablaBio();
+    // Cargar select de trabajadores con DNI
+    fetchJSON(SCRIPT_URL + '?accion=listarPersonal').then(function(data) {
+      var sel = document.getElementById('bio-nombre');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">Selecciona...</option>';
+      (data.personal||[]).forEach(function(p) {
+        var op = document.createElement('option');
+        op.value = p.nombre_sistema;
+        op.textContent = p.nombre_sistema;
+        if (p.dni) op.setAttribute('data-dni', p.dni);
+        sel.appendChild(op);
+      });
+    });
+  }
   if (id === 'programacion') {
     // Cargar estados desde LEYENDA
     fetchJSON(SCRIPT_URL + '?accion=listarEstados').then(function(data) {
@@ -523,6 +553,24 @@ function nav(id, el) {
 }
 
 // JSONP fetch
+function fetchPOST(url, datos) {
+  return new Promise(function(resolve, reject) {
+    var form = new FormData();
+    form.append('datos', datos);
+    fetch(url, { method: 'POST', body: form })
+      .then(function(r) { return r.text(); })
+      .then(function(text) {
+        try { resolve(JSON.parse(text)); }
+        catch(e) { 
+          // Intentar extraer JSON del callback JSONP
+          var m = text.match(/\{.*\}/s);
+          if (m) resolve(JSON.parse(m[0]));
+          else reject(new Error('Respuesta invalida'));
+        }
+      }).catch(reject);
+  });
+}
+
 function fetchJSON(url) {
   return new Promise(function(resolve, reject) {
     var cbName = 'cb' + Date.now() + Math.floor(Math.random()*9999);
@@ -548,9 +596,10 @@ function fetchJSON(url) {
 function getMes() { return document.getElementById('g-mes').value; }
 function getAnio() { return document.getElementById('g-anio').value; }
 
-function badge(nom) {
+function badge(nom, obs) {
   if (!nom) return '<span style="color:var(--text3)"> </span>';
-  return '<span class="badge b-' + nom + '">' + nom + '</span>';
+  var title = obs ? ' title="' + obs + '" style="cursor:help"' : '';
+  return '<span class="badge b-' + nom + '"' + title + '>' + nom + '</span>';
 }
 
 function setEstado(id, tipo, msg) {
@@ -606,30 +655,42 @@ function poblarSelectores(rows) {
 // DASHBOARD
 function cargarDashboard() {
   var mes = getMes(), anio = getAnio();
+  var btn = document.getElementById('btn-actualizar-dash');
+  var estado = document.getElementById('dash-estado');
+  if (btn) { btn.disabled = true; btn.textContent = 'Actualizando...'; }
+  if (estado) { estado.textContent = 'Cargando datos...'; estado.style.color = 'var(--cyan)'; }
+
   fetchJSON(SCRIPT_URL + '?accion=dashboard&mes=' + mes + '&anio=' + anio).then(function(data) {
     var s = data.stats || {};
-    document.getElementById('s-personal').textContent = s.personal || ' ';
+    document.getElementById('s-personal').textContent = s.personal || '0';
     document.getElementById('s-asist').textContent = s.asistencias || '0';
     document.getElementById('s-faltas').textContent = s.faltas || '0';
     document.getElementById('s-foto').textContent = s.registros_foto || '0';
     document.getElementById('s-bio').textContent = s.registros_bio || '0';
     document.getElementById('s-ds').textContent = s.descansos || '0';
-  }).catch(function(e) { console.error(e); });
-
-  fetchJSON(SCRIPT_URL + '?accion=leerAsistencia&mes=' + mes + '&anio=' + anio).then(function(data) {
-    var rows = (data.asistencia || []).slice(-20).reverse();
-    document.getElementById('dash-tabla').innerHTML = rows.length === 0
-      ? '<tr><td colspan="7" class="loading-cell">Sin datos este mes</td></tr>'
-      : rows.map(function(r) {
-          return '<tr><td>' + r.nombre + '</td><td>' + (r.lugar||' ') + '</td>' +
-            '<td class="mono">' + r.fecha + '</td>' +
-            '<td class="mono">' + (r.hora_inicio||'') + (r.hora_fin?' - '+r.hora_fin:'') + '</td>' +
-            '<td class="mono" style="color:var(--green)">' + (r.entrada||' ') + '</td>' +
-            '<td class="mono" style="color:var(--red)">' + (r.salida||' ') + '</td>' +
-            '<td>' + badge(r.estado) + '</td></tr>';
-        }).join('');
+    var ahora = new Date();
+    if (estado) { 
+      estado.textContent = 'Actualizado ' + String(ahora.getHours()).padStart(2,'0') + ':' + String(ahora.getMinutes()).padStart(2,'0');
+      estado.style.color = 'var(--green)';
+    }
+    if (btn) { btn.disabled = false; btn.textContent = 'Actualizar'; }
+    // Cargar ultimos registros
+    fetchJSON(SCRIPT_URL + '?accion=leerAsistencia&mes=' + mes + '&anio=' + anio).then(function(data2) {
+      var rows = (data2.asistencia || []).slice(-10).reverse();
+      var tbody = document.getElementById('dash-tabla');
+      if (!tbody) return;
+      if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">Sin registros</td></tr>'; return; }
+      tbody.innerHTML = '';
+      rows.forEach(function(r) {
+        var estado_color = r.estado==='A'?'green':r.estado==='F'?'red':r.estado==='DS'?'gray':'yellow';
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>'+r.nombre+'</td><td>'+r.lugar+'</td><td>'+r.fecha+'</td><td>'+(r.h_inicio||'')+' - '+(r.h_fin||'')+'</td><td>'+(r.entrada||'')+'</td><td>'+(r.salida||'')+'</td><td><span class="badge '+estado_color+'">'+r.estado+'</span></td>';
+        tbody.appendChild(tr);
+      });
+    }).catch(function(){});
   }).catch(function(e) {
-    document.getElementById('dash-tabla').innerHTML = '<tr><td colspan="7" class="loading-cell" style="color:var(--red)">Error: ' + e.message + '</td></tr>';
+    if (estado) { estado.textContent = 'Error al actualizar'; estado.style.color = 'var(--red)'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Actualizar'; }
   });
 }
 
@@ -689,8 +750,9 @@ function cargarMensual() {
       html += '<tr><td class="lname">' + r['NOMBRE'] + '</td>';
       for (var d=1;d<=31;d++) {
         var v = r[String(d)] || '';
-        var bg = v==='F'?'background:rgba(239,68,68,0.15)':v==='DS'?'background:rgba(79,142,247,0.1)':v==='CP'?'background:rgba(245,158,11,0.1)':'';
-        html += '<td style="' + bg + '">' + (v ? badge(v) : '') + '</td>';
+        var obs = r['obs_' + String(d)] || '';
+        var bg = v==='F'?'background:rgba(239,68,68,0.15)':v==='DS'?'background:rgba(79,142,247,0.1)':v==='CP'||v==='CPSS'?'background:rgba(245,158,11,0.1)':'';
+        html += '<td style="' + bg + '">' + (v ? badge(v, obs) : '') + '</td>';
       }
       html += '<td class="mono" style="color:var(--red)">' + (r['TOTAL F']||'') + '</td>';
       html += '<td class="mono" style="color:var(--yellow)">' + (r['TOTAL T']||'') + '</td>';
@@ -719,8 +781,9 @@ function cargarImprimir() {
       html += '<td style="font-size:11px;color:var(--text2)">' + (r['CARGO']||'') + '</td>';
       for (var d=1;d<=31;d++) {
         var v = r[String(d)] || '';
-        var bg = v==='F'?'background:rgba(239,68,68,0.15)':v==='DS'?'background:rgba(79,142,247,0.1)':v==='CP'?'background:rgba(245,158,11,0.1)':'';
-        html += '<td style="' + bg + '">' + (v ? badge(v) : '') + '</td>';
+        var obs = r['obs_' + String(d)] || '';
+        var bg = v==='F'?'background:rgba(239,68,68,0.15)':v==='DS'?'background:rgba(79,142,247,0.1)':v==='CP'||v==='CPSS'?'background:rgba(245,158,11,0.1)':'';
+        html += '<td style="' + bg + '">' + (v ? badge(v, obs) : '') + '</td>';
       }
       html += '<td class="mono" style="color:var(--blue)">' + (r['DIAS TRABAJADOS']||'') + '</td>';
       html += '<td></td></tr>';
@@ -893,20 +956,38 @@ function agregarProgDia() {
   var lugar = document.getElementById('prog-add-lugar').value;
   var inicio = document.getElementById('prog-add-inicio').value;
   var fin = document.getElementById('prog-add-fin').value;
+  var obs = document.getElementById('prog-add-obs') ? document.getElementById('prog-add-obs').value.trim() : '';
   if (!nombre) { alert('Selecciona un trabajador'); return; }
   fetchJSON(SCRIPT_URL + '?accion=agregarProgramacion&fecha=' + encodeURIComponent(fechaFmt) +
     '&nombre=' + encodeURIComponent(nombre) +
     '&lugar=' + encodeURIComponent(lugar) +
     '&hora_inicio=' + encodeURIComponent(inicio) +
     '&hora_fin=' + encodeURIComponent(fin) +
-    '&estado=PROGRAMADO'
+    '&estado=PROGRAMADO' +
+    '&obs=' + encodeURIComponent(obs)
   ).then(function(data) {
     if (data.status === 'ok') {
       document.getElementById('prog-add-inicio').value = '';
       document.getElementById('prog-add-fin').value = '';
+      if (document.getElementById('prog-add-obs')) document.getElementById('prog-add-obs').value = '';
       cargarProgDia();
     } else alert('Error: ' + data.message);
   }).catch(function(e) { alert('Error: ' + e.message); });
+}
+
+function limpiarProgDia() {
+  var fecha = document.getElementById('prog-fecha-filtro').value;
+  if (!fecha) { alert('Selecciona una fecha'); return; }
+  var fp = fecha.split('-');
+  var fechaFmt = fp[2] + '/' + fp[1] + '/' + fp[0];
+  if (!confirm('Eliminar toda la programacion del ' + fechaFmt + '?')) return;
+  fetchJSON(SCRIPT_URL + '?accion=limpiarProgDia&fecha=' + encodeURIComponent(fechaFmt))
+    .then(function(data) {
+      if (data.status === 'ok') {
+        alert('Programacion del ' + fechaFmt + ' eliminada: ' + data.eliminados + ' registros');
+        cargarProgDia();
+      } else alert('Error: ' + data.message);
+    }).catch(function(e) { alert('Error: ' + e.message); });
 }
 
 function cargarProgDia() {
@@ -1042,6 +1123,14 @@ function guardarRegistroManual() {
     return;
   }
 
+  // Deshabilitar boton para evitar duplicados
+  var btnGuardar = document.getElementById('btn-guardar-rm');
+  if (btnGuardar) {
+    if (btnGuardar.disabled) return;
+    btnGuardar.disabled = true;
+    btnGuardar.textContent = 'Guardando...';
+  }
+
   // Convertir fecha de yyyy-mm-dd a dd/MM/yyyy
   var fp = fechaInput.split('-');
   var fecha = fp[2] + '/' + fp[1] + '/' + fp[0];
@@ -1068,9 +1157,11 @@ function guardarRegistroManual() {
       estado.textContent = 'Error: ' + data.message;
       estado.style.color = 'var(--red)';
     }
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = 'Guardar Registro'; }
   }).catch(function(e) {
     estado.textContent = 'Error: ' + e.message;
     estado.style.color = 'var(--red)';
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.textContent = 'Guardar Registro'; }
   });
 }
 
@@ -1210,58 +1301,105 @@ function eliminarPersonal(nombre) {
 }
 
 // BIOM TRICO
+function autoFillDni() {
+  var sel = document.getElementById('bio-nombre');
+  var dniInput = document.getElementById('bio-dni');
+  if (!sel || !dniInput) return;
+  var op = sel.selectedOptions[0];
+  if (op && op.getAttribute('data-dni')) {
+    dniInput.value = op.getAttribute('data-dni');
+  }
+}
+
 function agregarBiometrico() {
   var nom = document.getElementById('bio-nombre').value;
+  var dni = document.getElementById('bio-dni') ? document.getElementById('bio-dni').value.trim() : '';
   var fecha = document.getElementById('bio-fecha').value;
   var hora = document.getElementById('bio-hora').value;
   var tipo = document.getElementById('bio-tipo').value;
   if (!nom || !fecha || !hora) { alert('Completa nombre, fecha y hora'); return; }
   var fechaFmt = fecha.split('-').reverse().join('/');
   fetchJSON(SCRIPT_URL + '?accion=agregarBiometrico&nombre=' + encodeURIComponent(nom) +
-    '&fecha=' + encodeURIComponent(fechaFmt) + '&hora=' + encodeURIComponent(hora) + '&tipo=' + encodeURIComponent(tipo))
-  .then(function(data) {
-    if (data.status === 'ok') { alert('  Agregado'); cargarTablaBio(); }
-    else alert('Error: ' + data.message);
-  }).catch(function(e){ alert('Error: ' + e.message); });
+    '&dni=' + encodeURIComponent(dni) +
+    '&fecha=' + encodeURIComponent(fechaFmt) + '&hora=' + encodeURIComponent(hora) + '&tipo=' + encodeURIComponent(tipo)
+  ).then(function(data) {
+    if (data.status === 'ok') {
+      document.getElementById('bio-fecha').value = '';
+      document.getElementById('bio-hora').value = '';
+      if (document.getElementById('bio-dni')) document.getElementById('bio-dni').value = '';
+      cargarTablaBio();
+    } else alert('Error: ' + data.message);
+  }).catch(function(e) { alert('Error: ' + e.message); });
 }
 
 function cargarBiometricoMasivo() {
   var texto = document.getElementById('bio-masivo').value.trim();
   if (!texto) { alert('Pega datos primero'); return; }
-  var lineas = texto.split('\n').filter(function(l){return l.trim();});
-  var promesas = lineas.map(function(linea) {
-    var cols = linea.split('\t');
-    if (cols.length < 3) return Promise.resolve({status:'error'});
-    // Formato biometrico real: DNI | Nombre | FechaHora | Tipo
+
+  var lineas = texto.split('\n').filter(function(l){ return l.trim(); });
+  if (lineas.length === 0) { alert('Sin datos validos'); return; }
+
+  var btn = document.querySelector('[onclick="cargarBiometricoMasivo()"]');
+  var estado = document.getElementById('bio-masivo-estado');
+  if (btn) { btn.disabled = true; }
+
+  // Procesar cada linea individualmente con delay
+  var totalAgregados = 0;
+  var totalDuplicados = 0;
+  var errores = 0;
+  var procesados = 0;
+  var total = lineas.length;
+
+  function procesarLinea(idx) {
+    if (idx >= total) {
+      // Terminado
+      if (btn) { btn.disabled = false; btn.textContent = 'Cargar masivo'; }
+      var msg = '✅ Cargados: ' + totalAgregados + ' de ' + total;
+      if (totalDuplicados > 0) msg += ' (' + totalDuplicados + ' duplicados)';
+      if (estado) { estado.textContent = msg; estado.style.color = 'var(--green)'; }
+      document.getElementById('bio-masivo').value = '';
+      cargarTablaBio();
+      return;
+    }
+
+    var linea = lineas[idx].trim();
+    if (!linea) { procesarLinea(idx+1); return; }
+
+    var cols = linea.split('	');
+    if (cols.length < 3) { procesarLinea(idx+1); return; }
+
     var dni = cols[0].trim();
     var nombre = cols[1].trim();
     var fechaHora = cols[2].trim();
-    var tipo = cols[3] ? cols[3].trim() : '';
-    // Separar fecha y hora del campo "1/04/2026 07:00:59"
     var partes = fechaHora.split(' ');
     var fechaRaw = partes[0] || '';
-    var horaRaw = partes[1] ? partes[1].substring(0,5) : '';
-    // Formatear fecha a dd/MM/yyyy
-    var fechaFmt = fechaRaw;
-    if (fechaRaw.includes('/')) {
-      var fp = fechaRaw.split('/');
-      if (fp.length === 3) fechaFmt = fp[0].padStart(2,'0') + '/' + fp[1].padStart(2,'0') + '/' + fp[2];
-    } else if (fechaRaw.includes('-')) {
-      fechaFmt = fechaRaw.split('-').reverse().join('/');
-    }
-    if (!nombre || !fechaFmt || !horaRaw) return Promise.resolve({status:'error'});
-    return fetchJSON(SCRIPT_URL + '?accion=agregarBiometrico&dni=' + encodeURIComponent(dni) +
+    var horaRaw = partes[1] ? partes[1].substring(0,5) : (cols[3] ? cols[3].trim().substring(0,5) : '');
+    var fp = fechaRaw.split('/');
+    var fechaFmt = fp.length === 3 ? fp[0].padStart(2,'0')+'/'+fp[1].padStart(2,'0')+'/'+fp[2] : fechaRaw;
+    var tipo = cols[3] && !cols[3].includes(':') ? cols[3].trim() : (cols[4] ? cols[4].trim() : 'Entrada');
+
+    if (!nombre || !fechaFmt || !horaRaw) { procesarLinea(idx+1); return; }
+
+    var pct = Math.round(((idx+1)/total)*100);
+    if (btn) btn.textContent = 'Cargando ' + pct + '%... (' + (idx+1) + '/' + total + ')';
+    if (estado) { estado.textContent = 'Procesando registro ' + (idx+1) + ' de ' + total; estado.style.color = 'var(--cyan)'; }
+
+    fetchJSON(SCRIPT_URL + '?accion=agregarBiometrico&dni=' + encodeURIComponent(dni) +
       '&nombre=' + encodeURIComponent(nombre) +
       '&fecha=' + encodeURIComponent(fechaFmt) +
       '&hora=' + encodeURIComponent(horaRaw) +
-      '&tipo=' + encodeURIComponent(tipo));
-  });
-  Promise.all(promesas).then(function(results) {
-    var ok = results.filter(function(r){return r && r.status==='ok';}).length;
-    alert(ok + ' de ' + results.length + ' registros cargados');
-    document.getElementById('bio-masivo').value = '';
-    cargarTablaBio();
-  });
+      '&tipo=' + encodeURIComponent(tipo)
+    ).then(function(data) {
+      if (data.status === 'ok') totalAgregados++;
+      else totalDuplicados++;
+      setTimeout(function(){ procesarLinea(idx+1); }, 200);
+    }).catch(function() {
+      errores++;
+      setTimeout(function(){ procesarLinea(idx+1); }, 200);
+    });
+  }
+
+  procesarLinea(0);
 }
 
 function cargarTablaBio() {
